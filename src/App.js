@@ -1,7 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import './App.css';
-import {Canvas} from "./components/Canvas/Canvas";
-import $ from "jquery";
+import React, {useEffect, useState} from 'react'
+import './App.css'
+import {Canvas} from "./components/Canvas/Canvas"
+import $ from "jquery"
+import {
+    ReflexContainer,
+    ReflexSplitter,
+    ReflexElement
+} from 'react-reflex'
+
 
 function App() {
 
@@ -17,19 +23,34 @@ function App() {
     }, [])
 
     return <div className="App">
-        <div>
-            <input type="radio" id="contactChoice1"
-                   name="figure" value="line" />
-            <label htmlFor="contactChoice1">Line</label>
-            <input type="radio" id="contactChoice2"
-                   name="figure" value="polygon" />
-            <label htmlFor="contactChoice2">Polygon</label>
-            <input type="radio" id="contactChoice3"
-                   name="figure" value="none" />
-            <label htmlFor="contactChoice3">None</label>
-        </div>
 
-        <Canvas figureType={figureType}/>
+        <ReflexContainer orientation="vertical">
+            <ReflexElement className="left-pane" size={"300"}>
+                <div className="pane-content">
+                        <input type="radio" id="contactChoice1"
+                               name="figure" value="line"/>
+                        <label htmlFor="contactChoice1">Line</label>
+                        <input type="radio" id="contactChoice2"
+                               name="figure" value="polygon"/>
+                        <label htmlFor="contactChoice2">Polygon</label>
+                        <input type="radio" id="contactChoice3"
+                               name="figure" value="none"/>
+                        <label htmlFor="contactChoice3">None</label>
+                </div>
+            </ReflexElement>
+
+            <ReflexSplitter style={{width: 3}}/>
+
+            <ReflexElement className="right-pane"
+                           minSize="200"
+                           >
+                <div className="pane-content">
+                    <Canvas figureType={figureType}/>
+                </div>
+            </ReflexElement>
+
+        </ReflexContainer>
+
     </div>
 }
 
