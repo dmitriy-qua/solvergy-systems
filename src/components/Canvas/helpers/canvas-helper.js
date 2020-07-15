@@ -87,13 +87,8 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
     }
     let objects = canvas.getObjects();
 
-    let tcounter = 0;
-
     for (let i in objects) {
 
-        tcounter++;
-
-        //alert(tcounter);
         let scaleX = objects[i].scaleX;
         let scaleY = objects[i].scaleY;
         let left = objects[i].left;

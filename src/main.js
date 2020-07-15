@@ -10,6 +10,7 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({width: 1200, height: 700, minHeight: 700, minWidth: 1200});
+  mainWindow.setResizable(true)
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 }
