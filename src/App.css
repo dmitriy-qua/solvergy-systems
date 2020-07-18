@@ -7,6 +7,15 @@
     height: 100vh;
 }
 
+svg.material-icon {
+    width: 1.5rem;
+}
+
+svg.material-icon-tree {
+    padding: 0;
+    margin-right: 6px;
+}
+
 body {
     margin: 0;
     /*padding: 10px;*/
@@ -45,11 +54,13 @@ body {
 }
 
 .bp3-tree-node > .bp3-tree-node-content:hover {
-    background-color: rgba(171, 214, 140, 0.9);
+    background-color: #eceff1;
+    cursor: pointer;
 }
 
 .bp3-tree .bp3-tree-node.bp3-tree-node-selected > .bp3-tree-node-content{
-    background-color: #a1bd64; }
+    background-color: #78909c; }
+
 
 
 

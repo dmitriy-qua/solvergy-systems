@@ -6,6 +6,9 @@ import {circleDrawing, circleGenerated, lineCircle} from "./shapes/circle/config
 import {polygonDrawing, polygonGenerated, polygonLine} from "./shapes/polygon/config";
 import {connectLineToOtherLine, limitCanvasBoundary, zoomCanvas} from "./helpers/canvas-helper";
 
+const fs = window.require("fs")
+const path = window.require('path');
+
 const MIN = 99, MAX = 999999
 let canvas, zoom = 0;
 let _line, isDown, initialCanvasHeight, currentFigureType;
@@ -20,14 +23,14 @@ let _curX, _curY;
 let currentName;
 let relativeSize = 1;
 
-export const Canvas = ({figureType}) => {
+export const Canvas = ({figureType, map}) => {
 
     useEffect(() => {
 
         canvas = new fabric.Canvas('c', {
             selection: false,
             preserveObjectStacking: true,
-            fireMiddleClick: true
+            fireMiddleClick: true,
         })
 
         canvas.on('mouse:down', onMouseDown)
@@ -40,6 +43,33 @@ export const Canvas = ({figureType}) => {
         canvasDiv.addEventListener('wheel', onMouseWheel)
 
     }, [])
+
+    useEffect(() => {
+
+        if (map) {
+            const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+
+            fabric.Image.fromURL(imagePath, (img) => {
+                const scaleY = canvas.getHeight() / img.height
+                const scaleX = canvas.getWidth() / img.width
+
+                const imageResolution = img.width / img.height
+
+                canvas.setWidth(canvas.getHeight() * imageResolution)
+
+                img.set({
+                    scaleX : scaleY,
+                    scaleY: scaleY,
+                });
+
+                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas))
+            });
+        } else {
+            canvas.setBackgroundImage(0, canvas.renderAll.bind(canvas))
+        }
+
+    }, [map])
+
 
     useEffect(() => {
         currentFigureType = figureType
@@ -155,31 +185,35 @@ export const Canvas = ({figureType}) => {
     const onMouseWheel = (opt) => {
         opt.preventDefault()
 
-        relativeSize = canvas.getHeight() / initialCanvasHeight
+        if (opt.ctrlKey) {
+            relativeSize = canvas.getHeight() / initialCanvasHeight
 
-        let myDelta;
-        let delta = opt.deltaY;
-        if (delta < 0) {
-            myDelta = -1
-        } else {
-            myDelta = 1
-        }
-
-        zoom = Math.round(zoom - myDelta)
-
-        if (zoom <= 100 && zoom >= -20) {
+            let myDelta;
+            let delta = opt.deltaY;
             if (delta < 0) {
-                zoomCanvas(1.02, opt, zoom, canvas)
+                myDelta = -1
             } else {
-                zoomCanvas(1 / 1.02, opt, zoom, canvas)
+                myDelta = 1
             }
-        } else {
-            if (zoom > 100) {
-                zoom = 100
-            } else if (zoom < -20) {
-                zoom = -20
+
+            zoom = Math.round(zoom - myDelta)
+
+            if (zoom <= 120 && zoom >= -20) {
+                if (delta < 0) {
+                    zoomCanvas(1.02, opt, zoom, canvas)
+                } else {
+                    zoomCanvas(1 / 1.02, opt, zoom, canvas)
+                }
+            } else {
+                if (zoom > 120) {
+                    zoom = 120
+                } else if (zoom < -20) {
+                    zoom = -20
+                }
             }
+
         }
+
 
     }
 
@@ -196,7 +230,8 @@ export const Canvas = ({figureType}) => {
             _line = new fabric.Line(points, lineGenerated(relativeSize))
             _line.set({
                 name: name,
-                strokeWidth: 4 * relativeSize,
+                id: name,
+                //strokeWidth: 4 * relativeSize,
                 objectCaching: false
             })
             canvas.add(_line);

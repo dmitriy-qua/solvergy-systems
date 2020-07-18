@@ -1,5 +1,5 @@
 export const lineGenerated = (relativeSize) => ({
-    strokeWidth: 4 * relativeSize,
+    strokeWidth: 1 * relativeSize,
     fill: 'red',
     stroke: 'black',
     originX: 'center',

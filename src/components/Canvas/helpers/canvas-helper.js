@@ -72,7 +72,7 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
         canvasDiv.scrollLeft(pointer.x / 2.1)
         canvasDiv.scrollTop(pointer.y / 2.1)
     }
-    else if (zoom >= 60 && zoom <= 100) {
+    else if (zoom >= 60 && zoom <= 120) {
         canvasDiv.scrollLeft(pointer.x / 4)
         canvasDiv.scrollTop(pointer.y / 4)
     }
@@ -81,9 +81,12 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
     canvas.setWidth(Math.round(canvas.getWidth() * factor));
 
     if (canvas.backgroundImage) {
+        //console.log(canvas.backgroundImage)
+        //setCanvasHeight(Math.round(canvas.getHeight() * factor))
         // Need to scale background images as well
         let bi = canvas.backgroundImage;
-        bi.width = bi.width * factor; bi.height = bi.height * factor;
+        bi.scaleX = bi.scaleX * factor; //bi.width * factor;
+        bi.scaleY = bi.scaleY * factor;  //bi.height * factor;
     }
     let objects = canvas.getObjects();
 

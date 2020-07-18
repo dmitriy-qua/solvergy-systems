@@ -1,13 +1,16 @@
-import {Tree} from "@blueprintjs/core";
+import {Tree, Icon} from "@blueprintjs/core";
 import React, {useState} from "react";
 import {createUseStyles} from "react-jss";
+import MaterialIcon from '@mdi/react'
+import { mdiContentSave, mdiFolder } from '@mdi/js'
+import { FcFolder } from 'react-icons/fc';
+
 
 export const ObjectsTree = () => {
 
     const styles = useStyles()
 
     const [nodes, setNodes] = useState(initialNodes)
-    const [m, setM] = useState(false)
 
     const handleNodeClick = (nodeData, _nodePath, e) => {
         const originallySelected = nodeData.isSelected;
@@ -71,8 +74,9 @@ export const ObjectsTree = () => {
 const useStyles = createUseStyles({
     text: {
         fontSize: 12,
-        fontWeight: 500,
+        fontWeight: 400,
         fontFamily: "Montserrat",
+        color: "#5c7080"
     },
     backgroundNode: {
         backgroundColor: "red"
@@ -84,7 +88,7 @@ const initialNodes = [
         id: 0,
         hasCaret: true,
         isExpanded: true,
-        icon: "folder-close",
+        icon: <Icon icon={<FcFolder size={16} className={"bp3-icon material-icon-tree"}/>} />,
         label: "Folder 0",
         childNodes: [
             {
@@ -94,7 +98,7 @@ const initialNodes = [
             },
             {
                 id: 2,
-                icon: "tag",
+                icon: <Icon icon={<MaterialIcon path={mdiContentSave} className={"bp3-icon material-icon-tree"}/>} />,
                 label: "Organic meditation",
             },
             {

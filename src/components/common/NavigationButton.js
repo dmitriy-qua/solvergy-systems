@@ -7,7 +7,7 @@ export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, 
     const styles = useStyles({currentPage, pageName})
 
     return <div onClick={() => setCurrentPage(pageName)} className={styles.navigationButton}>
-        <Icon icon={icon} iconSize={18}/>
+        <Icon icon={icon} iconSize={16}/>
         <span className={styles.text}>{label}</span>
     </div>
 }
@@ -15,6 +15,7 @@ export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, 
 const useStyles = createUseStyles({
     navigationButton: {
         width: "100%",
+        color: "#5c7080",
         height: 110,
         borderRadius: 0,
         borderBottom: "1px solid #efefef",
@@ -24,9 +25,9 @@ const useStyles = createUseStyles({
         alignItems: "center",
         cursor: "pointer",
         '&:hover': {
-            backgroundColor: "#f9f9f9",
+            backgroundColor: "#eceff1",
         },
-        backgroundColor: props => props.currentPage === props.pageName ? "#f9f9f9" : "white",
+        backgroundColor: props => props.currentPage === props.pageName ? "#eceff1" : "white",
     },
     text: {
         marginTop: 12,

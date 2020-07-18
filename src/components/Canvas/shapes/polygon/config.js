@@ -1,8 +1,8 @@
 export const polygonDrawing = (relativeSize) => ({
     stroke: '#333333',
-    strokeWidth: 1 * relativeSize,
+    strokeWidth: 0.4 * relativeSize,
     fill: '#cccccc',
-    opacity: 0.3,
+    opacity: 0.1,
     selectable: false,
     hasBorders: false,
     hasControls: false,
@@ -12,8 +12,8 @@ export const polygonDrawing = (relativeSize) => ({
 
 export const polygonGenerated = (relativeSize) => ({
     stroke: 'black',
-    strokeWidth: 1.4 * relativeSize,
-    fill: 'red',
+    strokeWidth: 0.4 * relativeSize,
+    fill: '#e0e0e0',
     opacity: 0.4,
     hasBorders: false,
     hasControls: false,
@@ -23,7 +23,7 @@ export const polygonGenerated = (relativeSize) => ({
 })
 
 export const polygonLine = (relativeSize) => ({
-    strokeWidth: 2 * relativeSize,
+    strokeWidth: 0.4 * relativeSize,
     fill: '#999999',
     stroke: '#999999',
     class: 'line',

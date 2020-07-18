@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import {Canvas} from "./components/Canvas/Canvas"
-import $ from "jquery"
 import {
     ReflexContainer,
     ReflexSplitter,
@@ -10,21 +9,30 @@ import {
 import {
     Alignment,
     Button,
-    Classes,
+    Classes, Icon,
     Navbar,
     NavbarDivider,
     NavbarGroup,
-    NavbarHeading, Tree,
+    NavbarHeading,
 } from "@blueprintjs/core";
 import {createUseStyles} from 'react-jss'
 
 import './App.css'
 import {NavigationButton} from "./components/common/NavigationButton";
 import {ObjectsTree} from "./components/ObjectsTree/ObjectsTree";
+import MaterialIcon from "@mdi/react";
+import {mdiFolder, mdiFolderPlusOutline} from "@mdi/js";
+import { FaMap } from 'react-icons/fa';
+
+const {dialog} = window.require('electron').remote;
+const path = require('path');
+
+const {app} = window.require('electron').remote;
+console.log(app.getAppPath());
 
 const HEADER_HEIGHT = 50
 const FOOTER_HEIGHT = 50
-const LEFT_MENU_WIDTH = 150
+const LEFT_MENU_WIDTH = 130
 
 function App() {
 
@@ -32,6 +40,23 @@ function App() {
 
     const [figureType, setFigureType] = useState("none")
     const [currentPage, setCurrentPage] = useState("canvas")
+    const [treeWidth, setTreeWidth] = useState(250)
+    const [map, setMap] = useState(false)
+
+    const setMapBackground = () => {
+        // dialog.showOpenDialog({
+        //     filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }],
+        //     properties: ['openFile']
+        // }).then((filesName) => {
+        //     if (filesName) {
+        //         const normalizedFilePath = filesName.filePaths[0].replace(/\\/g, '/')
+        //         setMap(normalizedFilePath)
+        //     }
+        // });
+
+        setMap(prevState => !prevState)
+
+    }
 
     return <div className="App">
         <ReflexContainer orientation="horizontal" windowResizeAware={true}>
@@ -43,11 +68,19 @@ function App() {
                 <div className="pane-content">
                     <Navbar style={{height: HEADER_HEIGHT}}>
                         <NavbarGroup align={Alignment.LEFT} style={{height: HEADER_HEIGHT}}>
-                            <NavbarHeading className={styles.headerText}>Solvergy: Systems</NavbarHeading>
-                            <NavbarDivider/>
-                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="home" text="Home"/>
+                            {/*<NavbarHeading className={styles.headerText}>Solvergy: Systems</NavbarHeading>*/}
+                            {/*<NavbarDivider/>*/}
+                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon={<Icon icon={<MaterialIcon path={mdiFolderPlusOutline} className={"bp3-icon material-icon"}/>} />} text="Home"/>
                             <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="document" text="Files"/>
-                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="new-layers" text="New node"/>
+                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="new-layers"
+                                    text="New node"/>
+                            <NavbarDivider/>
+                            <Button icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"bp3-icon material-icon"}/>} />} className={[Classes.MINIMAL, styles.shapeButton]}
+                                    onClick={() => setFigureType("line")}/>
+                            <Button icon="polygon-filter" className={[Classes.MINIMAL, styles.shapeButton]}
+                                    onClick={() => setFigureType("polygon")}/>
+                            <Button icon="cross" className={[Classes.MINIMAL, styles.shapeButton]}
+                                    onClick={() => setFigureType("none")}/>
                         </NavbarGroup>
                     </Navbar>
                 </div>
@@ -58,41 +91,55 @@ function App() {
                                    size={LEFT_MENU_WIDTH}
                                    minSize={LEFT_MENU_WIDTH}
                                    maxSize={LEFT_MENU_WIDTH}
-                                   style={{borderRight: "4px solid #f0f0f0"}}
+                                   style={{borderRight: "4px solid #eceff1"}}
                     >
                         <div className="pane-content">
                             <NavigationButton currentPage={currentPage}
                                               setCurrentPage={setCurrentPage}
                                               pageName={"canvas"}
                                               label={"Canvas"}
-                                              icon={"map-create"}
+                                              icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>} />}
                             />
                             <NavigationButton currentPage={currentPage}
                                               setCurrentPage={setCurrentPage}
                                               pageName={"settings"}
                                               label={"Settings"}
-                                              icon={"cog"}
+                                              icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>} />}
                             />
                         </div>
                     </ReflexElement>
 
-                    <ReflexElement className="middle-pane" style={{overflow: "hidden"}}>
-                        <div className="pane-content">
-                            {currentPage === "canvas" && <Canvas figureType={figureType}/>}
+                    {currentPage === "canvas" && <ReflexElement>
+                        <ReflexContainer orientation="vertical" windowResizeAware={true}>
+                            <ReflexElement className="middle-pane" style={{overflow: "hidden"}}>
+                                <div className="pane-content">
+                                    <Canvas figureType={figureType} map={map}/>
+                                </div>
+                            </ReflexElement>
 
-                        </div>
+                            <ReflexSplitter style={{backgroundColor: "#eceff1", width: 4, border: 0}}
+                            />
+
+                            <ReflexElement className="right-pane"
+                                           minSize="230"
+                                           maxSize="300"
+                                           size={treeWidth}
+                                           onStopResize={({domElement}) => setTreeWidth(domElement.offsetWidth)}
+                            >
+                                <div className="pane-content">
+                                    <ObjectsTree/>
+                                </div>
+                            </ReflexElement>
+                        </ReflexContainer>
                     </ReflexElement>
+                    }
 
-                    <ReflexSplitter style={{backgroundColor: "#efefef", width: 4, border: 0}}/>
+                    {currentPage === "settings" && <ReflexElement>
+                        <ReflexContainer orientation="vertical" windowResizeAware={true}>
 
-                    <ReflexElement className="right-pane"
-                                   minSize="200"
-                                   maxSize="300"
-                    >
-                        <div className="pane-content">
-                            <ObjectsTree/>
-                        </div>
+                        </ReflexContainer>
                     </ReflexElement>
+                    }
                 </ReflexContainer>
             </ReflexElement>
             <ReflexElement className="footer"
@@ -101,9 +148,9 @@ function App() {
                            maxSize={FOOTER_HEIGHT}
                            style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", display: "flex", alignItems: "center"}}>
                 <div className="pane-content">
-                    <Button icon="layout-linear" className={styles.shapeButton} onClick={() => setFigureType("line")}/>
-                    <Button icon="polygon-filter" className={styles.shapeButton} onClick={() => setFigureType("polygon")}/>
-                    <Button icon="cross" className={styles.shapeButton} onClick={() => setFigureType("none")}/>
+                    <Button active={map} icon={<Icon icon={<FaMap size={16} className={"bp3-icon material-icon"}/>} />} className={[Classes.MINIMAL, styles.shapeButton]} onClick={setMapBackground}/>
+                    {/*<Button icon="polygon-filter" className={[Classes.MINIMAL, styles.shapeButton]} onClick={() => setFigureType("polygon")}/>*/}
+                    {/*<Button icon="cross" className={[Classes.MINIMAL, styles.shapeButton]} onClick={() => setFigureType("none")}/>*/}
                 </div>
             </ReflexElement>
         </ReflexContainer>
@@ -117,8 +164,9 @@ const useStyles = createUseStyles({
         fontFamily: 'Montserrat'
     },
     menuItemText: {
-        fontSize: 12,
-        fontFamily: 'Montserrat'
+        fontSize: 13,
+        fontWeight: 500,
+        fontFamily: 'Montserrat',
     },
     shapeButton: {
         marginLeft: 12

@@ -5,10 +5,13 @@
   "main": "src/main.js",
   "dependencies": {
     "@blueprintjs/core": "^3.29.0",
+    "@mdi/js": "^5.3.45",
+    "@mdi/react": "^1.4.0",
     "fabric": "^3.6.3",
     "jquery": "^3.5.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-icons": "^3.10.0",
     "react-jss": "^10.3.0",
     "react-reflex": "^3.1.0",
     "react-router": "^5.2.0",
