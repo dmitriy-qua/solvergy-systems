@@ -6,9 +6,6 @@ import {circleDrawing, circleGenerated, lineCircle} from "./shapes/circle/config
 import {polygonDrawing, polygonGenerated, polygonLine} from "./shapes/polygon/config";
 import {connectLineToOtherLine, limitCanvasBoundary, zoomCanvas} from "./helpers/canvas-helper";
 
-const fs = window.require("fs")
-const path = window.require('path');
-
 const MIN = 99, MAX = 999999
 let canvas, zoom = 0;
 let _line, isDown, initialCanvasHeight, currentFigureType;
@@ -22,8 +19,14 @@ let canDrawPolygon = false;
 let _curX, _curY;
 let currentName;
 let relativeSize = 1;
+let mapDistance = null;
 
-export const Canvas = ({figureType, map}) => {
+export const Canvas = ({figureType, mapIsVisible, map_Distance}) => {
+
+
+    useEffect(() => {
+        mapDistance = map_Distance
+    }, [map_Distance])
 
     useEffect(() => {
 
@@ -46,7 +49,7 @@ export const Canvas = ({figureType, map}) => {
 
     useEffect(() => {
 
-        if (map) {
+        if (mapIsVisible) {
             const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
 
             fabric.Image.fromURL(imagePath, (img) => {
@@ -68,7 +71,7 @@ export const Canvas = ({figureType, map}) => {
             canvas.setBackgroundImage(0, canvas.renderAll.bind(canvas))
         }
 
-    }, [map])
+    }, [mapIsVisible])
 
 
     useEffect(() => {
@@ -94,7 +97,7 @@ export const Canvas = ({figureType, map}) => {
     const addPoint = (o) => {
         let random = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
         let id = new Date().getTime() + random;
-        let circle = new fabric.Circle(circleDrawing(relativeSize));
+        let circle = new fabric.Circle(circleDrawing(relativeSize, mapDistance));
         circle.set({
             id: id,
             left: (o.e.layerX / canvas.getZoom()),
@@ -106,7 +109,7 @@ export const Canvas = ({figureType, map}) => {
             })
         }
         let points = [(o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom()), (o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom())];
-        const line = new fabric.Line(points, polygonLine(relativeSize));
+        const line = new fabric.Line(points, polygonLine(relativeSize, mapDistance));
         if (activeShape) {
             let pos = canvas.getPointer(o);
             let points = activeShape.get("points");
@@ -114,14 +117,14 @@ export const Canvas = ({figureType, map}) => {
                 x: pos.x,
                 y: pos.y
             });
-            let polygon = new fabric.Polygon(points, polygonDrawing(relativeSize));
+            let polygon = new fabric.Polygon(points, polygonDrawing(relativeSize, mapDistance));
             canvas.remove(activeShape)
             canvas.add(polygon)
             activeShape = polygon
             canvas.renderAll()
         } else {
             let polyPoint = [{x: (o.e.layerX / canvas.getZoom()), y: (o.e.layerY / canvas.getZoom())}];
-            let polygon = new fabric.Polygon(polyPoint, polygonDrawing(relativeSize));
+            let polygon = new fabric.Polygon(polyPoint, polygonDrawing(relativeSize, mapDistance));
             activeShape = polygon;
             canvas.add(polygon);
         }
@@ -149,12 +152,12 @@ export const Canvas = ({figureType, map}) => {
             canvas.remove(line);
         });
         canvas.remove(activeShape).remove(activeLine);
-        let polygon = new fabric.Polygon(points, polygonGenerated(relativeSize));
+        let polygon = new fabric.Polygon(points, polygonGenerated(relativeSize, mapDistance));
         canvas.add(polygon)
 
-        let circle1 = new fabric.Circle(circleGenerated(relativeSize));
+        let circle1 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
         circle1.set({
-            left: polygon.getCenterPoint().x + 20 * relativeSize,
+            left: polygon.getCenterPoint().x + 0.5 * relativeSize * (canvas.getHeight() / mapDistance),
             top: polygon.getCenterPoint().y,
             selectable: false,
             fill: 'red'
@@ -162,9 +165,9 @@ export const Canvas = ({figureType, map}) => {
         polygon.circle1 = circle1
         canvas.add(circle1)
 
-        let circle2 = new fabric.Circle(circleGenerated(relativeSize));
+        let circle2 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
         circle2.set({
-            left: polygon.getCenterPoint().x - 20 * relativeSize,
+            left: polygon.getCenterPoint().x - 0.5 * relativeSize * (canvas.getHeight() / mapDistance),
             top: polygon.getCenterPoint().y,
             selectable: false,
             fill: 'blue'
@@ -227,7 +230,7 @@ export const Canvas = ({figureType, map}) => {
             let random = Math.floor(Math.random() * (MAX - MIN + 1)) + MAX;
             let name = new Date().getTime() + random;
             currentName = name
-            _line = new fabric.Line(points, lineGenerated(relativeSize))
+            _line = new fabric.Line(points, lineGenerated(relativeSize, mapDistance))
             _line.set({
                 name: name,
                 id: name,
@@ -351,12 +354,12 @@ export const Canvas = ({figureType, map}) => {
         }
         else if (objType === 'polygon') {
             p.circle1.set({
-                left: p.getCenterPoint().x + 20 * relativeSize,
+                left: p.getCenterPoint().x + 0.5 * relativeSize * (canvas.getHeight() / mapDistance),
                 top: p.getCenterPoint().y
             });
 
             p.circle2.set({
-                left: p.getCenterPoint().x - 20 * relativeSize,
+                left: p.getCenterPoint().x - 0.5 * relativeSize * (canvas.getHeight() / mapDistance),
                 top: p.getCenterPoint().y
             });
             p.circle1.setCoords();
@@ -369,7 +372,7 @@ export const Canvas = ({figureType, map}) => {
     const makeCircle = (left, top, line, type) => {
         const random = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
         const id = new Date().getTime() + random;
-        const circle = new fabric.Circle(lineCircle(left, top, type, id, relativeSize));
+        const circle = new fabric.Circle(lineCircle(left, top, type, id, relativeSize, mapDistance));
         //canvas.moveTo(c, 2);
         circle.line = line;
         if (type === 'start') {

@@ -10,7 +10,7 @@ export const ObjectsTree = () => {
 
     const styles = useStyles()
 
-    const [nodes, setNodes] = useState(initialNodes)
+    const [nodes, setNodes] = useState([])
 
     const handleNodeClick = (nodeData, _nodePath, e) => {
         const originallySelected = nodeData.isSelected;

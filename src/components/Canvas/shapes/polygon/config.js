@@ -1,8 +1,11 @@
-export const polygonDrawing = (relativeSize) => ({
+const STROKE_WIDTH = 1.2
+const CANVAS_HEIGHT = 500
+
+export const polygonDrawing = (relativeSize, mapDistance) => ({
     stroke: '#333333',
-    strokeWidth: 0.4 * relativeSize,
+    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
     fill: '#cccccc',
-    opacity: 0.1,
+    opacity: 0.4,
     selectable: false,
     hasBorders: false,
     hasControls: false,
@@ -10,10 +13,10 @@ export const polygonDrawing = (relativeSize) => ({
     objectCaching: false
 })
 
-export const polygonGenerated = (relativeSize) => ({
+export const polygonGenerated = (relativeSize, mapDistance) => ({
     stroke: 'black',
-    strokeWidth: 0.4 * relativeSize,
-    fill: '#e0e0e0',
+    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
+    fill: '#528be0',
     opacity: 0.4,
     hasBorders: false,
     hasControls: false,
@@ -22,8 +25,8 @@ export const polygonGenerated = (relativeSize) => ({
     objectCaching: false
 })
 
-export const polygonLine = (relativeSize) => ({
-    strokeWidth: 0.4 * relativeSize,
+export const polygonLine = (relativeSize, mapDistance) => ({
+    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
     fill: '#999999',
     stroke: '#999999',
     class: 'line',

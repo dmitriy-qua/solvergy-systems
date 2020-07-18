@@ -28,7 +28,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
                 p.line.setCoords();
             }
 
-            canvas.renderAll();
+            //canvas.renderAll();
             break;
 
         }
@@ -49,7 +49,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
                 p.line.setCoords();
             }
 
-            canvas.renderAll();
+            //canvas.renderAll();
         }
     }
     canvas.renderAll();

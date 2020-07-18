@@ -61,6 +61,10 @@ body {
 .bp3-tree .bp3-tree-node.bp3-tree-node-selected > .bp3-tree-node-content{
     background-color: #78909c; }
 
+.bp3-dialog {
+    user-select: initial !important;
+}
+
 
 
 

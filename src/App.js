@@ -9,29 +9,28 @@ import {
 import {
     Alignment,
     Button,
-    Classes, Icon,
+    Classes,
+    Dialog,
+    Icon,
+    Intent,
     Navbar,
     NavbarDivider,
     NavbarGroup,
-    NavbarHeading,
+    NumericInput,
 } from "@blueprintjs/core";
 import {createUseStyles} from 'react-jss'
 
 import './App.css'
 import {NavigationButton} from "./components/common/NavigationButton";
-import {ObjectsTree} from "./components/ObjectsTree/ObjectsTree";
+import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
 import MaterialIcon from "@mdi/react";
-import {mdiFolder, mdiFolderPlusOutline} from "@mdi/js";
-import { FaMap } from 'react-icons/fa';
+import {mdiFolder} from "@mdi/js";
+import {TopNavigationBar} from "./components/common/TopNavigationBar";
 
-const {dialog} = window.require('electron').remote;
-const path = require('path');
-
-const {app} = window.require('electron').remote;
-console.log(app.getAppPath());
+//const {dialog} = window.require('electron').remote;
 
 const HEADER_HEIGHT = 50
-const FOOTER_HEIGHT = 50
+//const FOOTER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
 
 function App() {
@@ -41,9 +40,16 @@ function App() {
     const [figureType, setFigureType] = useState("none")
     const [currentPage, setCurrentPage] = useState("canvas")
     const [treeWidth, setTreeWidth] = useState(250)
-    const [map, setMap] = useState(false)
+    const [mapIsVisible, setMapIsVisible] = useState(false)
+    const [mapDistance, setMapDistance] = useState(null)
+    const [mapDistanceDialog, setMapDistanceDialog] = useState(false)
 
-    const setMapBackground = () => {
+    const [consumers, setConsumers] = useState([])
+    const [suppliers, setSuppliers] = useState([])
+    const [networks, setNetworks] = useState([])
+
+
+    const openMapSelectDialog = () => {
         // dialog.showOpenDialog({
         //     filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }],
         //     properties: ['openFile']
@@ -53,9 +59,6 @@ function App() {
         //         setMap(normalizedFilePath)
         //     }
         // });
-
-        setMap(prevState => !prevState)
-
     }
 
     return <div className="App">
@@ -66,23 +69,15 @@ function App() {
                            maxSize={HEADER_HEIGHT}
                            style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", zIndex: 1}}>
                 <div className="pane-content">
-                    <Navbar style={{height: HEADER_HEIGHT}}>
-                        <NavbarGroup align={Alignment.LEFT} style={{height: HEADER_HEIGHT}}>
-                            {/*<NavbarHeading className={styles.headerText}>Solvergy: Systems</NavbarHeading>*/}
-                            {/*<NavbarDivider/>*/}
-                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon={<Icon icon={<MaterialIcon path={mdiFolderPlusOutline} className={"bp3-icon material-icon"}/>} />} text="Home"/>
-                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="document" text="Files"/>
-                            <Button className={[Classes.MINIMAL, styles.menuItemText]} icon="new-layers"
-                                    text="New node"/>
-                            <NavbarDivider/>
-                            <Button icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"bp3-icon material-icon"}/>} />} className={[Classes.MINIMAL, styles.shapeButton]}
-                                    onClick={() => setFigureType("line")}/>
-                            <Button icon="polygon-filter" className={[Classes.MINIMAL, styles.shapeButton]}
-                                    onClick={() => setFigureType("polygon")}/>
-                            <Button icon="cross" className={[Classes.MINIMAL, styles.shapeButton]}
-                                    onClick={() => setFigureType("none")}/>
-                        </NavbarGroup>
-                    </Navbar>
+                    <TopNavigationBar setFigureType={setFigureType}
+                                      headerHeight={HEADER_HEIGHT}
+                                      mapIsVisible={mapIsVisible}
+                                      setMapIsVisible={setMapIsVisible}
+                                      mapDistanceDialog={mapDistanceDialog}
+                                      setMapDistanceDialog={setMapDistanceDialog}
+                                      mapDistance={mapDistance}
+                                      setMapDistance={setMapDistance}
+                    />
                 </div>
             </ReflexElement>
             <ReflexElement>
@@ -98,13 +93,15 @@ function App() {
                                               setCurrentPage={setCurrentPage}
                                               pageName={"canvas"}
                                               label={"Canvas"}
-                                              icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>} />}
+                                              icon={<Icon
+                                                  icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>}/>}
                             />
                             <NavigationButton currentPage={currentPage}
                                               setCurrentPage={setCurrentPage}
                                               pageName={"settings"}
                                               label={"Settings"}
-                                              icon={<Icon icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>} />}
+                                              icon={<Icon
+                                                  icon={<MaterialIcon path={mdiFolder} className={"material-icon"}/>}/>}
                             />
                         </div>
                     </ReflexElement>
@@ -113,16 +110,16 @@ function App() {
                         <ReflexContainer orientation="vertical" windowResizeAware={true}>
                             <ReflexElement className="middle-pane" style={{overflow: "hidden"}}>
                                 <div className="pane-content">
-                                    <Canvas figureType={figureType} map={map}/>
+                                    <Canvas figureType={figureType} mapIsVisible={mapIsVisible} map_Distance={mapDistance}/>
                                 </div>
                             </ReflexElement>
 
-                            <ReflexSplitter style={{backgroundColor: "#eceff1", width: 4, border: 0}}
+                            <ReflexSplitter style={{backgroundColor: "#eceff1", width: 4, border: 0, zIndex: 0}}
                             />
 
                             <ReflexElement className="right-pane"
                                            minSize="230"
-                                           maxSize="300"
+                                           maxSize="350"
                                            size={treeWidth}
                                            onStopResize={({domElement}) => setTreeWidth(domElement.offsetWidth)}
                             >
@@ -142,17 +139,15 @@ function App() {
                     }
                 </ReflexContainer>
             </ReflexElement>
-            <ReflexElement className="footer"
-                           size={FOOTER_HEIGHT}
-                           minSize={FOOTER_HEIGHT}
-                           maxSize={FOOTER_HEIGHT}
-                           style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", display: "flex", alignItems: "center"}}>
-                <div className="pane-content">
-                    <Button active={map} icon={<Icon icon={<FaMap size={16} className={"bp3-icon material-icon"}/>} />} className={[Classes.MINIMAL, styles.shapeButton]} onClick={setMapBackground}/>
-                    {/*<Button icon="polygon-filter" className={[Classes.MINIMAL, styles.shapeButton]} onClick={() => setFigureType("polygon")}/>*/}
-                    {/*<Button icon="cross" className={[Classes.MINIMAL, styles.shapeButton]} onClick={() => setFigureType("none")}/>*/}
-                </div>
-            </ReflexElement>
+            {/*<ReflexElement className="footer"*/}
+            {/*               size={FOOTER_HEIGHT}*/}
+            {/*               minSize={FOOTER_HEIGHT}*/}
+            {/*               maxSize={FOOTER_HEIGHT}*/}
+            {/*               style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", display: "flex", alignItems: "center"}}>*/}
+            {/*    <div className="pane-content">*/}
+
+            {/*    </div>*/}
+            {/*</ReflexElement>*/}
         </ReflexContainer>
     </div>
 }
@@ -168,9 +163,6 @@ const useStyles = createUseStyles({
         fontWeight: 500,
         fontFamily: 'Montserrat',
     },
-    shapeButton: {
-        marginLeft: 12
-    }
 })
 
 export default App;
