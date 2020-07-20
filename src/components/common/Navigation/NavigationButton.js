@@ -32,7 +32,7 @@ const useStyles = createUseStyles({
     text: {
         marginTop: 12,
         fontWeight: 600,
-        fontSize: 13,
+        fontSize: 12,
         fontFamily: "Montserrat"
     }
 })

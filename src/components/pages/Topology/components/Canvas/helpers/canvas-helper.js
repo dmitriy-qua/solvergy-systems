@@ -1,10 +1,12 @@
 import $ from "jquery";
+import {fabric} from "fabric";
+import {gridLineGenerated} from "../shapes/line/config";
 
 export const connectLineToOtherLine = (canvas, e, p) => {
 
     let pt = { x: canvas.getPointer(e.e).x, y: canvas.getPointer(e.e).y };
     let circles = canvas.getObjects('circle');
-    //console.log(circles);
+
     for (let i = 0; i < circles.length; i++) {
         if (circles[i].containsPoint(pt) && p.get('name') !== circles[i].get('name')) {
             p.set({
@@ -81,13 +83,11 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
     canvas.setWidth(Math.round(canvas.getWidth() * factor));
 
     if (canvas.backgroundImage) {
-        //console.log(canvas.backgroundImage)
-        //setCanvasHeight(Math.round(canvas.getHeight() * factor))
-        // Need to scale background images as well
         let bi = canvas.backgroundImage;
         bi.scaleX = bi.scaleX * factor; //bi.width * factor;
         bi.scaleY = bi.scaleY * factor;  //bi.height * factor;
     }
+
     let objects = canvas.getObjects();
 
     for (let i in objects) {
@@ -102,18 +102,10 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
         let tempLeft = left * factor;
         let tempTop = top * factor;
 
-        if (objects[i].get('type') === 'line') {
-            console.log("x1 - " + objects[i].x1);
-            console.log("y1 - " + objects[i].y1);
-            console.log("x2 - " + objects[i].x2);
-            console.log("y2 - " + objects[i].y2);
-        }
-
         if (objects[i].get('type') !== 'line') {
             objects[i].scaleX = Math.round(tempScaleX * 1000) / 1000;
             objects[i].scaleY = Math.round(tempScaleY * 1000) / 1000;
-        }
-        else {
+        } else {
             let strokeWidth = objects[i].strokeWidth;
             let tempStrokeWidth = strokeWidth * factor;
             objects[i].strokeWidth = Math.round(tempStrokeWidth * 1000) / 1000
@@ -140,14 +132,6 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
         objects[i].top = Math.round(tempTop * 1000) / 1000;
 
         objects[i].setCoords();
-
-        if (objects[i].get('type') === 'line') {
-            console.log("x1 - " + objects[i].x1);
-            console.log("y1 - " + objects[i].y1);
-            console.log("x2 - " + objects[i].x2);
-            console.log("y2 - " + objects[i].y2);
-        }
-
     }
     canvas.renderAll();
     canvas.calcOffset();
@@ -168,4 +152,42 @@ export const limitCanvasBoundary = (currentObj) => {
         currentObj.top = Math.min(currentObj.top, currentObj.canvas.height - currentObj.getBoundingRect().height + currentObj.top - currentObj.getBoundingRect().top);
         currentObj.left = Math.min(currentObj.left, currentObj.canvas.width - currentObj.getBoundingRect().width + currentObj.left - currentObj.getBoundingRect().left);
     }
+}
+
+export const setGrid = (canvas, linesCount, relativeSize, mapDistance) => {
+
+    const width = canvas.getWidth()
+    const delta = width / (linesCount)
+
+    for (let i = 1; i < linesCount; i++) {
+        canvas.add(new fabric.Line([delta * i, 0, delta * i, width], gridLineGenerated(relativeSize, mapDistance)))
+        canvas.add(new fabric.Line([0, delta * i, width, delta * i], gridLineGenerated(relativeSize, mapDistance)))
+    }
+
+    canvas.renderAll()
+}
+
+const rerenderObjectsSize = (canvas, mapDistance, relativeSize) => {
+
+    let objects = canvas.getObjects();
+
+    for (let i in objects) {
+        if (objects[i].get('type') === 'line') {
+            objects[i].set({
+                strokeWidth: 1.2 * relativeSize * (500 / mapDistance)
+            })
+        } else if (objects[i].get('type') === 'circle') {
+            objects[i].set({
+                radius: 1.2 * relativeSize * (500 / mapDistance),
+                strokeWidth: 0.2 * relativeSize * (500 / mapDistance),
+            })
+        } else {
+            objects[i].set({
+                strokeWidth: 1.2 * relativeSize * (500 / mapDistance),
+            })
+        }
+    }
+
+    canvas.renderAll()
+
 }

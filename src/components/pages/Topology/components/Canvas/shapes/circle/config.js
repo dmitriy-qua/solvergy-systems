@@ -3,9 +3,6 @@ const RADIUS = 1.2
 const CANVAS_HEIGHT = 500
 
 export const circleDrawing = (relativeSize, mapDistance) => {
-
-    console.log(mapDistance)
-
     return {
         radius: RADIUS * relativeSize * (CANVAS_HEIGHT / mapDistance),
         fill: '#ffffff',
@@ -29,6 +26,7 @@ export const circleGenerated = (relativeSize, mapDistance) => ({
     originY: 'center',
     hasBorders: false,
     hasControls: false,
+    objectCaching: false
 })
 
 export const lineCircle = (left, top, type, id, relativeSize, mapDistance) => ({

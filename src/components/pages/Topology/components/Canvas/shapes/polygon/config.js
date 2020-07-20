@@ -3,7 +3,7 @@ const CANVAS_HEIGHT = 500
 
 export const polygonDrawing = (relativeSize, mapDistance) => ({
     stroke: '#333333',
-    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
+    strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
     fill: '#cccccc',
     opacity: 0.4,
     selectable: false,
@@ -13,20 +13,23 @@ export const polygonDrawing = (relativeSize, mapDistance) => ({
     objectCaching: false
 })
 
-export const polygonGenerated = (relativeSize, mapDistance) => ({
+export const polygonGenerated = (relativeSize, mapDistance, objectType) => ({
     stroke: 'black',
-    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
-    fill: '#528be0',
+    strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
+    fill: getPolygonFillColor(objectType),
     opacity: 0.4,
     hasBorders: false,
     hasControls: false,
     perPixelTargetFind: true,
     targetFindTolerance: 5,
-    objectCaching: false
+    objectCaching: false,
+    strokeLineJoin: "round",
+    // lockMovementX: true,
+    // lockMovementY: true
 })
 
 export const polygonLine = (relativeSize, mapDistance) => ({
-    strokeWidth: STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
+    strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
     fill: '#999999',
     stroke: '#999999',
     class: 'line',
@@ -38,3 +41,11 @@ export const polygonLine = (relativeSize, mapDistance) => ({
     evented: false,
     objectCaching: false
 })
+
+const getPolygonFillColor = (objectType) => {
+    if (objectType === "supplier") {
+        return "#ee7265"
+    } else if (objectType === "consumer") {
+        return "#528be0"
+    }
+}

@@ -1,17 +1,23 @@
 import React, {useState} from "react";
 import {ReflexContainer, ReflexElement, ReflexSplitter} from "react-reflex";
-import {Canvas} from "../Canvas/Canvas";
-import {ObjectsTree} from "../Canvas/components/ObjectsTree";
+import {Canvas} from "./components/Canvas/Canvas";
+import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
 
 
-export const Topology = ({figureType, mapIsVisible, mapDistance}) => {
+export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes, objects, setObjects, setObjectType}) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
 
     return <ReflexContainer orientation="vertical" windowResizeAware={true}>
         <ReflexElement className="middle-pane" style={{overflow: "hidden"}}>
             <div className="pane-content">
-                <Canvas figureType={figureType} mapIsVisible={mapIsVisible} map_Distance={mapDistance}/>
+                <Canvas objectType={objectType}
+                        mapIsVisible={mapIsVisible}
+                        map_Distance={mapDistance}
+                        objects={objects}
+                        setObjects={setObjects}
+                        setObjectType={setObjectType}
+                />
             </div>
         </ReflexElement>
 
@@ -25,7 +31,9 @@ export const Topology = ({figureType, mapIsVisible, mapDistance}) => {
                        onStopResize={({domElement}) => setTreeWidth(domElement.offsetWidth)}
         >
             <div className="pane-content">
-                <ObjectsTree/>
+                <ObjectsTree nodes={nodes}
+                             setNodes={setNodes}
+                />
             </div>
         </ReflexElement>
     </ReflexContainer>
