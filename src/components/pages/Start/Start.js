@@ -1,12 +1,15 @@
-import React from "react";
+import React, {useState} from "react";
 import {StartButton} from "./components/StartButton";
 import {mdiPlusBoxOutline, mdiFolderOutline, mdiHelpCircleOutline, mdiLoginVariant} from "@mdi/js";
+import {StartDialog} from "./components/StartDialog";
 
 
 export const Start = ({setProject}) => {
 
+    const [startDialog, setStartDialog] = useState(false)
+
     return <div className="start">
-        <StartButton action={() => setProject(true)}
+        <StartButton action={() => setStartDialog(true)}
                      icon={mdiPlusBoxOutline}
                      label="Create project..."
                      description={"Start new project, upload the map and set scale distance"}/>
@@ -25,5 +28,9 @@ export const Start = ({setProject}) => {
                      icon={mdiHelpCircleOutline}
                      label="Help"
                      description={"Learn how to create projects in Solvergy: Systems"}/>
+
+        <StartDialog startDialog={startDialog}
+                     setStartDialog={setStartDialog}
+        />
     </div>
 }

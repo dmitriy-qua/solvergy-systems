@@ -79,9 +79,9 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                           }}/>
             </MenuItem>
 
-            <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>} text="Edit object..."
-                      disabled={!project}/>
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Edit producers..."
+                      disabled={!project}/>
+            <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>} text="Edit object..."
                       disabled={!project}/>
             <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>} text="Delete object" disabled={!project}
                       intent={Intent.DANGER}/>
@@ -155,11 +155,6 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                     <Button className={[Classes.MINIMAL, styles.menuItemText]}
                             icon={<GoGear size={"1rem"} className={"bp3-icon"}/>} text="Settings"/>
                 </Popover>
-
-                {/*<MapDistanceDialog mapDistanceDialog={mapDistanceDialog}*/}
-                {/*                   setMapDistanceDialog={setMapDistanceDialog}*/}
-                {/*                   mapDistance={mapDistance}*/}
-                {/*                   setMapDistance={setMapDistance}/>*/}
             </NavbarGroup>
 
             {project && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>

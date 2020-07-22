@@ -59,41 +59,43 @@ export const App = () => {
 
 
             {project ? <ReflexElement>
-                <ReflexContainer orientation="vertical"
-                                 windowResizeAware={true}
-                >
-                    <ReflexElement className="left-pane"
-                                   size={LEFT_MENU_WIDTH}
-                                   minSize={LEFT_MENU_WIDTH}
-                                   maxSize={LEFT_MENU_WIDTH}
-                                   style={{borderRight: "4px solid #eceff1"}}
+                    <ReflexContainer orientation="vertical"
+                                     windowResizeAware={true}
                     >
-                        <NavigationBar currentPage={currentPage}
-                                       setCurrentPage={setCurrentPage}
-                        />
-                    </ReflexElement>
+                        <ReflexElement className="left-pane"
+                                       size={LEFT_MENU_WIDTH}
+                                       minSize={LEFT_MENU_WIDTH}
+                                       maxSize={LEFT_MENU_WIDTH}
+                                       style={{borderRight: "4px solid #eceff1"}}
+                        >
+                            <NavigationBar currentPage={currentPage}
+                                           setCurrentPage={setCurrentPage}
+                            />
+                        </ReflexElement>
 
-                    {currentPage === "topology" && <ReflexElement>
-                        <Topology objectType={objectType}
-                                  mapIsVisible={mapIsVisible}
-                                  mapDistance={mapDistance}
-                                  nodes={nodes}
-                                  setNodes={setNodes}
-                                  objects={objects}
-                                  setObjects={setObjects}
-                                  setObjectType={setObjectType}
-                        />
-                    </ReflexElement>}
+                        {currentPage === "topology" && <ReflexElement>
+                            <Topology objectType={objectType}
+                                      mapIsVisible={mapIsVisible}
+                                      mapDistance={mapDistance}
+                                      nodes={nodes}
+                                      setNodes={setNodes}
+                                      objects={objects}
+                                      setObjects={setObjects}
+                                      setObjectType={setObjectType}
+                            />
+                        </ReflexElement>}
 
-                    {currentPage === "settings" && <ReflexElement>
-                        <ReflexContainer orientation="vertical" windowResizeAware={true}>
+                        {currentPage === "settings" && <ReflexElement>
+                            <ReflexContainer orientation="vertical" windowResizeAware={true}>
 
-                        </ReflexContainer>
-                    </ReflexElement>}
-                </ReflexContainer>
-            </ReflexElement>
+                            </ReflexContainer>
+                        </ReflexElement>}
+                    </ReflexContainer>
+                </ReflexElement>
                 :
-                <Start setProject={setProject}/>
+                <ReflexElement>
+                    <Start setProject={setProject}/>
+                </ReflexElement>
             }
 
             {/*<ReflexElement className="footer"*/}

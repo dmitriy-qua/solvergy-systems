@@ -1,6 +1,9 @@
 import $ from "jquery";
 import {fabric} from "fabric";
 import {gridLineGenerated} from "../shapes/line/config";
+import {circleDrawing, circleGenerated, lineCircle} from "../shapes/circle/config";
+import {polygonDrawing, polygonGenerated, polygonLine} from "../shapes/polygon/config";
+import {generateId} from "../../../../../../helpers/data-helper";
 
 export const connectLineToOtherLine = (canvas, e, p) => {
 
@@ -191,3 +194,91 @@ const rerenderObjectsSize = (canvas, mapDistance, relativeSize) => {
     canvas.renderAll()
 
 }
+
+export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray) => {
+    let id = generateId()
+    let circle = new fabric.Circle(circleDrawing(relativeSize, mapDistance));
+    circle.set({
+        id: id,
+        left: (o.e.layerX / canvas.getZoom()),
+        top: (o.e.layerY / canvas.getZoom())
+    })
+    if (pointArray.length === 0) {
+        circle.set({
+            fill: 'red'
+        })
+    }
+    let points = [(o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom()), (o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom())];
+    const line = new fabric.Line(points, polygonLine(relativeSize, mapDistance));
+    if (activeShape) {
+        let pos = canvas.getPointer(o);
+        let points = activeShape.get("points");
+        points.push({
+            x: pos.x,
+            y: pos.y
+        });
+        let polygon = new fabric.Polygon(points, polygonDrawing(relativeSize, mapDistance));
+        canvas.remove(activeShape)
+        canvas.add(polygon)
+        activeShape = polygon
+        canvas.renderAll()
+    } else {
+        let polyPoint = [{x: (o.e.layerX / canvas.getZoom()), y: (o.e.layerY / canvas.getZoom())}];
+        let polygon = new fabric.Polygon(polyPoint, polygonDrawing(relativeSize, mapDistance));
+        activeShape = polygon;
+        canvas.add(polygon);
+    }
+
+    activeLine = line
+
+    pointArray.push(circle);
+    lineArray.push(line);
+
+    canvas.add(line);
+    canvas.add(circle);
+    canvas.selection = false;
+
+    return {pointArrayBuf: pointArray, lineArrayBuf: lineArray, activeLineBuf: activeLine, activeShapeBuf: activeShape}
+}
+
+export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType) => {
+    const points = [];
+    $.each(pointArray, (index, point) => {
+        points.push({
+            x: point.left,
+            y: point.top
+        });
+        canvas.remove(point);
+    });
+    $.each(lineArray, (index, line) => {
+        canvas.remove(line);
+    });
+    canvas.remove(activeShape).remove(activeLine);
+    let polygon = new fabric.Polygon(points, polygonGenerated(relativeSize, mapDistance, currentFigureType));
+    canvas.add(polygon)
+
+    let circle1 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
+    circle1.set({
+        left: polygon.getCenterPoint().x + 2 * (canvas.getHeight() / mapDistance),
+        top: polygon.getCenterPoint().y,
+        selectable: false,
+        fill: 'red'
+    })
+    polygon.circle1 = circle1
+    canvas.add(circle1)
+
+    let circle2 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
+    circle2.set({
+        left: polygon.getCenterPoint().x - 2 * (canvas.getHeight() / mapDistance),
+        top: polygon.getCenterPoint().y,
+        selectable: false,
+        fill: 'blue'
+    })
+    polygon.circle2 = circle2
+    canvas.add(circle2)
+
+    canvas.moveTo(circle1, 0)
+    canvas.moveTo(circle2, 0)
+    canvas.moveTo(polygon, 0)
+}
+
