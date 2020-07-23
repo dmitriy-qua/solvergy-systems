@@ -123,8 +123,52 @@ body {
 }
 
 .start-block {
-    padding: 16px;
+    padding: 26px;
 
+}
+
+.geosuggestions {
+    margin: 0px;
+    padding: 0px;
+    max-height: 140px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-color: currentcolor rgb(221, 221, 221) rgb(221, 221, 221);
+    border-style: none solid solid;
+    border-width: medium 1px 1px;
+    background-color: white;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    list-style-type: none;
+    text-align: left;
+}
+
+.geosuggestion {
+    padding: 6px 10px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.geosuggestion:hover {
+    color: #4c5151;
+    background-color: #dfe2e4;
+}
+
+.bp3-popover-wrapper.fullwidth, .bp3-popover-wrapper.fullwidth > .bp3-popover-target {
+    display:block;
+    max-width: 300px;
+}
+
+/* with portal */
+.bp3-overlay.fullwidth .bp3-select-popover {
+    width: 300px;
+}
+
+/* without portal */
+.bp3-popover-wrapper.fullwidth .bp3-select-popover {
+    width: 300px;
 }
 
 

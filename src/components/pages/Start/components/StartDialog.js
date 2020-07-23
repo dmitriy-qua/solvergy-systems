@@ -1,12 +1,13 @@
 import React, {useState} from "react";
-import {Button, Classes, Dialog, Icon, Intent} from "@blueprintjs/core";
+import {Button, Classes, Dialog, Intent} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {FaProjectDiagram} from 'react-icons/fa';
 import Stepper from 'react-stepper-horizontal'
-import {Authentication} from "./pages/Authentication";
+import {Authentication} from "./pages/Authentication/Authentication";
 import {ProjectInfo} from "./pages/ProjectInfo";
 import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
+import { ViewPager, Frame, Track, View } from 'react-view-pager'
 
 export const StartDialog = ({startDialog, setStartDialog}) => {
 
@@ -14,6 +15,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
 
     const [hasError, setHasError] = useState(false)
     const [activeStep, setActiveStep] = useState(0)
+    const [viewPager, setViewPager] = useState(null)
 
     return <Dialog
         icon={<FaProjectDiagram size={16} className={"bp3-icon material-icon"}/>}
@@ -28,7 +30,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 600, height: 500}}
+        style={{width: 650, height: 550, borderRadius: 2}}
         isOpen={startDialog}
     >
         <div className={[Classes.DIALOG_BODY]}>
@@ -37,32 +39,51 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
             </div>
             <br/>
 
-            {activeStep === 0 &&
-                <Authentication/>
-            }
-            {activeStep === 1 &&
-                <ProjectInfo/>
-            }
-            {activeStep === 2 &&
-                <ModelType/>
-            }
-            {activeStep === 3 &&
-                <MapSettings/>
-            }
+            <ViewPager tag="main">
+                <Frame className="frame" accessibility={false}>
+                    <Track
+                        ref={c => setViewPager(c)}
+                        viewsToShow={1}
+                        swipe={false}
+                        currentView={activeStep}
+                        className="track"
+                    >
+                        <View className="view"><Authentication/></View>
+                        <View className="view"><ProjectInfo/></View>
+                        <View className="view"><ModelType/></View>
+                        <View className="view"><MapSettings/></View>
+                    </Track>
+                </Frame>
+            </ViewPager>
 
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                <Button onClick={() => {
-                    setActiveStep(prevState => {
-                        if (prevState > 0) return prevState - 1
-                        else return prevState
-                    })
-                }}>
+                <Button intent={Intent.NONE}
+                        style={{width: 70, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => {
+                            setHasError(false)
+                            setStartDialog(false)
+                        }}>
+                    Close
+                </Button>
+                <Button disabled={activeStep === 0}
+                        intent={Intent.PRIMARY}
+                        style={{width: 70, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => {
+                            //if (viewPager) viewPager.prev()
+                            setActiveStep(prevState => {
+                                if (prevState > 0) return prevState - 1
+                                else return prevState
+                            })
+                        }}>
                     Back
                 </Button>
-                <Button intent={Intent.SUCCESS}
+                <Button disabled={activeStep === steps.length - 1}
+                        style={{width: 70, fontFamily: "Montserrat", fontSize: 13}}
+                        intent={Intent.SUCCESS}
                         onClick={() => {
+                            //if (viewPager) viewPager.next()
                             setActiveStep(prevState => {
                                 if (prevState < steps.length - 1) return prevState + 1
                                 else return prevState
@@ -100,7 +121,7 @@ const stepperStyle = (hasError) => ({
     defaultColor: "#a7b6c2",
     activeTitleColor: "#78909c",
     completeTitleColor: "#78909c",
-    defaultTitleColor: "#a7b6c2",
+    defaultTitleColor: "#c2d1dd",
     circleFontColor: "white",
     size: 22,
     circleFontSize: 13,
@@ -108,7 +129,7 @@ const stepperStyle = (hasError) => ({
     circleTop: 6,
     defaultBarColor: "#e0e0e0",
     completeBarColor: "#e0e0e0",
-    lineMarginOffset: 2
+    lineMarginOffset: 10
 })
 
 const steps = [

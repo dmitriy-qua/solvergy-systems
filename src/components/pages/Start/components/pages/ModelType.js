@@ -1,36 +1,92 @@
 import React, {useState} from "react";
-import {Intent, NumericInput} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
+import { Select } from "@blueprintjs/select"
+import {Button, MenuItem} from "@blueprintjs/core";
+import {generateId} from "../../../../../helpers/data-helper";
 
 export const ModelType = ({hasError, setHasError}) => {
 
     const styles = useStyles()
 
-    const [mapDistanceInput, setMapDistanceInput] = useState(null)
+    const [selectedModelType, setSelectedModelType] = useState(null)
+    const [selectedEnergySystemType, setSelectedEnergySystemType] = useState(null)
 
-    return <div>
+    const modelTypes = [
+        {title: "System"},
+        {title: "Market over system"}
+    ]
+
+    const energySystemTypes = [
+        {title: "Heat"},
+        {title: "Heat + electricity"},
+        {title: "Electricity"}
+    ]
+
+    const handleModelTypeElementSelect = (item) => {
+        setSelectedModelType(item.title)
+    }
+
+    const renderModelTypeItem = (item) => {
+        return (
+            <MenuItem
+                key={generateId()}
+                onClick={() => handleModelTypeElementSelect(item)}
+                text={item.title.toString()}
+            />
+        );
+    }
+
+    const handleEnergySystemTypeElementSelect = (item) => {
+        setSelectedEnergySystemType(item.title)
+    }
+
+    const renderEnergySystemTypeItem = (item) => {
+        return (
+            <MenuItem
+                key={generateId()}
+                onClick={() => handleEnergySystemTypeElementSelect(item)}
+                text={item.title.toString()}
+            />
+        );
+    }
+
+    return <div className="start-block">
         <p className={styles.dialogText}>
-            Set vertical real distance of the current map fragment in meters:
+            Select model type:
         </p>
-        <NumericInput placeholder="Enter a distance in meters..."
-                      onValueChange={(value) => {
-                          setHasError(false)
-                          setMapDistanceInput(value)
-                          if (!value) {
-                              setHasError(true)
-                          }
-                      }}
-                      allowNumericCharactersOnly
-                      selectAllOnIncrement
-                      majorStepSize={10}
-                      min={0}
-                      minorStepSize={0.1}
-                      stepSize={1}
-                      value={mapDistanceInput ? mapDistanceInput : ""}
-                      leftIcon="arrows-vertical"
-                      fill
-                      intent={hasError ? Intent.DANGER : Intent.NONE}
-        /></div>
+
+        <Select
+            items={modelTypes}
+            itemRenderer={renderModelTypeItem}
+            activeItem={selectedModelType}
+            minimal={true}
+            className="fullwidth"
+            popoverProps={{ minimal: true, portalClassName:"fullwidth" }}
+            filterable={false}
+            onItemSelect={handleModelTypeElementSelect}
+        >
+            <Button text={selectedModelType || "Select model type..."} rightIcon="caret-down" alignText="left" fill="{true}" />
+        </Select>
+
+        <br/>
+
+        <p className={styles.dialogText}>
+            Select energy system type:
+        </p>
+
+        <Select
+            items={energySystemTypes}
+            itemRenderer={renderEnergySystemTypeItem}
+            activeItem={selectedEnergySystemType}
+            minimal={true}
+            className="fullwidth"
+            popoverProps={{ minimal: true, portalClassName:"fullwidth" }}
+            filterable={false}
+            onItemSelect={handleEnergySystemTypeElementSelect}
+        >
+            <Button text={selectedEnergySystemType || "Select energy system type..."} rightIcon="caret-down" alignText="left" fill="{true}" />
+        </Select>
+    </div>
 }
 
 const useStyles = createUseStyles({
@@ -46,8 +102,12 @@ const useStyles = createUseStyles({
         fontFamily: 'Montserrat'
     },
     dialogText: {
-        fontWeight: 500,
+        fontWeight: 600,
         fontSize: 12,
         fontFamily: 'Montserrat'
     },
+    select: {
+        width: 200,
+        textAlign: "left"
+    }
 })

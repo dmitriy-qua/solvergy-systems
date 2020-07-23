@@ -1,8 +1,9 @@
+import {FormGroup, InputGroup, Intent} from "@blueprintjs/core";
 import React, {useState} from "react";
-import {FormGroup, InputGroup, Intent, Tooltip, Button} from "@blueprintjs/core";
+import {LockButton} from "./LockButton";
 import {createUseStyles} from "react-jss";
 
-export const Authentication = ({hasError, setHasError}) => {
+export const AuthForm = () => {
 
     const styles = useStyles()
 
@@ -12,39 +13,23 @@ export const Authentication = ({hasError, setHasError}) => {
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
 
-    const lockButton = (
-        <Tooltip content={`${showPassword ? "Hide" : "Show"} Password`}>
-            <Button
-                icon={showPassword ? "unlock" : "lock"}
-                intent={Intent.WARNING}
-                minimal={true}
-                onClick={() => setShowPassword(prevState => !prevState)}
-            />
-        </Tooltip>
-    );
-
-    return <div className="start-block">
-        <p className={styles.dialogText}>
-            Sign in to be able to save the progress of your projects:
-        </p>
+    return <div>
         <FormGroup
             disabled={false}
             helperText={loginHasError && "Please enter login..."}
             intent={loginHasError ? Intent.DANGER : Intent.NONE}
             label={"Login: "}
-            labelFor="text-input"
-            labelInfo={"(required)"}
+            labelFor="login"
             style={{width: 270}}
             className={styles.labelText}
         >
-            <InputGroup id="text-input"
+            <InputGroup id="login"
                         placeholder="Enter login"
                         className={styles.labelText}
                         intent={loginHasError ? Intent.DANGER : Intent.NONE}
                         value={login}
                         type={"text"}
                         leftIcon={"user"}
-
                         onChange={e => {
                             setLoginHasError(false)
                             setLogin(e.target.value)
@@ -59,20 +44,18 @@ export const Authentication = ({hasError, setHasError}) => {
             helperText={passwordHasError && "Please enter password..."}
             intent={passwordHasError ? Intent.DANGER : Intent.NONE}
             label={"Password: "}
-            labelFor="text-input"
-            labelInfo={"(required)"}
+            labelFor="password"
             style={{width: 270}}
             className={styles.labelText}
         >
-            <InputGroup id="text-input"
+            <InputGroup id="password"
                         placeholder="Enter password"
                         className={styles.labelText}
                         intent={passwordHasError ? Intent.DANGER : Intent.NONE}
                         value={password}
                         type={showPassword ? "text" : "password"}
                         leftIcon={"key"}
-                        rightElement={lockButton}
-
+                        rightElement={<LockButton showPassword={showPassword} setShowPassword={setShowPassword}/>}
                         onChange={e => {
                             setPasswordHasError(false)
                             setPassword(e.target.value)
