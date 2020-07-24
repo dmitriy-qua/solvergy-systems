@@ -3,7 +3,7 @@ import {Button, Classes, Dialog, Intent} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {FaProjectDiagram} from 'react-icons/fa';
 import Stepper from 'react-stepper-horizontal'
-import {Authentication} from "./pages/Authentication/Authentication";
+import {Authentication} from "./pages/Authentication";
 import {ProjectInfo} from "./pages/ProjectInfo";
 import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
@@ -22,7 +22,6 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
         onClose={() => {
             setHasError(false)
             setStartDialog(false)
-            //setMapDistanceInput(mapDistance)
         }}
         title={<span className={styles.dialogTitle}>Set initial project</span>}
         autoFocus={false}

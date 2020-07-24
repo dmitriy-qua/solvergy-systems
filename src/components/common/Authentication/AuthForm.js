@@ -3,14 +3,12 @@ import React, {useState} from "react";
 import {LockButton} from "./LockButton";
 import {createUseStyles} from "react-jss";
 
-export const AuthForm = () => {
+export const AuthForm = ({login, setLogin, password, setPassword}) => {
 
     const styles = useStyles()
 
     const [loginHasError, setLoginHasError] = useState(false)
     const [passwordHasError, setPasswordHasError] = useState(false)
-    const [login, setLogin] = useState("")
-    const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
 
     return <div>

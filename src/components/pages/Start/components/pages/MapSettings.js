@@ -16,7 +16,7 @@ export const MapSettings = ({hasError, setHasError}) => {
             Set map image:
         </p>
 
-        <FileInput text={mapImageUri ? mapImageUri : "Set map image..."}
+        <FileInput text={mapImageUri ? <span className={styles.inputText}>{mapImageUri}</span> : <span className={styles.inputText}>Set map image...</span>}
                    buttonText={"Browse"}
                    fill
                    inputProps={{accept: "image/*"}}
@@ -35,6 +35,7 @@ export const MapSettings = ({hasError, setHasError}) => {
                               setHasMapDistanceError(true)
                           }
                       }}
+                      className={styles.inputText}
                       allowNumericCharactersOnly
                       selectAllOnIncrement
                       majorStepSize={10}
@@ -54,6 +55,11 @@ const useStyles = createUseStyles({
         marginTop: 12,
         fontWeight: 600,
         fontSize: 13,
+        fontFamily: "Montserrat"
+    },
+    inputText: {
+        fontWeight: 400,
+        fontSize: 14,
         fontFamily: "Montserrat"
     },
     dialogTitle: {

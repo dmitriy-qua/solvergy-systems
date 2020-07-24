@@ -1,5 +1,5 @@
 import './App.css'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {NavigationBar} from "./components/common/Navigation/NavigationBar";
@@ -9,12 +9,27 @@ import {FaObjectUngroup} from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {addObjectInTree} from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
+import {useDispatch, useSelector} from "react-redux";
+import {successLogin} from "./redux/actions/auth";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
 //const FOOTER_HEIGHT = 50
 
 export const App = () => {
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const user = localStorage.getItem('user')
+
+        if (user) {
+            dispatch(successLogin(JSON.parse(user).data.user))
+        }
+    }, [])
+
+
+    const project = useSelector(state => state.project.project)
 
     const [objectType, setObjectType] = useState("none")
     const [currentPage, setCurrentPage] = useState("topology")
@@ -29,7 +44,6 @@ export const App = () => {
     })
 
     const [nodes, setNodes] = useState(initialNodes)
-    const [project, setProject] = useState(null)
 
     const createTreeNode = (objectType, objectName) => {
         setNodes(addObjectInTree(objectType, objectName))
@@ -94,7 +108,7 @@ export const App = () => {
                 </ReflexElement>
                 :
                 <ReflexElement>
-                    <Start setProject={setProject}/>
+                    <Start/>
                 </ReflexElement>
             }
 

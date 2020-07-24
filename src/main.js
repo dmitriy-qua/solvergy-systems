@@ -19,6 +19,7 @@ function createWindow() {
       nodeIntegration: true
     }});
 
+
   mainWindow.setResizable(true)
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);

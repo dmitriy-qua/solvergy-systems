@@ -3,8 +3,7 @@ import {StartButton} from "./components/StartButton";
 import {mdiPlusBoxOutline, mdiFolderOutline, mdiHelpCircleOutline, mdiLoginVariant} from "@mdi/js";
 import {StartDialog} from "./components/StartDialog";
 
-
-export const Start = ({setProject}) => {
+export const Start = () => {
 
     const [startDialog, setStartDialog] = useState(false)
 
