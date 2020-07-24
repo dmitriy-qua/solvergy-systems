@@ -9,6 +9,8 @@ export const MapSettings = ({hasError, setHasError}) => {
     const [mapDistanceInput, setMapDistanceInput] = useState(null)
     const [mapImageUri, setMapImageUri] = useState(null)
 
+    const [hasMapDistanceError, setHasMapDistanceError] = useState(false)
+
     return <div className="start-block">
         <p className={styles.dialogText}>
             Set map image:
@@ -27,10 +29,10 @@ export const MapSettings = ({hasError, setHasError}) => {
         </p>
         <NumericInput placeholder="Enter a distance in meters..."
                       onValueChange={(value) => {
-                          setHasError(false)
+                          setHasMapDistanceError(false)
                           setMapDistanceInput(value)
                           if (!value) {
-                              setHasError(true)
+                              setHasMapDistanceError(true)
                           }
                       }}
                       allowNumericCharactersOnly
@@ -42,7 +44,7 @@ export const MapSettings = ({hasError, setHasError}) => {
                       value={mapDistanceInput ? mapDistanceInput : ""}
                       leftIcon="arrows-vertical"
                       fill
-                      intent={hasError ? Intent.DANGER : Intent.NONE}
+                      intent={hasMapDistanceError ? Intent.DANGER : Intent.NONE}
         />
     </div>
 }

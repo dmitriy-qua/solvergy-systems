@@ -158,17 +158,26 @@ body {
 
 .bp3-popover-wrapper.fullwidth, .bp3-popover-wrapper.fullwidth > .bp3-popover-target {
     display:block;
-    max-width: 300px;
+    max-width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* with portal */
 .bp3-overlay.fullwidth .bp3-select-popover {
-    width: 300px;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* without portal */
 .bp3-popover-wrapper.fullwidth .bp3-select-popover {
-    width: 300px;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
 }
 
 
