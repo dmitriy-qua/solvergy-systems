@@ -2,25 +2,33 @@ import React, {useState} from "react";
 import {FileInput, Intent, NumericInput} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 
-export const MapSettings = ({hasError, setHasError}) => {
+export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapImageUri}) => {
 
     const styles = useStyles()
 
-    const [mapDistanceInput, setMapDistanceInput] = useState(null)
-    const [mapImageUri, setMapImageUri] = useState(null)
-
-    const [hasMapDistanceError, setHasMapDistanceError] = useState(false)
+    const [mapDistanceInputTouched, setMapDistanceInputTouched] = useState(false)
+    const [mapImageUriTouched, setMapImageUriTouched] = useState(false)
 
     return <div className="start-block">
         <p className={styles.dialogText}>
             Set map image:
         </p>
 
-        <FileInput text={mapImageUri ? <span className={styles.inputText}>{mapImageUri}</span> : <span className={styles.inputText}>Set map image...</span>}
+        <FileInput text={mapImageUri ?
+            <span className={styles.inputText}>{mapImageUri}</span>
+            :
+            <span className={styles.inputText}>Set map image...</span>}
                    buttonText={"Browse"}
                    fill
                    inputProps={{accept: "image/*"}}
-                   onInputChange={(e) => setMapImageUri(e.target.files[0].path)} />
+                   onInputChange={(e) => {
+                       setMapImageUriTouched(true)
+                       setMapImageUri(e.target.files[0].path)
+                   }}
+        />
+
+        <br/>
+        {(!mapImageUri && mapImageUriTouched) && <span className={styles.errorText}>Set map image!</span>}
 
         <br/><br/>
 
@@ -29,11 +37,8 @@ export const MapSettings = ({hasError, setHasError}) => {
         </p>
         <NumericInput placeholder="Enter a distance in meters..."
                       onValueChange={(value) => {
-                          setHasMapDistanceError(false)
-                          setMapDistanceInput(value)
-                          if (!value) {
-                              setHasMapDistanceError(true)
-                          }
+                          setMapDistanceInputTouched(true)
+                          setMapDistance(value)
                       }}
                       className={styles.inputText}
                       allowNumericCharactersOnly
@@ -42,10 +47,10 @@ export const MapSettings = ({hasError, setHasError}) => {
                       min={0}
                       minorStepSize={0.1}
                       stepSize={1}
-                      value={mapDistanceInput ? mapDistanceInput : ""}
+                      value={mapDistance ? mapDistance: ""}
                       leftIcon="arrows-vertical"
                       fill
-                      intent={hasMapDistanceError ? Intent.DANGER : Intent.NONE}
+                      intent={(!mapDistance && mapDistanceInputTouched) ? Intent.DANGER : Intent.NONE}
         />
     </div>
 }
@@ -55,6 +60,13 @@ const useStyles = createUseStyles({
         marginTop: 12,
         fontWeight: 600,
         fontSize: 13,
+        fontFamily: "Montserrat"
+    },
+    errorText: {
+        marginLeft: 4,
+        fontWeight: 500,
+        color: "#c23030",
+        fontSize: 12,
         fontFamily: "Montserrat"
     },
     inputText: {

@@ -4,12 +4,12 @@ import { MultiSelect, Select } from "@blueprintjs/select"
 import {Button, MenuItem, Intent} from "@blueprintjs/core";
 import {generateId} from "../../../../../helpers/data-helper";
 
-export const ModelType = ({hasError, setHasError}) => {
+export const ModelType = ({selectedModelType, setSelectedModelType, selectedEnergySystemType, setSelectedEnergySystemType}) => {
 
     const styles = useStyles()
 
-    const [selectedModelType, setSelectedModelType] = useState(null)
-    const [selectedEnergySystemType, setSelectedEnergySystemType] = useState([])
+    const [selectedModelTypeTouched, setSelectedModelTypeTouched] = useState(false)
+    const [selectedEnergySystemTypeTouched, setSelectedEnergySystemTypeTouched] = useState(false)
 
     const modelTypes = [
         {title: "System"},
@@ -24,6 +24,7 @@ export const ModelType = ({hasError, setHasError}) => {
     ]
 
     const handleModelTypeElementSelect = (item) => {
+        setSelectedModelTypeTouched(true)
         setSelectedModelType(item.title)
     }
 
@@ -38,6 +39,7 @@ export const ModelType = ({hasError, setHasError}) => {
     }
 
     const handleEnergySystemTypeElementSelect = (item) => {
+        setSelectedEnergySystemTypeTouched(true)
         setSelectedEnergySystemType([...selectedEnergySystemType, item.title])
     }
 
@@ -85,6 +87,8 @@ export const ModelType = ({hasError, setHasError}) => {
             <Button text={<span className={styles.selectText}>{selectedModelType || "Select model type..."}</span>} rightIcon="caret-down" alignText="left" fill="{true}" />
         </Select>
 
+        {(!selectedModelType && selectedModelTypeTouched) && <span className={styles.errorText}>Set model type!</span>}
+
         <br/>
 
         <p className={styles.dialogText}>
@@ -111,6 +115,7 @@ export const ModelType = ({hasError, setHasError}) => {
             onItemSelect={handleEnergySystemTypeElementSelect}
         >
         </MultiSelect>
+        {(selectedEnergySystemType.length === 0 && selectedEnergySystemTypeTouched) && <span className={styles.errorText}>Set model type!</span>}
     </div>
 }
 
@@ -119,6 +124,13 @@ const useStyles = createUseStyles({
         marginTop: 12,
         fontWeight: 600,
         fontSize: 13,
+        fontFamily: "Montserrat"
+    },
+    errorText: {
+        marginLeft: 4,
+        fontWeight: 500,
+        color: "#c23030",
+        fontSize: 12,
         fontFamily: "Montserrat"
     },
     tagText: {

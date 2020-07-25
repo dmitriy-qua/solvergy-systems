@@ -82,15 +82,16 @@ body {
 }
 
 .stepper-container div div div div a {
-    line-height: 20px !important;
-    font-weight: 600 !important;
+    line-height: 22px !important;
+    font-weight: 500 !important;
     text-decoration: none;
     margin-left: 0px;
+
 }
 
 .stepper-container div div div div span {
-    line-height: 20px !important;
-    font-weight: 600 !important;
+    line-height: 22px !important;
+    font-weight: 500 !important;
     margin-left: 0px;
 }
 
@@ -104,24 +105,6 @@ body {
     text-decoration: none;
 }
 
-.slide-enter {
-    transform: translateX(100%);
-}
-
-.slide-enter-active {
-    transform: translateX(0%);
-    transition: transform 1000ms ease-in-out;
-}
-
-.slide-exit {
-    transform: translateX(0%);
-}
-
-.slide-exit-active {
-    transform: translateX(-100%);
-    transition: transform 1000ms ease-in-out;
-}
-
 .start-block {
     padding: 26px;
 
@@ -130,7 +113,7 @@ body {
 .geosuggestions {
     margin: 0px;
     padding: 0px;
-    max-height: 140px;
+    max-height: 90px;
     overflow-y: auto;
     overflow-x: hidden;
     border-color: currentcolor rgb(221, 221, 221) rgb(221, 221, 221);
@@ -162,6 +145,7 @@ body {
     font-size: 13px;
     font-weight: 500;
     font-family: 'Montserrat', sans-serif;
+    margin-bottom: 6px;
 }
 
 /* with portal */
@@ -170,6 +154,7 @@ body {
     font-size: 13px;
     font-weight: 500;
     font-family: 'Montserrat', sans-serif;
+    margin-bottom: 6px;
 }
 
 /* without portal */
@@ -178,6 +163,7 @@ body {
     font-size: 13px;
     font-weight: 500;
     font-family: 'Montserrat', sans-serif;
+    margin-bottom: 6px;
 }
 
 

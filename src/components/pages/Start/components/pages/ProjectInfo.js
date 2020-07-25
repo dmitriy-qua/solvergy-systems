@@ -8,9 +8,12 @@ import usePlacesAutocomplete, {
 import useOnclickOutside from "react-cool-onclickoutside"
 import {generateId} from "../../../../../helpers/data-helper";
 
-export const ProjectInfo = ({hasError, setHasError}) => {
+export const ProjectInfo = ({name, setName, location, setLocation}) => {
 
     const styles = useStyles()
+
+    const [nameTouched, setNameTouched] = useState("")
+    const [locationTouched, setLocationTouched] = useState("")
 
     const {
         ready,
@@ -26,19 +29,18 @@ export const ProjectInfo = ({hasError, setHasError}) => {
     });
 
     const ref = useOnclickOutside(() => {
-        // When user clicks outside of the component, we can dismiss
-        // the searched suggestions by calling this method
         clearSuggestions();
     })
 
     const handleInput = (e) => {
-        // Update the keyword of the input element
         setValue(e.target.value);
+        if (!e.target.value) setLocation("")
+
     }
 
     const handleSelect = ({ description }) => () => {
-        // When user selects a place, we can replace the keyword without request data from API
-        // by setting the second parameter to "false"
+        setLocationTouched(true)
+        setLocation(description)
         setValue(description, false);
         clearSuggestions();
 
@@ -67,12 +69,6 @@ export const ProjectInfo = ({hasError, setHasError}) => {
             );
         })
 
-    const [nameHasError, setNameHasError] = useState(false)
-    const [locationHasError, setLocationHasError] = useState(false)
-
-    const [name, setName] = useState("")
-    const [location, setLocation] = useState("")
-
     return <div className="start-block">
         <p className={styles.dialogText}>
             Set project name and system location:
@@ -80,8 +76,8 @@ export const ProjectInfo = ({hasError, setHasError}) => {
 
         <FormGroup
             disabled={false}
-            helperText={nameHasError && "Please enter project name..."}
-            intent={nameHasError ? Intent.DANGER : Intent.NONE}
+            helperText={(!name && nameTouched) && "Please enter project name..."}
+            intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
             label={"Project name: "}
             labelFor="name"
             fill
@@ -90,24 +86,21 @@ export const ProjectInfo = ({hasError, setHasError}) => {
             <InputGroup id="name"
                         placeholder="Enter project name"
                         className={styles.labelText}
-                        intent={nameHasError ? Intent.DANGER : Intent.NONE}
+                        intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
                         value={name}
                         type={"text"}
                         leftIcon={"clipboard"}
                         onChange={e => {
-                            setNameHasError(false)
+                            setNameTouched(true)
                             setName(e.target.value)
-                            if (!e.target.value) {
-                                setNameHasError(true)
-                            }
                         }}
             />
         </FormGroup>
 
         <FormGroup
             disabled={false}
-            helperText={locationHasError && "Please set location..."}
-            intent={locationHasError ? Intent.DANGER : Intent.NONE}
+            helperText={(!location && locationTouched) && "Please set location..."}
+            intent={(!location && locationTouched) ? Intent.DANGER : Intent.NONE}
             label={"Location: "}
             labelFor="location"
             fill
@@ -117,17 +110,12 @@ export const ProjectInfo = ({hasError, setHasError}) => {
                 <InputGroup id="location"
                             placeholder="Set location..."
                             className={styles.labelText}
-                            intent={locationHasError ? Intent.DANGER : Intent.NONE}
+                            intent={(!location && locationTouched) ? Intent.DANGER : Intent.NONE}
                             value={value}
                             type={"text"}
                             leftIcon={"geosearch"}
                             onChange={e => {
                                 handleInput(e)
-                                // setLocationHasError(false)
-                                // setLocation(e.target.value)
-                                // if (!e.target.value) {
-                                //     setLocationHasError(true)
-                                // }
                             }}
                 />
                 {/* We can use the "status" to decide whether we should display the dropdown or not */}

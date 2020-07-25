@@ -5,15 +5,12 @@ import {Button} from "@blueprintjs/core";
 import {useDispatch, useSelector} from "react-redux";
 import {logout, signIn} from "../../../redux/actions/auth";
 
-export const SignIn = () => {
+export const SignIn = ({login, setLogin, password, setPassword}) => {
 
     const user = useSelector(state => state.auth.user)
     const isAuth = useSelector(state => state.auth.isAuth)
 
     const [isSignInPage, setIsSignInPage] = useState(true)
-
-    const [login, setLogin] = useState("")
-    const [password, setPassword] = useState("")
 
     const styles = useStyles()
 

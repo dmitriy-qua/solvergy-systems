@@ -26,15 +26,19 @@ import {
     FaUserPlus,
     FaQuestionCircle,
     FaUsersCog,
-    FaMap
+    FaMap,
+    FaLayerGroup
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory, GiTreasureMap} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
+import {useSelector} from "react-redux";
 
 
 export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, mapDistance, createTreeNode, project}) => {
 
     const styles = useStyles()
+
+    const isAuth = useSelector(state => state.auth.isAuth)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -57,21 +61,21 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!mapDistance || !project}
+                          disabled={!project}
                           text="Consumer"
                           onClick={() => {
                               createTreeNode("consumer", "newConsumer")
                               setObjectType("consumer")
                           }}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!mapDistance || !project}
+                          disabled={!project}
                           text="Supplier"
                           onClick={() => {
                               createTreeNode("supplier", "newSupplier")
                               setObjectType("supplier")
                           }}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!mapDistance || !project}
+                          disabled={!project}
                           text="Network"
                           onClick={() => {
                               createTreeNode("network", "newNetwork")
@@ -79,8 +83,13 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                           }}/>
             </MenuItem>
 
-            <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Edit producers..."
+            <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
                       disabled={!project}/>
+            <MenuItem icon={<FaLayerGroup size={"1rem"} className={"bp3-icon"}/>} text="Networks templates..."
+                      disabled={!project}/>
+
+            <MenuDivider/>
+
             <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>} text="Edit object..."
                       disabled={!project}/>
             <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>} text="Delete object" disabled={!project}
@@ -91,11 +100,15 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
     const SettingsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
             <MenuItem icon={<FaWrench size={"1rem"} className={"bp3-icon"}/>} text="Preferences"/>
+
             <MenuDivider/>
-            <MenuItem icon={<FaSignInAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign in..."/>
-            <MenuItem icon={<FaUserPlus size={"1rem"} className={"bp3-icon"}/>} text="Sign up..."/>
-            <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign out"/>
+
+            {!isAuth && <MenuItem icon={<FaSignInAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign in..."/>}
+            {!isAuth && <MenuItem icon={<FaUserPlus size={"1rem"} className={"bp3-icon"}/>} text="Sign up..."/>}
+            {isAuth && <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign out"/>}
+
             <MenuDivider/>
+
             <MenuItem icon={<FaQuestionCircle size={"1rem"} className={"bp3-icon"}/>} text="Help..."/>
         </Menu>
     }
@@ -160,7 +173,7 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
             {project && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
                 <Button active={mapIsVisible}
-                        disabled={!mapDistance || !project}
+                        disabled={!project}
                         icon={<Icon icon={<FaMap size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
                         onClick={() => setMapIsVisible(prevState => !prevState)}/>
@@ -169,21 +182,21 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
 
                 <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
-                        disabled={!mapDistance || !project}
+                        disabled={!project}
                         onClick={() => {
                             createTreeNode("consumer", "newConsumer")
                             setObjectType("consumer")
                         }}/>
                 <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!mapDistance || !project}
+                        disabled={!project}
                         onClick={() => {
                             createTreeNode("supplier", "newSupplier")
                             setObjectType("supplier")
                         }}/>
                 <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!mapDistance || !project}
+                        disabled={!project}
                         onClick={() => {
                             createTreeNode("network", "newNetwork")
                             setObjectType("network")
@@ -193,7 +206,13 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
 
                 <Button icon={<Icon icon={<FaUsersCog size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!mapDistance || !project}
+                        disabled={!project}
+                        onClick={() => {
+                        }}/>
+
+                <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL, styles.iconButton]}
+                        disabled={!project}
                         onClick={() => {
                         }}/>
 
