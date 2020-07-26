@@ -1,12 +1,35 @@
-import {GET_USER_PROJECT, SET_INITIAL_STATE} from "../constants/project";
+import {CREATE_NEW_PROJECT, SET_INITIAL_STATE} from "../constants/project";
+
+// let initialState = {
+//     project: null,
+// };
 
 let initialState = {
-    project: null,
-};
+    project: {
+        info: {
+            location: "Kyiv, Ukraine",
+            name: "New Project"
+        },
+        type: {
+            modelType: "System",
+            energySystemType: ["Heating"]
+        },
+        map: {
+            mapImageUri: "C:/Users/User/Desktop",
+            mapDistance: 1024
+        },
+        objects: {
+            consumers: [],
+            suppliers: [],
+            networks: [],
+            producers: []
+        },
+    }
+}
 
 const project = (state = initialState, action) => {
     switch (action.type) {
-        case GET_USER_PROJECT:
+        case CREATE_NEW_PROJECT:
             return {
                 ...state,
                 project: action.data

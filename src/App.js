@@ -30,18 +30,18 @@ export const App = () => {
 
 
     const project = useSelector(state => state.project.project)
+    const consumers = useSelector(state => state.project.project.objects.consumers)
+    const mapDistance = useSelector(state => state.project.project.map.mapDistance)
+
+    const createConsumer = () => {
+
+    }
+
 
     const [objectType, setObjectType] = useState("none")
+    const [selectedObject, setSelectedObject] = useState(null)
     const [currentPage, setCurrentPage] = useState("topology")
-    const [mapIsVisible, setMapIsVisible] = useState(false)
-    const [mapDistance, setMapDistance] = useState(300)
-    const [mapDistanceDialog, setMapDistanceDialog] = useState(false)
-
-    const [objects, setObjects] = useState({
-        consumers: [],
-        suppliers: [],
-        networks: []
-    })
+    const [mapIsVisible, setMapIsVisible] = useState(true)
 
     const [nodes, setNodes] = useState(initialNodes)
 
@@ -62,12 +62,10 @@ export const App = () => {
                           headerHeight={HEADER_HEIGHT}
                           mapIsVisible={mapIsVisible}
                           setMapIsVisible={setMapIsVisible}
-                          mapDistanceDialog={mapDistanceDialog}
-                          setMapDistanceDialog={setMapDistanceDialog}
-                          mapDistance={mapDistance}
-                          setMapDistance={setMapDistance}
                           createTreeNode={createTreeNode}
                           project={project}
+                          selectedObject={selectedObject}
+                          createConsumer={createConsumer}
                 />
             </ReflexElement>
 
@@ -93,8 +91,6 @@ export const App = () => {
                                       mapDistance={mapDistance}
                                       nodes={nodes}
                                       setNodes={setNodes}
-                                      objects={objects}
-                                      setObjects={setObjects}
                                       setObjectType={setObjectType}
                             />
                         </ReflexElement>}

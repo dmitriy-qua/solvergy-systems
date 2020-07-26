@@ -4,7 +4,7 @@ import {Canvas} from "./components/Canvas/Canvas";
 import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
 
 
-export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes, objects, setObjects, setObjectType}) => {
+export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes, setObjectType}) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
 
@@ -14,8 +14,6 @@ export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes
                 <Canvas objectType={objectType}
                         mapIsVisible={mapIsVisible}
                         map_Distance={mapDistance}
-                        objects={objects}
-                        setObjects={setObjects}
                         setObjectType={setObjectType}
                 />
             </div>

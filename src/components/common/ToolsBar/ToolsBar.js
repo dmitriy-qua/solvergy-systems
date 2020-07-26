@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
     Alignment,
     Button,
@@ -32,13 +32,18 @@ import {
 import {GiTeePipe, GiHouse, GiFactory, GiTreasureMap} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
 import {useSelector} from "react-redux";
+import Consumer from "../../../objects/consumer";
+import {generateId} from "../../../helpers/data-helper";
+import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
 
 
-export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, mapDistance, createTreeNode, project}) => {
+export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, createTreeNode, project, selectedObject, createConsumer}) => {
 
     const styles = useStyles()
 
     const isAuth = useSelector(state => state.auth.isAuth)
+
+    const [createConsumerDialogIsOpened, setCreateConsumerDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -90,9 +95,12 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
 
             <MenuDivider/>
 
-            <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>} text="Edit object..."
-                      disabled={!project}/>
-            <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>} text="Delete object" disabled={!project}
+            <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>}
+                      text="Edit object..."
+                      disabled={!selectedObject || !project}/>
+            <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>}
+                      text="Delete object"
+                      disabled={!selectedObject || !project}
                       intent={Intent.DANGER}/>
         </Menu>
     }
@@ -184,9 +192,17 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                         className={[Classes.MINIMAL]}
                         disabled={!project}
                         onClick={() => {
-                            createTreeNode("consumer", "newConsumer")
-                            setObjectType("consumer")
+
+                            setCreateConsumerDialogIsOpened(true)
+                            //const consumer = new Consumer("consumer_" + generateId(), "New Consumer", "shape", "manual", 200, "Gcal")
+
+                            // createTreeNode("consumer", "newConsumer")
+                            // setObjectType("consumer")
                         }}/>
+                <CreateConsumerDialog createConsumer={createConsumer}
+                                      dialogIsOpened={createConsumerDialogIsOpened}
+                                      setDialogIsOpened={setCreateConsumerDialogIsOpened}/>
+
                 <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}

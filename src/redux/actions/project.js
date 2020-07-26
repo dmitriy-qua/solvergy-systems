@@ -1,10 +1,10 @@
-import {GET_USER_PROJECT, SET_INITIAL_STATE} from "../constants/project";
-
-const setUserProject = (data) => ({
-    type: GET_USER_PROJECT,
-    data
-})
+import {CREATE_NEW_PROJECT, SET_INITIAL_STATE} from "../constants/project";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
+})
+
+export const createNewProject = (data) => ({
+    type: CREATE_NEW_PROJECT,
+    data
 })

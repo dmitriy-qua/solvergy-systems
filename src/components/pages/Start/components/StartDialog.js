@@ -8,11 +8,14 @@ import {ProjectInfo} from "./pages/ProjectInfo";
 import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
 import { ViewPager, Frame, Track, View } from 'react-view-pager'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {createNewProject} from "../../../../redux/actions/project";
 
 export const StartDialog = ({startDialog, setStartDialog}) => {
 
     const styles = useStyles()
+
+    const dispatch = useDispatch()
 
     const isAuth = useSelector(state => state.auth.isAuth)
 
@@ -22,13 +25,11 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
     const [name, setName] = useState("")
     const [location, setLocation] = useState("")
 
-    const [selectedModelType, setSelectedModelType] = useState(null)
-    const [selectedEnergySystemType, setSelectedEnergySystemType] = useState([])
+    const [modelType, setModelType] = useState(null)
+    const [energySystemType, setEnergySystemType] = useState([])
 
     const [mapDistance, setMapDistance] = useState(null)
     const [mapImageUri, setMapImageUri] = useState(null)
-
-    const [hasError, setHasError] = useState(false)
 
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
@@ -40,7 +41,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
             case 1:
                 return name && location
             case 2:
-                return selectedModelType && selectedEnergySystemType.length > 0
+                return modelType && energySystemType.length > 0
             case 3:
                 return mapDistance && mapImageUri
             default:
@@ -48,11 +49,35 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
         }
     }
 
+    const createProject = () => {
+        const newProject = {
+            info: {
+                name,
+                location
+            },
+            type: {
+                modelType,
+                energySystemType
+            },
+            map: {
+                mapImageUri,
+                mapDistance
+            },
+            objects: {
+                consumers: [],
+                suppliers: [],
+                networks: [],
+                producers: []
+            },
+        }
+
+        dispatch(createNewProject(newProject))
+    }
+
 
     return <Dialog
         icon={<FaProjectDiagram size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
-            setHasError(false)
             setStartDialog(false)
         }}
         title={<span className={styles.dialogTitle}>Set initial project information</span>}
@@ -66,7 +91,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
     >
         <div className={[Classes.DIALOG_BODY]}>
             <div className='stepper-container'>
-                <Stepper steps={steps} activeStep={activeStep} {...stepperStyle(hasError)} />
+                <Stepper steps={steps} activeStep={activeStep} {...stepperStyle} />
             </div>
             <br/>
 
@@ -97,10 +122,10 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                         </View>
 
                         <View className="view">
-                            <ModelType selectedModelType={selectedModelType}
-                                       setSelectedModelType={setSelectedModelType}
-                                       selectedEnergySystemType={selectedEnergySystemType}
-                                       setSelectedEnergySystemType={setSelectedEnergySystemType}
+                            <ModelType selectedModelType={modelType}
+                                       setSelectedModelType={setModelType}
+                                       selectedEnergySystemType={energySystemType}
+                                       setSelectedEnergySystemType={setEnergySystemType}
                             />
                         </View>
 
@@ -122,7 +147,6 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                 <Button intent={Intent.NONE}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
-                            setHasError(false)
                             setStartDialog(false)
                         }}>
                     Close
@@ -149,7 +173,8 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                                     else return prevState
                                 })
                             } else {
-                                // setProject
+                                createProject()
+                                setStartDialog(false)
                             }
                         }}>
                 </Button>
@@ -177,7 +202,7 @@ const useStyles = createUseStyles({
     },
 })
 
-const stepperStyle = (hasError) => ({
+const stepperStyle = {
     activeColor: "#78909c",
     completeColor: "#0f9960",
     defaultColor: "#a7b6c2",
@@ -195,11 +220,11 @@ const stepperStyle = (hasError) => ({
     activeBorderColor: "#78909c",
     completeBorderColor: "#45525d",
     defaultBorderColor: "#78909c",
-    defaultBorderWidth: 1,
+    defaultBorderWidth: 0,
     defaultBorderStyle: "solid",
     completeBorderStyle: "solid",
     activeBorderStyle: "solid",
-})
+}
 
 const steps = [
     {title: 'Authentication'},
