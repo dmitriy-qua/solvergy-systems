@@ -87,7 +87,7 @@ export const ModelType = ({selectedModelType, setSelectedModelType, selectedEner
             <Button text={<span className={styles.selectText}>{selectedModelType || "Select model type..."}</span>} rightIcon="caret-down" alignText="left" fill="{true}" />
         </Select>
 
-        {(!selectedModelType && selectedModelTypeTouched) && <span className={styles.errorText}>Set model type!</span>}
+        {(!selectedModelType && selectedModelTypeTouched) && <p className={styles.errorText}>Set model type!</p>}
 
         <br/>
 
@@ -115,7 +115,7 @@ export const ModelType = ({selectedModelType, setSelectedModelType, selectedEner
             onItemSelect={handleEnergySystemTypeElementSelect}
         >
         </MultiSelect>
-        {(selectedEnergySystemType.length === 0 && selectedEnergySystemTypeTouched) && <span className={styles.errorText}>Set model type!</span>}
+        {(selectedEnergySystemType.length === 0 && selectedEnergySystemTypeTouched) && <p className={styles.errorText}>Set model type!</p>}
     </div>
 }
 

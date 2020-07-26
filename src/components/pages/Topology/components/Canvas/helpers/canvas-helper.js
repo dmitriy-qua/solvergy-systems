@@ -241,7 +241,7 @@ export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canva
     return {pointArrayBuf: pointArray, lineArrayBuf: lineArray, activeLineBuf: activeLine, activeShapeBuf: activeShape}
 }
 
-export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType) => {
+export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType, finishCreateObject) => {
     const points = [];
     $.each(pointArray, (index, point) => {
         points.push({
@@ -280,5 +280,8 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     canvas.moveTo(circle1, 0)
     canvas.moveTo(circle2, 0)
     canvas.moveTo(polygon, 0)
+
+    finishCreateObject(polygon)
+
 }
 

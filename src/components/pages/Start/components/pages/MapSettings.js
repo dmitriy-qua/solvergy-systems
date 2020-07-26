@@ -28,7 +28,7 @@ export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapIma
         />
 
         <br/>
-        {(!mapImageUri && mapImageUriTouched) && <span className={styles.errorText}>Set map image!</span>}
+        {(!mapImageUri && mapImageUriTouched) && <p className={styles.errorText}>Set map image!</p>}
 
         <br/><br/>
 
@@ -52,6 +52,7 @@ export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapIma
                       fill
                       intent={(!mapDistance && mapDistanceInputTouched) ? Intent.DANGER : Intent.NONE}
         />
+        {(!mapDistance && mapDistanceInputTouched) && <p className={styles.errorText}>Set map distance!</p>}
     </div>
 }
 

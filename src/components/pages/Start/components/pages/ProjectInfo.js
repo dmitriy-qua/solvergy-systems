@@ -12,8 +12,8 @@ export const ProjectInfo = ({name, setName, location, setLocation}) => {
 
     const styles = useStyles()
 
-    const [nameTouched, setNameTouched] = useState("")
-    const [locationTouched, setLocationTouched] = useState("")
+    const [nameTouched, setNameTouched] = useState(false)
+    const [locationTouched, setLocationTouched] = useState(false)
 
     const {
         ready,

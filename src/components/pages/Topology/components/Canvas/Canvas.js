@@ -26,7 +26,7 @@ let currentName;
 let relativeSize = 1;
 let mapDistance = null;
 
-export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType}) => {
+export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -150,7 +150,7 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType}) 
             );
         } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
             if (o.target && o.target.id === pointArray[0].id) {
-                generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType)
+                generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType, finishCreateObject)
                 activeLine = null
                 activeShape = null
                 polygonMode = false

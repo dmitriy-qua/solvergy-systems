@@ -11,10 +11,15 @@ import {addObjectInTree} from "./components/pages/Topology/components/Canvas/hel
 import {Start} from "./components/pages/Start/Start";
 import {useDispatch, useSelector} from "react-redux";
 import {successLogin} from "./redux/actions/auth";
+import {generateId} from "./helpers/data-helper";
+import Consumer from "./objects/consumer";
+import {addNewConsumer} from "./redux/actions/project";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
 //const FOOTER_HEIGHT = 50
+
+let creatingObjectData = null
 
 export const App = () => {
 
@@ -30,12 +35,11 @@ export const App = () => {
 
 
     const project = useSelector(state => state.project.project)
-    const consumers = useSelector(state => state.project.project.objects.consumers)
-    const mapDistance = useSelector(state => state.project.project.map.mapDistance)
 
-    const createConsumer = () => {
+    const consumers = useSelector(state => state.project.project && state.project.project.objects.consumers)
+    const mapDistance = useSelector(state => state.project.project && state.project.project.map.mapDistance)
 
-    }
+    console.log(consumers)
 
 
     const [objectType, setObjectType] = useState("none")
@@ -45,8 +49,22 @@ export const App = () => {
 
     const [nodes, setNodes] = useState(initialNodes)
 
-    const createTreeNode = (objectType, objectName) => {
-        setNodes(addObjectInTree(objectType, objectName))
+    const startCreateObject = (name, consumption) => {
+        const id = "consumer_" + generateId()
+        creatingObjectData = {id, name, consumption}
+        setObjectType("consumer")
+    }
+
+    const finishCreateObject = (shape) => {
+        const {id, name, consumption} = creatingObjectData
+        const consumer = new Consumer(id, name, shape, "manual", consumption, "Gcal")
+        dispatch(addNewConsumer(consumer))
+        createTreeNode("consumer", name, id)
+        creatingObjectData = null
+    }
+
+    const createTreeNode = (objectType, objectName, id) => {
+        setNodes(addObjectInTree(objectType, objectName, id))
     }
 
     return <div className="App">
@@ -65,7 +83,7 @@ export const App = () => {
                           createTreeNode={createTreeNode}
                           project={project}
                           selectedObject={selectedObject}
-                          createConsumer={createConsumer}
+                          startCreateObject={startCreateObject}
                 />
             </ReflexElement>
 
@@ -92,6 +110,7 @@ export const App = () => {
                                       nodes={nodes}
                                       setNodes={setNodes}
                                       setObjectType={setObjectType}
+                                      finishCreateObject={finishCreateObject}
                             />
                         </ReflexElement>}
 

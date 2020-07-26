@@ -37,7 +37,7 @@ import {generateId} from "../../../helpers/data-helper";
 import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
 
 
-export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, createTreeNode, project, selectedObject, createConsumer}) => {
+export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, createTreeNode, project, selectedObject, startCreateObject}) => {
 
     const styles = useStyles()
 
@@ -192,14 +192,9 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                         className={[Classes.MINIMAL]}
                         disabled={!project}
                         onClick={() => {
-
                             setCreateConsumerDialogIsOpened(true)
-                            //const consumer = new Consumer("consumer_" + generateId(), "New Consumer", "shape", "manual", 200, "Gcal")
-
-                            // createTreeNode("consumer", "newConsumer")
-                            // setObjectType("consumer")
                         }}/>
-                <CreateConsumerDialog createConsumer={createConsumer}
+                <CreateConsumerDialog startCreateObject={startCreateObject}
                                       dialogIsOpened={createConsumerDialogIsOpened}
                                       setDialogIsOpened={setCreateConsumerDialogIsOpened}/>
 

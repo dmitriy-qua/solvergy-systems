@@ -166,6 +166,11 @@ body {
     margin-bottom: 6px;
 }
 
+.selectPopover {
+    max-height: 160px;
+    overflow: auto;
+}
+
 
 
 
