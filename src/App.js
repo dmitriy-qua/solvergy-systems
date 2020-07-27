@@ -13,7 +13,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {successLogin} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
-import {addNewConsumer} from "./redux/actions/project";
+import {addNewConsumer, addNewSupplier} from "./redux/actions/project";
+import Supplier from "./objects/supplier";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
@@ -36,11 +37,9 @@ export const App = () => {
 
     const project = useSelector(state => state.project.project)
 
+    const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
     const consumers = useSelector(state => state.project.project && state.project.project.objects.consumers)
     const mapDistance = useSelector(state => state.project.project && state.project.project.map.mapDistance)
-
-    console.log(consumers)
-
 
     const [objectType, setObjectType] = useState("none")
     const [selectedObject, setSelectedObject] = useState(null)
@@ -49,22 +48,47 @@ export const App = () => {
 
     const [nodes, setNodes] = useState(initialNodes)
 
-    const startCreateObject = (name, consumption) => {
-        const id = "consumer_" + generateId()
-        creatingObjectData = {id, name, consumption}
-        setObjectType("consumer")
+    const startCreateObject = (objectType, name, properties) => {
+        const id = objectType + "_" + generateId()
+
+        switch (objectType) {
+            case "consumer":
+                creatingObjectData = {id, name, consumption: properties.consumption}
+                break
+            case "supplier":
+                creatingObjectData = {id, name, producerId: properties.producerId}
+                break
+            case "network":
+                creatingObjectData = {id, name, properties}
+                break
+            default:
+                break
+        }
+
+        setObjectType(objectType)
     }
 
-    const finishCreateObject = (shape) => {
-        const {id, name, consumption} = creatingObjectData
-        const consumer = new Consumer(id, name, shape, "manual", consumption, "Gcal")
-        dispatch(addNewConsumer(consumer))
-        createTreeNode("consumer", name, id)
+    const finishCreateObject = (objectType, shape) => {
+        switch (objectType) {
+            case "consumer":
+                const consumer = new Consumer(creatingObjectData.id, creatingObjectData.name, shape, "manual", creatingObjectData.consumption, "Gcal")
+                dispatch(addNewConsumer(consumer))
+                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
+                break
+            case "supplier":
+                const supplier = new Supplier(creatingObjectData.id, creatingObjectData.name, shape, creatingObjectData.producerId)
+                const producer = producers.find(producer => producer.id === creatingObjectData.producerId)
+                dispatch(addNewSupplier(supplier))
+                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, producer.name))
+                break
+            case "network":
+
+                break
+            default:
+                break
+        }
+
         creatingObjectData = null
-    }
-
-    const createTreeNode = (objectType, objectName, id) => {
-        setNodes(addObjectInTree(objectType, objectName, id))
     }
 
     return <div className="App">
@@ -80,7 +104,6 @@ export const App = () => {
                           headerHeight={HEADER_HEIGHT}
                           mapIsVisible={mapIsVisible}
                           setMapIsVisible={setMapIsVisible}
-                          createTreeNode={createTreeNode}
                           project={project}
                           selectedObject={selectedObject}
                           startCreateObject={startCreateObject}

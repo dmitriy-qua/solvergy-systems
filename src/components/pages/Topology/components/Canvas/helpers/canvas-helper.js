@@ -281,7 +281,7 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     canvas.moveTo(circle2, 0)
     canvas.moveTo(polygon, 0)
 
-    finishCreateObject(polygon)
+    finishCreateObject(currentFigureType, polygon)
 
 }
 

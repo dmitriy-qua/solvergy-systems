@@ -1,10 +1,11 @@
 import React from 'react'
 import {Icon} from "@blueprintjs/core";
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
+import {useSelector} from "react-redux";
 
-export const addObjectInTree = (objectType, objectName, id) => prevState => {
+export const addObjectInTree = (objectType, objectName, id, producerName = null) => prevState => {
 
-    const object = getNewObjectData(objectType, objectName, id)
+    const object = getNewObjectData(objectType, objectName, id, producerName)
 
     const objectTypeIndex = prevState[0].childNodes.findIndex(objType => objType.id === objectType)
 
@@ -28,11 +29,11 @@ export const addObjectInTree = (objectType, objectName, id) => prevState => {
     }]
 }
 
-const getNewObjectData = (objectType, objectName, id) => {
+const getNewObjectData = (objectType, objectName, id, producerName) => {
     return {
         id,
         icon: getObjectIcon(objectType),
-        label: objectName,
+        label: producerName ? objectName + " ("+ producerName + ")" : objectName,
     }
 }
 

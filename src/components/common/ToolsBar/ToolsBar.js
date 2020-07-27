@@ -29,21 +29,21 @@ import {
     FaMap,
     FaLayerGroup
 } from 'react-icons/fa';
-import {GiTeePipe, GiHouse, GiFactory, GiTreasureMap} from 'react-icons/gi';
+import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
 import {useSelector} from "react-redux";
-import Consumer from "../../../objects/consumer";
-import {generateId} from "../../../helpers/data-helper";
 import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
+import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
 
 
-export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, createTreeNode, project, selectedObject, startCreateObject}) => {
+export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, project, selectedObject, startCreateObject}) => {
 
     const styles = useStyles()
 
     const isAuth = useSelector(state => state.auth.isAuth)
 
     const [createConsumerDialogIsOpened, setCreateConsumerDialogIsOpened] = useState(false)
+    const [createSupplierDialogIsOpened, setCreateSupplierDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -69,22 +69,19 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                           disabled={!project}
                           text="Consumer"
                           onClick={() => {
-                              createTreeNode("consumer", "newConsumer")
-                              setObjectType("consumer")
+
                           }}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Supplier"
                           onClick={() => {
-                              createTreeNode("supplier", "newSupplier")
-                              setObjectType("supplier")
+
                           }}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Network"
                           onClick={() => {
-                              createTreeNode("network", "newNetwork")
-                              setObjectType("network")
+
                           }}/>
             </MenuItem>
 
@@ -191,9 +188,7 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                 <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
                         disabled={!project}
-                        onClick={() => {
-                            setCreateConsumerDialogIsOpened(true)
-                        }}/>
+                        onClick={() => setCreateConsumerDialogIsOpened(true)}/>
                 <CreateConsumerDialog startCreateObject={startCreateObject}
                                       dialogIsOpened={createConsumerDialogIsOpened}
                                       setDialogIsOpened={setCreateConsumerDialogIsOpened}/>
@@ -201,16 +196,16 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                 <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
-                        onClick={() => {
-                            createTreeNode("supplier", "newSupplier")
-                            setObjectType("supplier")
-                        }}/>
+                        onClick={() => setCreateSupplierDialogIsOpened(true)}/>
+                <CreateSupplierDialog startCreateObject={startCreateObject}
+                                      dialogIsOpened={createSupplierDialogIsOpened}
+                                      setDialogIsOpened={setCreateSupplierDialogIsOpened}/>
+
                 <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
                         onClick={() => {
-                            createTreeNode("network", "newNetwork")
-                            setObjectType("network")
+
                         }}/>
 
                 <NavbarDivider/>
