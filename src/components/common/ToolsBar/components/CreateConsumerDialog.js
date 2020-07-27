@@ -33,6 +33,15 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
     const [selectedUserDataItem, setSelectedUserDataItem] = useState(null)
     const [selectedUserDataItemTouched, setSelectedUserDataItemTouched] = useState(false)
 
+    const resetStates = () => {
+        setName("")
+        setNameTouched(false)
+        setConsumption("")
+        setConsumptionTouched(false)
+        setImportFromSolvergyBuildings(false)
+        setSelectedUserDataItem(null)
+        setSelectedUserDataItemTouched(false)
+    }
 
     const handleUserDataElementSelect = (item) => {
         setSelectedUserDataItemTouched(true)
@@ -156,6 +165,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             startCreateObject("consumer", name, {consumption})
+                            resetStates()
                             setDialogIsOpened(false)
                         }}>
                 </Button>

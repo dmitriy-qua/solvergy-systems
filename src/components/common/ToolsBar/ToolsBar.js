@@ -34,6 +34,7 @@ import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
 import {useSelector} from "react-redux";
 import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
 import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
+import {CreateNetworkDialog} from "./components/CreateNetworkDialog";
 
 
 export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, project, selectedObject, startCreateObject}) => {
@@ -44,6 +45,7 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
 
     const [createConsumerDialogIsOpened, setCreateConsumerDialogIsOpened] = useState(false)
     const [createSupplierDialogIsOpened, setCreateSupplierDialogIsOpened] = useState(false)
+    const [createNetworkDialogIsOpened, setCreateNetworkDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -68,21 +70,15 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Consumer"
-                          onClick={() => {
-
-                          }}/>
+                          onClick={() => setCreateConsumerDialogIsOpened(true)}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Supplier"
-                          onClick={() => {
-
-                          }}/>
+                          onClick={() => setCreateSupplierDialogIsOpened(true)}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Network"
-                          onClick={() => {
-
-                          }}/>
+                          onClick={() => setCreateNetworkDialogIsOpened(true)}/>
             </MenuItem>
 
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
@@ -204,9 +200,10 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
                 <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
-                        onClick={() => {
-
-                        }}/>
+                        onClick={() => setCreateNetworkDialogIsOpened(true)}/>
+                <CreateNetworkDialog startCreateObject={startCreateObject}
+                                      dialogIsOpened={createNetworkDialogIsOpened}
+                                      setDialogIsOpened={setCreateNetworkDialogIsOpened}/>
 
                 <NavbarDivider/>
 

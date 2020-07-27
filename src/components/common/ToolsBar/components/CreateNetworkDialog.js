@@ -9,53 +9,53 @@ import {
     MenuItem,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
-import {GiFactory} from 'react-icons/gi';
+import {GiTeePipe} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
 import {generateId} from "../../../../helpers/data-helper";
 
-export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
-    const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
+    const templates = useSelector(state => state.project.project && state.project.project.templates.networks)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
 
-    const [selectedProducer, setSelectedProducer] = useState(null)
-    const [selectedProducerTouched, setSelectedProducerTouched] = useState(false)
+    const [selectedTemplate, setSelectedTemplate] = useState(null)
+    const [selectedTemplateTouched, setSelectedTemplateTouched] = useState(false)
 
     const resetStates = () => {
         setName("")
         setNameTouched(false)
-        setSelectedProducer(null)
-        setSelectedProducerTouched(false)
+        setSelectedTemplate(null)
+        setSelectedTemplateTouched(false)
     }
 
-    const handleProducerSelect = (item) => {
-        setSelectedProducerTouched(true)
-        setSelectedProducer(item)
+    const handleTemplateSelect = (item) => {
+        setSelectedTemplateTouched(true)
+        setSelectedTemplate(item)
     }
 
-    const renderProducerItem = (item) => {
+    const renderTemplateItem = (item) => {
         return (
             <MenuItem
                 key={generateId()}
-                onClick={() => handleProducerSelect(item)}
+                onClick={() => handleTemplateSelect(item)}
                 text={item.name}
             />
         );
     }
 
     return <Dialog
-        icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
+        icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
             setDialogIsOpened(false)
         }}
-        title={<span className={styles.dialogTitle}>Create supplier</span>}
+        title={<span className={styles.dialogTitle}>Create network</span>}
         autoFocus={false}
         enforceFocus={false}
         canEscapeKeyClose={false}
@@ -67,18 +67,18 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
         <div className={[Classes.DIALOG_BODY]}>
 
             <p className={styles.dialogText}>
-                Supplier name:
+                Network name:
             </p>
             <FormGroup
                 disabled={false}
-                helperText={(!name && nameTouched) && "Please enter supplier name..."}
+                helperText={(!name && nameTouched) && "Please enter network name..."}
                 intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
                 labelFor="name"
                 fill
                 className={styles.labelText}
             >
                 <InputGroup id="name"
-                            placeholder="Enter supplier name"
+                            placeholder="Enter network name"
                             className={styles.labelText}
                             intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
                             value={name}
@@ -92,24 +92,24 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
             </FormGroup>
 
             <p className={styles.dialogText}>
-                Select producer:
+                Select template:
             </p>
             <Select
-                items={producers}
-                itemRenderer={renderProducerItem}
-                activeItem={selectedProducer && selectedProducer.name}
+                items={templates}
+                itemRenderer={renderTemplateItem}
+                activeItem={selectedTemplate && selectedTemplate.name}
                 className="fullwidth"
                 popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
                 filterable={false}
-                onItemSelect={handleProducerSelect}
+                onItemSelect={handleTemplateSelect}
             >
                 <Button text={<span
-                    className={styles.selectText}>{selectedProducer && selectedProducer.name || "Select producer..."}</span>}
+                    className={styles.selectText}>{selectedTemplate && selectedTemplate.name || "Select template..."}</span>}
                         rightIcon="caret-down" alignText="left" fill="{true}"/>
             </Select>
 
-            {(!selectedProducer && selectedProducerTouched) &&
-            <p className={styles.errorText}>Set producer!</p>}
+            {(!selectedTemplate && selectedTemplateTouched) &&
+            <p className={styles.errorText}>Set template!</p>}
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -125,7 +125,7 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         text={"Create"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
-                            startCreateObject("supplier", name, {producerId: selectedProducer.id})
+                            startCreateObject("network", name, {templateId: selectedTemplate.id})
                             resetStates()
                             setDialogIsOpened(false)
                         }}>

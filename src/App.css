@@ -51,9 +51,10 @@ body {
     flex-wrap: wrap;
 }
 
+
 .canvas {
-    border: 0px solid rgb(239, 239, 239);
-    box-shadow: 0px 0px 3px rgb(232, 232, 232);
+    border: 1px solid rgb(239, 239, 239);
+    box-shadow: 1px 1px 3px rgb(232, 232, 232);
 }
 
 .canvas-container {

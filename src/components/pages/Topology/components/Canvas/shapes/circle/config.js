@@ -4,10 +4,10 @@ const CANVAS_HEIGHT = 500
 
 export const circleDrawing = (relativeSize, mapDistance) => {
     return {
-        radius: RADIUS * relativeSize * (CANVAS_HEIGHT / mapDistance),
+        radius: RADIUS ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
         fill: '#ffffff',
         stroke: '#333333',
-        strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
+        strokeWidth: STROKE_WIDTH ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
         selectable: false,
         hasBorders: false,
         hasControls: false,
@@ -18,10 +18,10 @@ export const circleDrawing = (relativeSize, mapDistance) => {
 }
 
 export const circleGenerated = (relativeSize, mapDistance) => ({
-    radius: RADIUS * relativeSize * (CANVAS_HEIGHT / mapDistance),
+    radius: RADIUS ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
     fill: '#ffffff',
     stroke: '#333333',
-    strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
+    strokeWidth: STROKE_WIDTH ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
     originX: 'center',
     originY: 'center',
     hasBorders: false,
@@ -30,10 +30,10 @@ export const circleGenerated = (relativeSize, mapDistance) => ({
 })
 
 export const lineCircle = (left, top, type, id, relativeSize, mapDistance) => ({
-    radius: RADIUS * relativeSize * (CANVAS_HEIGHT / mapDistance),
+    radius: RADIUS ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
     fill: '#ffffff',
     stroke: '#333333',
-    strokeWidth: STROKE_WIDTH * relativeSize * (CANVAS_HEIGHT / mapDistance),
+    strokeWidth: STROKE_WIDTH ,//* relativeSize * (CANVAS_HEIGHT / mapDistance),
     left: left,
     top: top,
     selectable: true,

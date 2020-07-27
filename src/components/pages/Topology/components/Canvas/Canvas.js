@@ -11,9 +11,11 @@ import {
 } from "./helpers/canvas-helper";
 import {generateId} from "../../../../../helpers/data-helper";
 import {lineCircle} from "./shapes/circle/config";
+import {useSelector} from "react-redux";
+import $ from "jquery";
 
 let canvas, zoom = 0;
-let _line, isDown, initialCanvasHeight, currentFigureType;
+let _line, isDown, initialCanvasHeight, initialCanvasWidth, currentFigureType;
 let polygonMode = true;
 let pointArray = []
 let lineArray = []
@@ -32,6 +34,8 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
         mapDistance = map_Distance
     }, [map_Distance])
 
+    const objects = useSelector(state => state.project.project && state.project.project.objects)
+
     useEffect(() => {
 
         canvas = new fabric.Canvas('c', {
@@ -41,14 +45,33 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
             renderOnAddRemove: false
         })
 
+
+        objects.consumers.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
+
+        objects.suppliers.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
+
+        objects.networks.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
+
+        canvas.renderAll()
+
         canvas.on('mouse:down', onMouseDown)
         canvas.on('mouse:move', onMouseMove)
         canvas.on('mouse:up', onMouseUp)
         canvas.on('object:moving', objectMoving)
 
-        initialCanvasHeight = canvas.getHeight()
-        let canvasDiv = document.getElementById('canvas-div')
-        canvasDiv.addEventListener('wheel', onMouseWheel)
+        //canvasDiv.addEventListener('wheel', onMouseWheel)
 
     }, [])
 
@@ -70,7 +93,51 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
                     scaleY: scaleY,
                 });
 
+                initialCanvasHeight = canvas.getHeight()
+                initialCanvasWidth = canvas.getWidth()
+
+                // var bg = new fabric.Rect({ width: img.width, height: img.height, stroke: 'pink', strokeWidth: 4, fill: '', selectable: false,});
+                // bg.fill = new fabric.Pattern({ source: imagePath,  }, function() { bg.dirty = true; canvas.requestRenderAll() });
+                // canvas.add(bg)
+
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas))
+
+                canvas.on('mouse:wheel', function (opt) {
+                    let delta = opt.e.deltaY;
+                    let zoom = canvas.getZoom();
+                    zoom *= 0.999 ** delta;
+                    if (zoom > 20) zoom = 20;
+                    if (zoom < 1) zoom = 1;
+                    canvas.setZoom(zoom)
+                    opt.e.preventDefault();
+                    opt.e.stopPropagation();
+
+                    const canvasDiv = $('#canvas-div')
+
+                    if (zoom >= -20 && zoom < 20) {
+                        canvasDiv.scrollLeft(opt.e.offsetX / 2)
+                        canvasDiv.scrollTop(opt.e.offsetY / 2)
+                    }
+                    else if (zoom >= 20 && zoom < 40) {
+                        canvasDiv.scrollLeft(opt.e.offsetX / 2.1)
+                        canvasDiv.scrollTop(opt.e.offsetY / 2.1)
+                    }
+                    else if (zoom >= 40 && zoom < 60) {
+                        canvasDiv.scrollLeft(opt.e.offsetX / 2.1)
+                        canvasDiv.scrollTop(opt.e.offsetY / 2.1)
+                    }
+                    else if (zoom >= 60 && zoom <= 120) {
+                        canvasDiv.scrollLeft(opt.e.offsetX / 4)
+                        canvasDiv.scrollTop(opt.e.offsetY / 4)
+                    }
+
+                    this.setDimensions({
+                        width: initialCanvasWidth * zoom,
+                        height: initialCanvasHeight * zoom
+                    });
+
+                    //this.renderAll()
+                })
             });
         } else {
             canvas.setBackgroundImage(0, canvas.renderAll.bind(canvas))
@@ -82,14 +149,17 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
     useEffect(() => {
         currentFigureType = objectType
         if (objectType === "consumer" || objectType === "supplier") {
+            canvas.defaultCursor = 'crosshair'
             canDrawPolygon = true
             polygonMode = true
             pointArray = []
             lineArray = []
             activeLine = null
         } else if (objectType === "network") {
+            canvas.defaultCursor = 'crosshair'
             canDrawLine = true;
         } else if (objectType === "none") {
+            canvas.defaultCursor = 'default'
             canDrawPolygon = false;
             canDrawLine = false;
         }
@@ -212,6 +282,9 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
 
     const onMouseUp = (o) => {
         if (currentFigureType === "network" && canDrawLine) {
+            console.log(_line)
+            finishCreateObject(currentFigureType, _line)
+            _line = null
             isDown = false
             canDrawLine = false
             setObjectType("none")
@@ -299,8 +372,35 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
         }
     }
 
-    return <div id="canvas-div" className="div-canvas">
+    // return <div className="canvas-container"
+    //             style={{width: 400, height: 400, position: "relative", userSelect: "none"}}>
+    //     <canvas id="c" width="400" height="400" className="canvas"
+    //             style={{
+    //                 position: "absolute",
+    //                 width: 400,
+    //                 height: 400,
+    //                 left: 0,
+    //                 top: 0,
+    //                 touchAction: "none",
+    //                 userSelect: "none"
+    //             }}/>
+    //     <canvas className="upper-canvas"
+    //             style={{
+    //                 position: "absolute",
+    //                 width: 400,
+    //                 height: 400,
+    //                 left: 0,
+    //                 top: 0,
+    //                 touchAction: "none",
+    //                 userSelect: "none",
+    //                 cursor: "move"
+    //             }}
+    //             width="400" height="400"/>
+    // </div>
+
+    return <div id="canvas-div" className={"div-canvas"}>
         <canvas className="canvas" id="c" width="500" height="500"/>
     </div>
+
 
 }

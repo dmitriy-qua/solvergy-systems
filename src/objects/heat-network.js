@@ -1,9 +1,10 @@
 export default class HeatNetwork {
 
-    constructor(id, name, shape) {
+    constructor(id, name, shape, templateId) {
         this.id = id
         this.name = name
         this.shape = shape
+        this.templateId = templateId
         this.properties = {
             length: null,
             diameter: null,

@@ -1,4 +1,10 @@
-import {ADD_NEW_CONSUMER, ADD_NEW_SUPPLIER, CREATE_NEW_PROJECT, SET_INITIAL_STATE} from "../constants/project";
+import {
+    ADD_NEW_CONSUMER, ADD_NEW_NETWORK,
+    ADD_NEW_PRODUCER,
+    ADD_NEW_SUPPLIER,
+    CREATE_NEW_PROJECT,
+    SET_INITIAL_STATE
+} from "../constants/project";
 
 // let initialState = {
 //     project: null,
@@ -24,6 +30,9 @@ let initialState = {
             networks: [],
             producers: [{name: "Main", id: "prod1"}]
         },
+        templates: {
+            networks: [{name: "template 1", properties: null}]
+        }
     }
 }
 
@@ -57,6 +66,34 @@ const project = (state = initialState, action) => {
                         ...state.project.objects,
                         suppliers: [
                             ...state.project.objects.suppliers,
+                            action.data
+                        ]
+                    }
+                }
+            }
+        case ADD_NEW_NETWORK:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    objects: {
+                        ...state.project.objects,
+                        networks: [
+                            ...state.project.objects.networks,
+                            action.data
+                        ]
+                    }
+                }
+            }
+        case ADD_NEW_PRODUCER:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    objects: {
+                        ...state.project.objects,
+                        producers: [
+                            ...state.project.objects.producers,
                             action.data
                         ]
                     }

@@ -13,8 +13,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {successLogin} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
-import {addNewConsumer, addNewSupplier} from "./redux/actions/project";
+import {addNewConsumer, addNewNetwork, addNewSupplier} from "./redux/actions/project";
 import Supplier from "./objects/supplier";
+import HeatNetwork from "./objects/heat-network";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
@@ -59,7 +60,7 @@ export const App = () => {
                 creatingObjectData = {id, name, producerId: properties.producerId}
                 break
             case "network":
-                creatingObjectData = {id, name, properties}
+                creatingObjectData = {id, name, templateId: properties.templateId}
                 break
             default:
                 break
@@ -82,7 +83,9 @@ export const App = () => {
                 setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, producer.name))
                 break
             case "network":
-
+                const network = new HeatNetwork(creatingObjectData.id, creatingObjectData.name, shape, creatingObjectData.templateId)
+                dispatch(addNewNetwork(network))
+                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
                 break
             default:
                 break
