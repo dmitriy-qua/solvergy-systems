@@ -7,11 +7,10 @@ import {generateId} from "../../../../../../helpers/data-helper";
 
 export const connectLineToOtherLine = (canvas, e, p) => {
 
-    let pt = { x: canvas.getPointer(e.e).x, y: canvas.getPointer(e.e).y };
     let circles = canvas.getObjects('circle');
 
     for (let i = 0; i < circles.length; i++) {
-        if (circles[i].containsPoint(pt) && p.get('name') !== circles[i].get('name')) {
+        if (canvas.containsPoint(canvas.getPointer(e.e), circles[i]) && p.get('name') !== circles[i].get('name')) {
             p.set({
                 left: circles[i].left,
                 top: circles[i].top
@@ -140,31 +139,35 @@ export const zoomCanvas = (factor, opt, zoom, canvas) => {
     canvas.calcOffset();
 }
 
-export const limitCanvasBoundary = (currentObj) => {
-    if (currentObj.currentHeight > currentObj.canvas.height || currentObj.currentWidth > currentObj.canvas.width) {
+export const limitCanvasBoundary = (currentObj, mapWidth, mapHeight) => {
+
+    const canvasHeight = mapHeight
+    const canvasWidth = mapWidth
+
+    if (currentObj.currentHeight > canvasHeight || currentObj.currentWidth > canvasWidth) {
         return;
     }
     currentObj.setCoords();
     // top-left  corner
-    if (currentObj.getBoundingRect().top < 0 || currentObj.getBoundingRect().left < 0) {
-        currentObj.top = Math.max(currentObj.top, currentObj.top - currentObj.getBoundingRect().top);
-        currentObj.left = Math.max(currentObj.left, currentObj.left - currentObj.getBoundingRect().left);
+    if (currentObj.getBoundingRect(true).top < 0 || currentObj.getBoundingRect(true).left < 0) {
+        currentObj.top = Math.max(currentObj.top, currentObj.top - currentObj.getBoundingRect(true).top);
+        currentObj.left = Math.max(currentObj.left, currentObj.left - currentObj.getBoundingRect(true).left);
     }
     // bot-right corner
-    if (currentObj.getBoundingRect().top + currentObj.getBoundingRect().height > currentObj.canvas.height || currentObj.getBoundingRect().left + currentObj.getBoundingRect().width > currentObj.canvas.width) {
-        currentObj.top = Math.min(currentObj.top, currentObj.canvas.height - currentObj.getBoundingRect().height + currentObj.top - currentObj.getBoundingRect().top);
-        currentObj.left = Math.min(currentObj.left, currentObj.canvas.width - currentObj.getBoundingRect().width + currentObj.left - currentObj.getBoundingRect().left);
+    if (currentObj.getBoundingRect(true).top + currentObj.getBoundingRect(true).height > canvasHeight || currentObj.getBoundingRect(true).left + currentObj.getBoundingRect(true).width > canvasWidth) {
+        currentObj.top = Math.min(currentObj.top, canvasHeight - currentObj.getBoundingRect(true).height + currentObj.top - currentObj.getBoundingRect(true).top);
+        currentObj.left = Math.min(currentObj.left, canvasWidth - currentObj.getBoundingRect(true).width + currentObj.left - currentObj.getBoundingRect(true).left);
     }
 }
 
-export const setGrid = (canvas, linesCount, relativeSize, mapDistance) => {
+export const setGrid = (canvas, linesCount, canvasHeight, mapDistance) => {
 
-    const width = canvas.getWidth()
+    const width = canvasHeight
     const delta = width / (linesCount)
 
     for (let i = 1; i < linesCount; i++) {
-        canvas.add(new fabric.Line([delta * i, 0, delta * i, width], gridLineGenerated(relativeSize, mapDistance)))
-        canvas.add(new fabric.Line([0, delta * i, width, delta * i], gridLineGenerated(relativeSize, mapDistance)))
+        canvas.add(new fabric.Line([delta * i, 0, delta * i, width], gridLineGenerated(mapDistance)))
+        canvas.add(new fabric.Line([0, delta * i, width, delta * i], gridLineGenerated(mapDistance)))
     }
 
     canvas.renderAll()
@@ -197,18 +200,19 @@ const rerenderObjectsSize = (canvas, mapDistance, relativeSize) => {
 
 export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray) => {
     let id = generateId()
+    let pointer = canvas.getPointer(o);
     let circle = new fabric.Circle(circleDrawing(relativeSize, mapDistance));
     circle.set({
         id: id,
-        left: (o.e.layerX / canvas.getZoom()),
-        top: (o.e.layerY / canvas.getZoom())
+        left: (pointer.x),
+        top: (pointer.y)
     })
     if (pointArray.length === 0) {
         circle.set({
             fill: 'red'
         })
     }
-    let points = [(o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom()), (o.e.layerX / canvas.getZoom()), (o.e.layerY / canvas.getZoom())];
+    let points = [(pointer.x), (pointer.y), (pointer.x), (pointer.y)];
     const line = new fabric.Line(points, polygonLine(relativeSize, mapDistance));
     if (activeShape) {
         let pos = canvas.getPointer(o);
@@ -223,7 +227,7 @@ export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canva
         activeShape = polygon
         canvas.renderAll()
     } else {
-        let polyPoint = [{x: (o.e.layerX / canvas.getZoom()), y: (o.e.layerY / canvas.getZoom())}];
+        let polyPoint = [{x: (pointer.x), y: (pointer.y)}];
         let polygon = new fabric.Polygon(polyPoint, polygonDrawing(relativeSize, mapDistance));
         activeShape = polygon;
         canvas.add(polygon);
@@ -259,7 +263,7 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     let circle1 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
     circle1.set({
-        left: polygon.getCenterPoint().x + 2 * (canvas.getHeight() / mapDistance),
+        left: polygon.getCenterPoint().x + 1, //* (canvas.getHeight() / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
         fill: 'red'
@@ -269,7 +273,7 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     let circle2 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
     circle2.set({
-        left: polygon.getCenterPoint().x - 2 * (canvas.getHeight() / mapDistance),
+        left: polygon.getCenterPoint().x - 1, //* (canvas.getHeight() / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
         fill: 'blue'

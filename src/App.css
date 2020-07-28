@@ -53,12 +53,26 @@ body {
 
 
 .canvas {
-    border: 1px solid rgb(239, 239, 239);
+    /*border: 1px solid rgb(134, 173, 239);*/
     box-shadow: 1px 1px 3px rgb(232, 232, 232);
 }
 
 .canvas-container {
-    margin: 0px auto;
+    /*border: 1px solid rgb(239, 168, 157);*/
+    margin: 0 auto;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    /*overflow: auto;*/
+    /*border:1px solid rgb(233, 233, 233);*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    vertical-align: top;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .bp3-tree-node > .bp3-tree-node-content {
