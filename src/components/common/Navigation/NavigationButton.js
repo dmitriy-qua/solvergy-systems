@@ -1,12 +1,18 @@
 import React from "react";
 import { Icon } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
+import {useHistory} from "react-router-dom";
 
 export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, icon}) => {
 
     const styles = useStyles({currentPage, pageName})
 
-    return <div onClick={() => setCurrentPage(pageName)} className={styles.navigationButton}>
+    const history = useHistory()
+
+    return <div onClick={() => {
+        history.push("/" + pageName);
+        setCurrentPage(pageName)
+    }} className={styles.navigationButton}>
         <Icon icon={icon} iconSize={16}/>
         <span className={styles.text}>{label}</span>
     </div>

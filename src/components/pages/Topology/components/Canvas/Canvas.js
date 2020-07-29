@@ -46,7 +46,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         })
 
 
-        canvas.setZoom(0.4)
+        canvas.setZoom(0.3)
 
         setMap()
 

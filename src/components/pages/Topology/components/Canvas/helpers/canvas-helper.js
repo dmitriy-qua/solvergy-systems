@@ -87,11 +87,15 @@ export const setGrid = (canvas, linesCount, canvasWidth, canvasHeight, mapDistan
     const linesCountY = canvasWidth / DELTA
 
     for (let i = 1; i < linesCountY; i++) {
-        canvas.add(new fabric.Line([DELTA * i, 0, DELTA * i, canvasHeight], gridLineGenerated(mapDistance)))
+        let line = new fabric.Line([DELTA * i, 0, DELTA * i, canvasHeight], gridLineGenerated(canvasHeight, mapDistance))
+        canvas.add(line)
+        canvas.moveTo(line, 2)
     }
 
     for (let i = 1; i < linesCountX; i++) {
-        canvas.add(new fabric.Line([0, DELTA * i, canvasWidth, DELTA * i], gridLineGenerated(mapDistance)))
+        let line = new fabric.Line([0, DELTA * i, canvasWidth, DELTA * i], gridLineGenerated(canvasHeight, mapDistance))
+        canvas.add(line)
+        canvas.moveTo(line, 2)
     }
 
     canvas.renderAll()

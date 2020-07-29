@@ -1,4 +1,4 @@
-const STROKE_WIDTH = 1.2
+const STROKE_WIDTH = 1.0
 
 export const lineGenerated = (mapHeight, mapDistance) => ({
     strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),
@@ -16,7 +16,7 @@ export const lineGenerated = (mapHeight, mapDistance) => ({
 })
 
 export const gridLineGenerated = (mapHeight, mapDistance) => ({
-    strokeWidth: 0.4 * STROKE_WIDTH * (mapHeight / mapDistance),
+    strokeWidth: 0.4 * (mapHeight / mapDistance),
     id: "grid",
     opacity: 0.1,
     fill: '#e0e0e0',

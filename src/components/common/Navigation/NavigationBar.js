@@ -6,6 +6,7 @@ import {mdiTune, mdiSitemap} from "@mdi/js";
 
 export const NavigationBar = ({currentPage, setCurrentPage}) => {
 
+
     return <div className="pane-content">
         <NavigationButton currentPage={currentPage}
                           setCurrentPage={setCurrentPage}
@@ -15,6 +16,7 @@ export const NavigationBar = ({currentPage, setCurrentPage}) => {
         />
         <NavigationButton currentPage={currentPage}
                           setCurrentPage={setCurrentPage}
+                          pageNumber={1}
                           pageName={"settings"}
                           label={"Model settings"}
                           icon={<Icon icon={<MaterialIcon path={mdiTune} className={"material-icon"}/>}/>}
