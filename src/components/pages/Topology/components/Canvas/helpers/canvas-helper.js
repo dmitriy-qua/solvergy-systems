@@ -160,16 +160,25 @@ export const limitCanvasBoundary = (currentObj, mapWidth, mapHeight) => {
     }
 }
 
-export const setGrid = (canvas, linesCount, canvasHeight, mapDistance) => {
+export const setGrid = (canvas, linesCount, canvasWidth, canvasHeight, mapDistance) => {
 
-    const width = canvasHeight
-    const delta = width / (linesCount)
+    const DELTA = 30
+    const linesCountX = canvasHeight / DELTA
+    const linesCountY = canvasWidth / DELTA
 
-    for (let i = 1; i < linesCount; i++) {
-        canvas.add(new fabric.Line([delta * i, 0, delta * i, width], gridLineGenerated(mapDistance)))
-        canvas.add(new fabric.Line([0, delta * i, width, delta * i], gridLineGenerated(mapDistance)))
+    for (let i = 1; i < linesCountY; i++) {
+        canvas.add(new fabric.Line([DELTA * i, 0, DELTA * i, canvasHeight], gridLineGenerated(mapDistance)))
     }
 
+    for (let i = 1; i < linesCountX; i++) {
+        canvas.add(new fabric.Line([0, DELTA * i, canvasWidth, DELTA * i], gridLineGenerated(mapDistance)))
+    }
+
+    canvas.renderAll()
+}
+
+export const removeGrid = (canvas) => {
+    canvas.getObjects().forEach(item => item.id === "grid" && canvas.remove(item))
     canvas.renderAll()
 }
 
@@ -281,9 +290,11 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     polygon.circle2 = circle2
     canvas.add(circle2)
 
-    canvas.moveTo(circle1, 0)
-    canvas.moveTo(circle2, 0)
-    canvas.moveTo(polygon, 0)
+    canvas.moveTo(circle1, 3)
+    canvas.moveTo(circle2, 3)
+    canvas.moveTo(polygon, 3)
+
+    canvas.renderAll()
 
     finishCreateObject(currentFigureType, polygon)
 

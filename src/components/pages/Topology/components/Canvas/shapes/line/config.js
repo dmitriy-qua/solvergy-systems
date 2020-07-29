@@ -17,8 +17,9 @@ export const lineGenerated = (relativeSize, mapDistance) => ({
 })
 
 export const gridLineGenerated = (relativeSize, mapDistance) => ({
-    strokeWidth: 1.0 ,//* STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
-    opacity: 0.2,
+    strokeWidth: 0.4 ,//* STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
+    id: "grid",
+    opacity: 0.1,
     fill: '#e0e0e0',
     stroke: 'black',
     originX: 'center',

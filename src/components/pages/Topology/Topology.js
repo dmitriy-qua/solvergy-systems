@@ -4,7 +4,7 @@ import {Canvas} from "./components/Canvas/Canvas";
 import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
 
 
-export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject}) => {
+export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject}) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
 
@@ -12,7 +12,7 @@ export const Topology = ({objectType, mapIsVisible, mapDistance, nodes, setNodes
         <ReflexElement className="middle-pane" style={{overflow: "hidden"}}>
             <div className="pane-content">
                 <Canvas objectType={objectType}
-                        mapIsVisible={mapIsVisible}
+                        gridIsVisible={gridIsVisible}
                         map_Distance={mapDistance}
                         setObjectType={setObjectType}
                         finishCreateObject={finishCreateObject}

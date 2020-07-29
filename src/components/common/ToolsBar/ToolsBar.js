@@ -26,7 +26,7 @@ import {
     FaUserPlus,
     FaQuestionCircle,
     FaUsersCog,
-    FaMap,
+    FaBorderAll,
     FaLayerGroup
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
@@ -37,7 +37,7 @@ import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
 import {CreateNetworkDialog} from "./components/CreateNetworkDialog";
 
 
-export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVisible, project, selectedObject, startCreateObject}) => {
+export const ToolsBar = ({setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject}) => {
 
     const styles = useStyles()
 
@@ -173,11 +173,11 @@ export const ToolsBar = ({setObjectType, headerHeight, mapIsVisible, setMapIsVis
 
             {project && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
-                <Button active={mapIsVisible}
+                <Button active={gridIsVisible}
                         disabled={!project}
-                        icon={<Icon icon={<FaMap size={16} className={"bp3-icon material-icon"}/>}/>}
+                        icon={<Icon icon={<FaBorderAll size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
-                        onClick={() => setMapIsVisible(prevState => !prevState)}/>
+                        onClick={() => setGridIsVisible(prevState => !prevState)}/>
 
                 <NavbarDivider/>
 

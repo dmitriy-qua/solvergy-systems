@@ -45,7 +45,7 @@ export const App = () => {
     const [objectType, setObjectType] = useState("none")
     const [selectedObject, setSelectedObject] = useState(null)
     const [currentPage, setCurrentPage] = useState("topology")
-    const [mapIsVisible, setMapIsVisible] = useState(true)
+    const [gridIsVisible, setGridIsVisible] = useState(false)
 
     const [nodes, setNodes] = useState(initialNodes)
 
@@ -105,8 +105,8 @@ export const App = () => {
             >
                 <ToolsBar setObjectType={setObjectType}
                           headerHeight={HEADER_HEIGHT}
-                          mapIsVisible={mapIsVisible}
-                          setMapIsVisible={setMapIsVisible}
+                          gridIsVisible={gridIsVisible}
+                          setGridIsVisible={setGridIsVisible}
                           project={project}
                           selectedObject={selectedObject}
                           startCreateObject={startCreateObject}
@@ -131,7 +131,7 @@ export const App = () => {
 
                         {currentPage === "topology" && <ReflexElement>
                             <Topology objectType={objectType}
-                                      mapIsVisible={mapIsVisible}
+                                      gridIsVisible={gridIsVisible}
                                       mapDistance={mapDistance}
                                       nodes={nodes}
                                       setNodes={setNodes}

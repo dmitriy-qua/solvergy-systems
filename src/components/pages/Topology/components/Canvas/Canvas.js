@@ -6,15 +6,14 @@ import {
     connectLineToOtherLine,
     generatePolygon,
     limitCanvasBoundary,
-    makeCircle, setGrid,
+    makeCircle, removeGrid, setGrid,
     zoomCanvas
 } from "./helpers/canvas-helper";
 import {generateId} from "../../../../../helpers/data-helper";
 import {lineCircle} from "./shapes/circle/config";
 import {useSelector} from "react-redux";
 
-let MAP_HEIGHT = 2000
-let CANVAS_HEIGHT = 800, CANVAS_WIDTH = 800
+let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
 let canvas, zoom = 1;
 let _line, isDown, initialCanvasHeight, initialCanvasWidth, currentFigureType;
@@ -30,10 +29,7 @@ let currentName;
 let relativeSize = 1;
 let mapDistance = null;
 
-export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
-
-    const [canvasHeight, setCanvasHeight] = useState(CANVAS_HEIGHT)
-    const [canvasWidth, setCanvasWidth] = useState(CANVAS_WIDTH)
+export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -50,154 +46,34 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
             renderOnAddRemove: false
         })
 
+
         canvas.setZoom(0.4)
-        fitResponsiveCanvas();
+
+        setMap()
+
         window.onresize = (event) => {
-            fitResponsiveCanvas();
+            fitResponsiveCanvas()
         };
 
-        setGrid(canvas, 40, MAP_HEIGHT, mapDistance)
-
-        objects.consumers.forEach((item) => {
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-        })
-
-        objects.suppliers.forEach((item) => {
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-        })
-
-        objects.networks.forEach((item) => {
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-        })
-
-        canvas.renderAll()
+        loadObjects(objects)
 
         canvas.on('mouse:down', onMouseDown)
         canvas.on('mouse:move', onMouseMove)
         canvas.on('mouse:up', onMouseUp)
         canvas.on('object:moving', objectMoving)
-
-        // const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
-        //
-        // fabric.Image.fromURL(imagePath, setMap);
-        // canvas.on('mouse:wheel', setZoom)
-
-        canvas.on('mouse:wheel', function (opt) {
-            if (opt.e.ctrlKey === true) {
-                const delta = opt.e.deltaY;
-                let zoom = canvas.getZoom();
-                zoom *= 0.999 ** delta;
-                if (zoom > 20) zoom = 20;
-                if (zoom < 0.1) zoom = 0.1;
-                canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
-                opt.e.preventDefault();
-                opt.e.stopPropagation();
-                setViewportTransform(zoom, false, null)
-            }
-        });
-        canvas.on('mouse:down', function (opt) {
-            var evt = opt.e;
-            if (evt.altKey === true) {
-                canvas.isDragging = true;
-                canvas.selection = false;
-                canvas.lastPosX = evt.clientX;
-                canvas.lastPosY = evt.clientY;
-            }
-        });
-        canvas.on('mouse:move', function (opt) {
-            if (canvas.isDragging) {
-                const zoom = canvas.getZoom();
-                setViewportTransform(zoom, true, opt)
-                canvas.requestRenderAll();
-                canvas.lastPosX = opt.e.clientX;
-                canvas.lastPosY = opt.e.clientY;
-            }
-        });
-        canvas.on('mouse:up', function (opt) {
-            canvas.isDragging = false;
-        });
+        canvas.on('mouse:wheel', onMouseWheel);
 
     }, [])
 
-    function setViewportTransform(zoom, isPan = false, opt = null) {
-        let vpt = canvas.viewportTransform;
-        if (zoom < canvas.getHeight() / MAP_HEIGHT) {
-            vpt[4] = canvas.getWidth() / 2 - MAP_HEIGHT * zoom / 2;
-            vpt[5] = canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
-        } else {
-            if (isPan) {
-                const e = opt.e;
-                vpt[4] += e.clientX - canvas.lastPosX;
-                vpt[5] += e.clientY - canvas.lastPosY;
-            }
-
-            if (vpt[4] >= 0) {
-                vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - MAP_HEIGHT * zoom / 2;
-            } else if (vpt[4] < canvas.getWidth() - MAP_HEIGHT * zoom) {
-                vpt[4] = canvas.getWidth() - MAP_HEIGHT * zoom;
-            }
-            if (vpt[5] >= 0) {
-                vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
-            } else if (vpt[5] < canvas.getHeight() - MAP_HEIGHT * zoom) {
-                vpt[5] = canvas.getHeight() - MAP_HEIGHT * zoom;
-            }
-        }
-        canvas.renderAll()
-    }
-
-    function fitResponsiveCanvas() {
-        // canvas dimensions
-        let canvasSize = {
-            width: 800,
-            height: 800
-        };
-        // canvas container dimensions
-        let containerSize = {
-            width: document.getElementById('div-canvas').offsetWidth,
-            height: document.getElementById('div-canvas').offsetHeight
-        };
-
-        let scaleRatio = Math.min(containerSize.width / canvasSize.width, containerSize.height / canvasSize.height);
-
-        canvas.setWidth(containerSize.width);
-        canvas.setHeight(containerSize.height);
-
-        const zoom = canvas.getZoom();
-        setViewportTransform(zoom, false, null)
-    }
-
     useEffect(() => {
 
-        if (mapIsVisible) {
-            var bg = new fabric.Rect({
-                width: MAP_HEIGHT - 10,
-                height: MAP_HEIGHT - 10,
-                stroke: 'pink',
-                strokeWidth: 10,
-                fill: '',
-                selectable: false,
-                hoverCursor: "default",
-                evented: false
-            });
-            bg.fill = new fabric.Pattern({source: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAASElEQVQ4y2NkYGD4z0A6+M3AwMBKrGJWBgYGZiibEQ0zIInDaCaoelYyHYcX/GeitomjBo4aOGrgQBj4b7RwGFwGsjAwMDAAAD2/BjgezgsZAAAAAElFTkSuQmCC'},
-                function () {
-                    bg.dirty = true;
-                    canvas.renderAll()
-                });
+            if (gridIsVisible) {
+                setGrid(canvas, 40, MAP_WIDTH, MAP_HEIGHT, mapDistance)
+            } else {
+                removeGrid(canvas)
+            }
 
-            //canvas.add(bg)
-            canvas.renderAll()
-        } else {
-            canvas.setBackgroundImage(0, canvas.renderAll.bind(canvas))
-        }
-
-    }, [mapIsVisible])
+    }, [gridIsVisible])
 
 
     useEffect(() => {
@@ -219,94 +95,117 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
         }
     }, [objectType])
 
+    const setMap = () => {
+        const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+        fabric.Image.fromURL(imagePath, (img) => {
 
-    const setZoom = (opt) => {
-        if (opt.e.ctrlKey) {
-            let delta = opt.e.deltaY;
-            let zoom = canvas.getZoom();
-            zoom *= 0.999 ** delta;
-            if (zoom > 20) zoom = 20;
-            if (zoom < 1) zoom = 1;
-            //canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-            canvas.setZoom(zoom)
-            opt.e.preventDefault()
-            opt.e.stopPropagation()
+            const scaleY = MAP_HEIGHT / img.height
+            const imageResolution = img.width / img.height
+            MAP_WIDTH = MAP_HEIGHT * imageResolution
 
-            // const canvasDiv = $('#canvas-div')
-            //
-            // if (zoom >= -20 && zoom < 20) {
-            //     canvasDiv.scrollLeft(opt.e.offsetX / 2)
-            //     canvasDiv.scrollTop(opt.e.offsetY / 2)
-            // }
-            // else if (zoom >= 20 && zoom < 40) {
-            //     canvasDiv.scrollLeft(opt.e.offsetX / 2.1)
-            //     canvasDiv.scrollTop(opt.e.offsetY / 2.1)
-            // }
-            // else if (zoom >= 40 && zoom < 60) {
-            //     canvasDiv.scrollLeft(opt.e.offsetX / 2.1)
-            //     canvasDiv.scrollTop(opt.e.offsetY / 2.1)
-            // }
-            // else if (zoom >= 60 && zoom <= 120) {
-            //     canvasDiv.scrollLeft(opt.e.offsetX / 4)
-            //     canvasDiv.scrollTop(opt.e.offsetY / 4)
-            // }
+            img.set({
+                id: "background",
+                scaleX: scaleY,
+                scaleY: scaleY,
+                stroke: '#cbcbcb',
+                strokeWidth: 2,
+                selectable: false,
+                hoverCursor: "default",
+                evented: false,
+            })
 
-            //canvas.setWidth(initialCanvasWidth * zoom)
-            //canvas.setHeight(initialCanvasHeight * zoom)
+            canvas.add(img)
+            canvas.sendToBack(img)
             canvas.renderAll()
-            console.log("width: ", canvas.getWidth(), "height: ", canvas.getHeight())
-        }
+
+            fitResponsiveCanvas()
+        });
     }
 
-    const setMap = (img) => {
-        const scaleY = canvas.getHeight() / img.height
-        //const scaleX = canvas.getWidth() / img.width
+    const loadObjects = (objects) => {
+        objects.consumers.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
 
-        const imageResolution = img.width / img.height
+        objects.suppliers.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
 
-        canvas.setWidth(canvas.getHeight() * imageResolution)
+        objects.networks.forEach((item) => {
+            canvas.add(item.shape)
+            canvas.add(item.shape.circle1)
+            canvas.add(item.shape.circle2)
+        })
 
-        img.set({scaleX: scaleY, scaleY: scaleY});
+        canvas.renderAll()
+    }
 
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas))
+    function setViewportTransform(zoom, isPan = false, opt = null) {
+        let vpt = canvas.viewportTransform;
+        if (zoom < canvas.getHeight() / MAP_HEIGHT) {
+            vpt[4] = canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2;
+            vpt[5] = canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
+        } else {
+            if (isPan) {
+                const e = opt.e;
+                vpt[4] += e.clientX - canvas.lastPosX;
+                vpt[5] += e.clientY - canvas.lastPosY;
+            }
 
-        initialCanvasHeight = canvas.getHeight()
-        initialCanvasWidth = canvas.getWidth()
+            if (vpt[4] >= 0) {
+                vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2;
+            } else if (vpt[4] < canvas.getWidth() - MAP_WIDTH * zoom) {
+                vpt[4] = canvas.getWidth() - MAP_WIDTH * zoom;
+            }
+            if (vpt[5] >= 0) {
+                vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
+            } else if (vpt[5] < canvas.getHeight() - MAP_HEIGHT * zoom) {
+                vpt[5] = canvas.getHeight() - MAP_HEIGHT * zoom;
+            }
+        }
+        canvas.renderAll()
+    }
+
+    function fitResponsiveCanvas() {
+        let containerSize = {
+            width: document.getElementById('div-canvas').offsetWidth,
+            height: document.getElementById('div-canvas').offsetHeight
+        };
+
+        canvas.setWidth(containerSize.width);
+        canvas.setHeight(containerSize.height);
+
+        const zoom = canvas.getZoom();
+        setViewportTransform(zoom, false, null)
     }
 
     const onMouseWheel = (opt) => {
-        opt.preventDefault()
-
-        if (opt.ctrlKey) {
-            relativeSize = canvas.getHeight() / initialCanvasHeight
-
-            let myDelta;
-            let delta = opt.deltaY;
-            if (delta < 0) {
-                myDelta = -1
-            } else {
-                myDelta = 1
-            }
-
-            zoom = Math.round(zoom - myDelta)
-
-            if (zoom <= 120 && zoom >= -20) {
-                if (delta < 0) {
-                    zoomCanvas(1.02, opt, zoom, canvas)
-                } else {
-                    zoomCanvas(1 / 1.02, opt, zoom, canvas)
-                }
-            } else {
-                if (zoom > 120) {
-                    zoom = 120
-                } else if (zoom < -20) {
-                    zoom = -20
-                }
-            }
+        if (opt.e.ctrlKey === true) {
+            const delta = opt.e.deltaY;
+            let zoom = canvas.getZoom();
+            zoom *= 0.999 ** delta;
+            if (zoom > 20) zoom = 20;
+            if (zoom < 0.1) zoom = 0.1;
+            canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+            setViewportTransform(zoom, false, null)
         }
     }
 
     const onMouseDown = (o) => {
+
+        if (o.e.altKey === true) {
+            canvas.isDragging = true;
+            canvas.selection = false;
+            canvas.lastPosX = o.e.clientX;
+            canvas.lastPosY = o.e.clientY;
+        }
+
         if (currentFigureType === "network" && canDrawLine) {
             if (canvas.findTarget(o.e)) return;
             isDown = true
@@ -317,11 +216,12 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
             _line = new fabric.Line(points, lineGenerated(relativeSize, mapDistance))
             _line.set({name: name, id: name, objectCaching: false})
             canvas.add(_line);
-            canvas.moveTo(_line, 1000);
+            canvas.moveTo(_line, -2);
             canvas.add(
                 makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, relativeSize, mapDistance),
                 makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, relativeSize, mapDistance)
             );
+            canvas.renderAll()
         } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
             if (o.target && o.target.id === pointArray[0].id) {
                 generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType, finishCreateObject)
@@ -356,6 +256,15 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
     }
 
     const onMouseMove = (o) => {
+
+        if (canvas.isDragging) {
+            const zoom = canvas.getZoom();
+            setViewportTransform(zoom, true, o)
+            canvas.requestRenderAll();
+            canvas.lastPosX = o.e.clientX;
+            canvas.lastPosY = o.e.clientY;
+        }
+
         if (currentFigureType === "network") {
             if (!isDown) return;
             let pointer = canvas.getPointer(o);
@@ -385,6 +294,8 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
     }
 
     const onMouseUp = (o) => {
+        canvas.isDragging = false
+
         if (currentFigureType === "network" && canDrawLine) {
             finishCreateObject(currentFigureType, _line)
             _line = null
@@ -407,6 +318,7 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
         } else if (type === 'end') {
             line.circle2 = circle
         }
+        circle.moveTo(-2)
         circle.setCoords();
         return circle
     }
@@ -417,7 +329,7 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
                 const zoom = canvas.getZoom()
                 let p = e.target;
 
-                limitCanvasBoundary(p, MAP_HEIGHT, MAP_HEIGHT);
+                limitCanvasBoundary(p, MAP_WIDTH, MAP_HEIGHT);
 
                 let objType = p.get('type');
 
@@ -428,8 +340,8 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
 
-                    limitCanvasBoundary(p.circle1, MAP_HEIGHT, MAP_HEIGHT);
-                    limitCanvasBoundary(p.circle2, MAP_HEIGHT, MAP_HEIGHT);
+                    limitCanvasBoundary(p.circle1, MAP_WIDTH, MAP_HEIGHT);
+                    limitCanvasBoundary(p.circle2, MAP_WIDTH, MAP_HEIGHT);
 
                     p.circle1.set({
                         'left': (p.circle1.left - _curXm),
@@ -480,16 +392,6 @@ export const Canvas = ({objectType, mapIsVisible, map_Distance, setObjectType, f
     }
 
     return <div className="canvas-container" id="div-canvas">
-            <canvas className="canvas" id="c" height={CANVAS_HEIGHT} width={CANVAS_HEIGHT}/>
+            <canvas className="canvas" id="c" height={"800"} width={"800"}/>
         </div>
-
-
-    // return <div id="canvas-div" className={"div-canvas"}>
-    //     <div className="canvas-container">
-    //         <canvas className="upper-canvas"></canvas>
-    //         <canvas className="lower-canvas" id="c" width={"800"} height={"800"}/>
-    //     </div>
-    // </div>
-
-
 }
