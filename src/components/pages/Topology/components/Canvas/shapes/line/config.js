@@ -1,8 +1,7 @@
 const STROKE_WIDTH = 1.2
-const CANVAS_HEIGHT = 500
 
-export const lineGenerated = (relativeSize, mapDistance) => ({
-    strokeWidth: STROKE_WIDTH * (CANVAS_HEIGHT / mapDistance), //* relativeSize
+export const lineGenerated = (mapHeight, mapDistance) => ({
+    strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),
     fill: 'red',
     stroke: 'black',
     originX: 'center',
@@ -16,8 +15,8 @@ export const lineGenerated = (relativeSize, mapDistance) => ({
     objectCaching: false,
 })
 
-export const gridLineGenerated = (relativeSize, mapDistance) => ({
-    strokeWidth: 0.4 ,//* STROKE_WIDTH * relativeSize  * (CANVAS_HEIGHT / mapDistance),
+export const gridLineGenerated = (mapHeight, mapDistance) => ({
+    strokeWidth: 0.4 * STROKE_WIDTH * (mapHeight / mapDistance),
     id: "grid",
     opacity: 0.1,
     fill: '#e0e0e0',

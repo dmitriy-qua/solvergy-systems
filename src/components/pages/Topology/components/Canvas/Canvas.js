@@ -16,7 +16,7 @@ import {useSelector} from "react-redux";
 let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
 let canvas, zoom = 1;
-let _line, isDown, initialCanvasHeight, initialCanvasWidth, currentFigureType;
+let _line, isDown, currentFigureType;
 let polygonMode = true;
 let pointArray = []
 let lineArray = []
@@ -26,7 +26,6 @@ let canDrawLine = false;
 let canDrawPolygon = false;
 let _curX, _curY;
 let currentName;
-let relativeSize = 1;
 let mapDistance = null;
 
 export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
@@ -213,18 +212,18 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             let points = [pointer.x, pointer.y, pointer.x, pointer.y];
             let name = generateId()
             currentName = name
-            _line = new fabric.Line(points, lineGenerated(relativeSize, mapDistance))
+            _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance))
             _line.set({name: name, id: name, objectCaching: false})
             canvas.add(_line);
             canvas.moveTo(_line, -2);
             canvas.add(
-                makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, relativeSize, mapDistance),
-                makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, relativeSize, mapDistance)
+                makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, MAP_HEIGHT, mapDistance),
+                makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, MAP_HEIGHT, mapDistance)
             );
             canvas.renderAll()
         } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
             if (o.target && o.target.id === pointArray[0].id) {
-                generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType, finishCreateObject)
+                generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, MAP_HEIGHT, mapDistance, currentFigureType, finishCreateObject)
                 activeLine = null
                 activeShape = null
                 polygonMode = false
@@ -235,7 +234,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
                     lineArrayBuf,
                     activeLineBuf,
                     activeShapeBuf
-                } = addPolygonPoint(o, relativeSize, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray)
+                } = addPolygonPoint(o, MAP_HEIGHT, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray)
 
                 pointArray = pointArrayBuf
                 lineArray = lineArrayBuf
@@ -311,7 +310,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
 
     const makeCircle = (left, top, line, type) => {
         const id = generateId()
-        const circle = new fabric.Circle(lineCircle(left, top, type, id, relativeSize, mapDistance))
+        const circle = new fabric.Circle(lineCircle(left, top, type, id, MAP_HEIGHT, mapDistance))
         circle.line = line
         if (type === 'start') {
             line.circle1 = circle
@@ -373,12 +372,12 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
                     canvas.renderAll();
                 } else if (objType === 'polygon') {
                     p.circle1.set({
-                        left: p.getCenterPoint().x + 1, // * (canvas.getHeight() / mapDistance),
+                        left: p.getCenterPoint().x + 2 * (MAP_HEIGHT / mapDistance),
                         top: p.getCenterPoint().y
                     });
 
                     p.circle2.set({
-                        left: p.getCenterPoint().x - 1, // * (canvas.getHeight() / mapDistance),
+                        left: p.getCenterPoint().x - 2 * (MAP_HEIGHT / mapDistance),
                         top: p.getCenterPoint().y
                     });
                     p.circle1.setCoords();

@@ -59,86 +59,6 @@ export const connectLineToOtherLine = (canvas, e, p) => {
     canvas.renderAll();
 }
 
-export const zoomCanvas = (factor, opt, zoom, canvas) => {
-
-    const canvasDiv = $('#canvas-div')
-    const pointer = canvas.getPointer(opt)
-
-    if (zoom >= -20 && zoom < 20) {
-        canvasDiv.scrollLeft(pointer.x / 2)
-        canvasDiv.scrollTop(pointer.y / 2)
-    }
-    else if (zoom >= 20 && zoom < 40) {
-        canvasDiv.scrollLeft(pointer.x / 2.1)
-        canvasDiv.scrollTop(pointer.y / 2.1)
-    }
-    else if (zoom >= 40 && zoom < 60) {
-        canvasDiv.scrollLeft(pointer.x / 2.1)
-        canvasDiv.scrollTop(pointer.y / 2.1)
-    }
-    else if (zoom >= 60 && zoom <= 120) {
-        canvasDiv.scrollLeft(pointer.x / 4)
-        canvasDiv.scrollTop(pointer.y / 4)
-    }
-
-    canvas.setHeight(Math.round(canvas.getHeight() * factor));
-    canvas.setWidth(Math.round(canvas.getWidth() * factor));
-
-    if (canvas.backgroundImage) {
-        let bi = canvas.backgroundImage;
-        bi.scaleX = bi.scaleX * factor; //bi.width * factor;
-        bi.scaleY = bi.scaleY * factor;  //bi.height * factor;
-    }
-
-    let objects = canvas.getObjects();
-
-    for (let i in objects) {
-
-        let scaleX = objects[i].scaleX;
-        let scaleY = objects[i].scaleY;
-        let left = objects[i].left;
-        let top = objects[i].top;
-
-        let tempScaleX = scaleX * factor;
-        let tempScaleY = scaleY * factor;
-        let tempLeft = left * factor;
-        let tempTop = top * factor;
-
-        if (objects[i].get('type') !== 'line') {
-            objects[i].scaleX = Math.round(tempScaleX * 1000) / 1000;
-            objects[i].scaleY = Math.round(tempScaleY * 1000) / 1000;
-        } else {
-            let strokeWidth = objects[i].strokeWidth;
-            let tempStrokeWidth = strokeWidth * factor;
-            objects[i].strokeWidth = Math.round(tempStrokeWidth * 1000) / 1000
-
-            let x1 = objects[i].x1;
-            let x2 = objects[i].x2;
-            let y1 = objects[i].y1;
-            let y2 = objects[i].y2;
-
-            let tempX1 = x1 * factor;
-            let tempX2 = x2 * factor;
-            let tempY1 = y1 * factor;
-            let tempY2 = y2 * factor;
-
-            objects[i].set({
-                'x1': Math.round(tempX1 * 1000) / 1000,
-                'y1': Math.round(tempY1 * 1000) / 1000,
-                'x2': Math.round(tempX2 * 1000) / 1000,
-                'y2': Math.round(tempY2 * 1000) / 1000
-            });
-        }
-
-        objects[i].left = Math.round(tempLeft * 1000) / 1000;
-        objects[i].top = Math.round(tempTop * 1000) / 1000;
-
-        objects[i].setCoords();
-    }
-    canvas.renderAll();
-    canvas.calcOffset();
-}
-
 export const limitCanvasBoundary = (currentObj, mapWidth, mapHeight) => {
 
     const canvasHeight = mapHeight
@@ -182,35 +102,10 @@ export const removeGrid = (canvas) => {
     canvas.renderAll()
 }
 
-const rerenderObjectsSize = (canvas, mapDistance, relativeSize) => {
-
-    let objects = canvas.getObjects();
-
-    for (let i in objects) {
-        if (objects[i].get('type') === 'line') {
-            objects[i].set({
-                strokeWidth: 1.2 * relativeSize * (500 / mapDistance)
-            })
-        } else if (objects[i].get('type') === 'circle') {
-            objects[i].set({
-                radius: 1.2 * relativeSize * (500 / mapDistance),
-                strokeWidth: 0.2 * relativeSize * (500 / mapDistance),
-            })
-        } else {
-            objects[i].set({
-                strokeWidth: 1.2 * relativeSize * (500 / mapDistance),
-            })
-        }
-    }
-
-    canvas.renderAll()
-
-}
-
-export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray) => {
+export const addPolygonPoint = (o, mapHeight, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray) => {
     let id = generateId()
     let pointer = canvas.getPointer(o);
-    let circle = new fabric.Circle(circleDrawing(relativeSize, mapDistance));
+    let circle = new fabric.Circle(circleDrawing(mapHeight, mapDistance));
     circle.set({
         id: id,
         left: (pointer.x),
@@ -222,7 +117,7 @@ export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canva
         })
     }
     let points = [(pointer.x), (pointer.y), (pointer.x), (pointer.y)];
-    const line = new fabric.Line(points, polygonLine(relativeSize, mapDistance));
+    const line = new fabric.Line(points, polygonLine(mapHeight, mapDistance));
     if (activeShape) {
         let pos = canvas.getPointer(o);
         let points = activeShape.get("points");
@@ -230,14 +125,14 @@ export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canva
             x: pos.x,
             y: pos.y
         });
-        let polygon = new fabric.Polygon(points, polygonDrawing(relativeSize, mapDistance));
+        let polygon = new fabric.Polygon(points, polygonDrawing(mapHeight, mapDistance));
         canvas.remove(activeShape)
         canvas.add(polygon)
         activeShape = polygon
         canvas.renderAll()
     } else {
         let polyPoint = [{x: (pointer.x), y: (pointer.y)}];
-        let polygon = new fabric.Polygon(polyPoint, polygonDrawing(relativeSize, mapDistance));
+        let polygon = new fabric.Polygon(polyPoint, polygonDrawing(mapHeight, mapDistance));
         activeShape = polygon;
         canvas.add(polygon);
     }
@@ -254,7 +149,7 @@ export const addPolygonPoint = (o, relativeSize, mapDistance, activeShape, canva
     return {pointArrayBuf: pointArray, lineArrayBuf: lineArray, activeLineBuf: activeLine, activeShapeBuf: activeShape}
 }
 
-export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, relativeSize, mapDistance, currentFigureType, finishCreateObject) => {
+export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, mapHeight, mapDistance, currentFigureType, finishCreateObject) => {
     const points = [];
     $.each(pointArray, (index, point) => {
         points.push({
@@ -267,12 +162,12 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
         canvas.remove(line);
     });
     canvas.remove(activeShape).remove(activeLine);
-    let polygon = new fabric.Polygon(points, polygonGenerated(relativeSize, mapDistance, currentFigureType));
+    let polygon = new fabric.Polygon(points, polygonGenerated(mapHeight, mapDistance, currentFigureType));
     canvas.add(polygon)
 
-    let circle1 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
+    let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle1.set({
-        left: polygon.getCenterPoint().x + 1, //* (canvas.getHeight() / mapDistance),
+        left: polygon.getCenterPoint().x + 2 * (mapHeight / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
         fill: 'red'
@@ -280,9 +175,9 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     polygon.circle1 = circle1
     canvas.add(circle1)
 
-    let circle2 = new fabric.Circle(circleGenerated(relativeSize, mapDistance));
+    let circle2 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle2.set({
-        left: polygon.getCenterPoint().x - 1, //* (canvas.getHeight() / mapDistance),
+        left: polygon.getCenterPoint().x - 2 * (mapHeight / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
         fill: 'blue'
