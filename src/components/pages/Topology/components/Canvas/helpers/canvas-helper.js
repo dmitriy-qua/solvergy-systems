@@ -88,14 +88,14 @@ export const setGrid = (canvas, linesCount, canvasWidth, canvasHeight, mapDistan
 
     for (let i = 1; i < linesCountY; i++) {
         let line = new fabric.Line([DELTA * i, 0, DELTA * i, canvasHeight], gridLineGenerated(canvasHeight, mapDistance))
-        canvas.add(line)
         canvas.moveTo(line, 2)
+        //canvas.add(line)
     }
 
     for (let i = 1; i < linesCountX; i++) {
         let line = new fabric.Line([0, DELTA * i, canvasWidth, DELTA * i], gridLineGenerated(canvasHeight, mapDistance))
-        canvas.add(line)
         canvas.moveTo(line, 2)
+        //canvas.add(line)
     }
 
     canvas.renderAll()
@@ -189,9 +189,10 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     polygon.circle2 = circle2
     canvas.add(circle2)
 
-    canvas.moveTo(circle1, 3)
-    canvas.moveTo(circle2, 3)
     canvas.moveTo(polygon, 3)
+    canvas.moveTo(circle1, 4)
+    canvas.moveTo(circle2, 4)
+
 
     canvas.renderAll()
 

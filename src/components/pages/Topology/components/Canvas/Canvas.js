@@ -46,16 +46,11 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             renderOnAddRemove: false
         })
 
-
-        canvas.setZoom(0.3)
-
+        canvas.setZoom(0.25)
         setMap()
-
-        new ResizeSensor(document.getElementById('div-canvas'), function(){
+        new ResizeSensor(document.getElementById('div-canvas'), function () {
             fitResponsiveCanvas()
         });
-
-        loadObjects(objects)
 
         canvas.on('mouse:down', onMouseDown)
         canvas.on('mouse:move', onMouseMove)
@@ -67,11 +62,11 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
 
     useEffect(() => {
 
-            if (gridIsVisible) {
-                setGrid(canvas, 40, MAP_WIDTH, MAP_HEIGHT, mapDistance)
-            } else {
-                removeGrid(canvas)
-            }
+        if (gridIsVisible) {
+            setGrid(canvas, 40, MAP_WIDTH, MAP_HEIGHT, mapDistance)
+        } else {
+            removeGrid(canvas)
+        }
 
     }, [gridIsVisible])
 
@@ -119,6 +114,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             canvas.renderAll()
 
             fitResponsiveCanvas()
+            loadObjects(objects)
         })
     }
 
@@ -127,15 +123,27 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             canvas.add(item.shape)
             canvas.add(item.shape.circle1)
             canvas.add(item.shape.circle2)
+
+            canvas.moveTo(item.shape, 3)
+            canvas.moveTo(item.shape.circle1, 4)
+            canvas.moveTo(item.shape.circle2, 4)
         })
 
         objects.suppliers.forEach((item) => {
+            canvas.moveTo(item.shape, 3)
+            canvas.moveTo(item.shape.circle1, 4)
+            canvas.moveTo(item.shape.circle2, 4)
+
             canvas.add(item.shape)
             canvas.add(item.shape.circle1)
             canvas.add(item.shape.circle2)
         })
 
         objects.networks.forEach((item) => {
+            canvas.moveTo(item.shape.circle1, -2)
+            canvas.moveTo(item.shape.circle2, -2)
+            canvas.moveTo(item.shape, -1)
+
             canvas.add(item.shape)
             canvas.add(item.shape.circle1)
             canvas.add(item.shape.circle2)
@@ -171,18 +179,16 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     }
 
     function fitResponsiveCanvas() {
-        if (document.getElementById('div-canvas')) {
-            let containerSize = {
-                width: document.getElementById('div-canvas').offsetWidth,
-                height: document.getElementById('div-canvas').offsetHeight
-            }
-
-            canvas.setWidth(containerSize.width)
-            canvas.setHeight(containerSize.height)
-
-            const zoom = canvas.getZoom()
-            setViewportTransform(zoom, false, null)
+        let containerSize = {
+            width: document.getElementById('div-canvas').offsetWidth,
+            height: document.getElementById('div-canvas').offsetHeight
         }
+
+        canvas.setWidth(containerSize.width)
+        canvas.setHeight(containerSize.height)
+
+        const zoom = canvas.getZoom()
+        setViewportTransform(zoom, false, null)
     }
 
     const onMouseWheel = (opt) => {
@@ -203,7 +209,6 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
 
         if (o.e.altKey === true) {
             canvas.isDragging = true
-            canvas.selection = false
             canvas.lastPosX = o.e.clientX
             canvas.lastPosY = o.e.clientY
         }
@@ -217,8 +222,9 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             currentName = name
             _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance))
             _line.set({name: name, id: name, objectCaching: false})
-            canvas.add(_line)
             canvas.moveTo(_line, -2)
+            canvas.add(_line)
+
             canvas.add(
                 makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, MAP_HEIGHT, mapDistance),
                 makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, MAP_HEIGHT, mapDistance)
@@ -262,9 +268,9 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         if (canvas.isDragging) {
             const zoom = canvas.getZoom()
             setViewportTransform(zoom, true, o)
-            canvas.requestRenderAll()
             canvas.lastPosX = o.e.clientX
             canvas.lastPosY = o.e.clientY
+            canvas.renderAll()
         }
 
         if (currentFigureType === "network") {
@@ -297,6 +303,9 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
 
     const onMouseUp = (o) => {
         canvas.isDragging = false
+        canvas.forEachObject(function(o) {
+            o.setCoords();
+        });
 
         if (currentFigureType === "network" && canDrawLine) {
             finishCreateObject(currentFigureType, _line)
@@ -394,6 +403,6 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     }
 
     return <div className="canvas-container" id="div-canvas">
-            <canvas className="canvas" id="c" height={"800"} width={"800"}/>
-        </div>
+        <canvas className="canvas" id="c" height={"800"} width={"800"}/>
+    </div>
 }
