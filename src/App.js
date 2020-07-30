@@ -105,7 +105,8 @@ export const App = () => {
                            maxSize={HEADER_HEIGHT}
                            style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", zIndex: 1}}
             >
-                <ToolsBar setObjectType={setObjectType}
+                <ToolsBar objectType={objectType}
+                          setObjectType={setObjectType}
                           headerHeight={HEADER_HEIGHT}
                           gridIsVisible={gridIsVisible}
                           setGridIsVisible={setGridIsVisible}

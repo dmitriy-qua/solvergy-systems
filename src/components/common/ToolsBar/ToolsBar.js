@@ -35,9 +35,10 @@ import {useSelector} from "react-redux";
 import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
 import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
 import {CreateNetworkDialog} from "./components/CreateNetworkDialog";
+import {ProducersDialog} from "./components/ProducersDialog";
 
 
-export const ToolsBar = ({setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject}) => {
+export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject}) => {
 
     const styles = useStyles()
 
@@ -46,6 +47,7 @@ export const ToolsBar = ({setObjectType, headerHeight, gridIsVisible, setGridIsV
     const [createConsumerDialogIsOpened, setCreateConsumerDialogIsOpened] = useState(false)
     const [createSupplierDialogIsOpened, setCreateSupplierDialogIsOpened] = useState(false)
     const [createNetworkDialogIsOpened, setCreateNetworkDialogIsOpened] = useState(false)
+    const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -182,28 +184,49 @@ export const ToolsBar = ({setObjectType, headerHeight, gridIsVisible, setGridIsV
                 <NavbarDivider/>
 
                 <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
+                        active={objectType === "consumer"}
                         className={[Classes.MINIMAL]}
                         disabled={!project}
-                        onClick={() => setCreateConsumerDialogIsOpened(true)}/>
+                        onClick={() => {
+                            if (objectType !== "consumer") {
+                                setCreateConsumerDialogIsOpened(true)
+                            } else {
+                                setObjectType("none")
+                            }
+                        }}/>
                 <CreateConsumerDialog startCreateObject={startCreateObject}
                                       dialogIsOpened={createConsumerDialogIsOpened}
                                       setDialogIsOpened={setCreateConsumerDialogIsOpened}/>
 
                 <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
+                        active={objectType === "supplier"}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
-                        onClick={() => setCreateSupplierDialogIsOpened(true)}/>
+                        onClick={() => {
+                            if (objectType !== "supplier") {
+                                setCreateSupplierDialogIsOpened(true)
+                            } else {
+                                setObjectType("none")
+                            }
+                        }}/>
                 <CreateSupplierDialog startCreateObject={startCreateObject}
                                       dialogIsOpened={createSupplierDialogIsOpened}
                                       setDialogIsOpened={setCreateSupplierDialogIsOpened}/>
 
                 <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
+                        active={objectType === "network"}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
-                        onClick={() => setCreateNetworkDialogIsOpened(true)}/>
+                        onClick={() => {
+                            if (objectType !== "network") {
+                                setCreateNetworkDialogIsOpened(true)
+                            } else {
+                                setObjectType("none")
+                            }
+                        }}/>
                 <CreateNetworkDialog startCreateObject={startCreateObject}
-                                      dialogIsOpened={createNetworkDialogIsOpened}
-                                      setDialogIsOpened={setCreateNetworkDialogIsOpened}/>
+                                     dialogIsOpened={createNetworkDialogIsOpened}
+                                     setDialogIsOpened={setCreateNetworkDialogIsOpened}/>
 
                 <NavbarDivider/>
 
@@ -211,7 +234,10 @@ export const ToolsBar = ({setObjectType, headerHeight, gridIsVisible, setGridIsV
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
                         onClick={() => {
+                            setProducersDialogIsOpened(true)
                         }}/>
+                <ProducersDialog dialogIsOpened={producersDialogIsOpened}
+                                  setDialogIsOpened={setProducersDialogIsOpened}/>
 
                 <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}

@@ -2,6 +2,7 @@
 @import "~normalize.css";
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import '~react-widgets/dist/css/react-widgets.css';
 
 .App {
     height: 100vh;
@@ -185,6 +186,33 @@ body {
     max-height: 160px;
     overflow: auto;
 }
+
+
+.rw-select-list {
+    max-height: 160px;
+    border-width: 0;
+}
+
+.rw-select-list-label {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.rw-list .rw-list-option .rw-state-focus {
+    border-width: 0;
+}
+
+.rw-list-option {
+    border-width: 0;
+}
+
+.rw-select-list .rw-list .rw-state-focus {
+    border-width: 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+
 
 
 

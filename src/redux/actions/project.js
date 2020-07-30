@@ -1,9 +1,11 @@
 import {
     ADD_NEW_CONSUMER,
-    ADD_NEW_NETWORK, ADD_NEW_PRODUCER,
+    ADD_NEW_NETWORK,
+    ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER,
     CREATE_NEW_PROJECT,
-    SET_INITIAL_STATE
+    SET_INITIAL_STATE,
+    SET_PRODUCERS
 } from "../constants/project";
 
 export const setInitialState = () => ({
@@ -27,6 +29,11 @@ export const addNewSupplier = (data) => ({
 
 export const addNewProducer = (data) => ({
     type: ADD_NEW_PRODUCER,
+    data
+})
+
+export const setProducers = (data) => ({
+    type: SET_PRODUCERS,
     data
 })
 

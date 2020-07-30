@@ -23,6 +23,7 @@
     "react-scripts": "^3.4.1",
     "react-stepper-horizontal": "^1.0.11",
     "react-view-pager": "^0.6.0",
+    "react-widgets": "^4.5.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "resize-sensor": "0.0.6",
