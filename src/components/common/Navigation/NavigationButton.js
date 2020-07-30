@@ -24,7 +24,7 @@ const useStyles = createUseStyles({
         color: "#5c7080",
         height: 110,
         borderRadius: 0,
-        borderBottom: "1px solid #efefef",
+        //borderBottom: "1px solid #efefef",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",

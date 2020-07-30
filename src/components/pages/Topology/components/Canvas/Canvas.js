@@ -1,32 +1,33 @@
-import React, {useEffect, useState} from "react";
-import {fabric} from "fabric";
-import {lineGenerated} from "./shapes/line/config";
+import React, {useEffect, useState} from "react"
+import {fabric} from "fabric"
+import {lineGenerated} from "./shapes/line/config"
 import {
     addPolygonPoint,
     connectLineToOtherLine,
     generatePolygon,
     limitCanvasBoundary,
-    makeCircle, removeGrid, setGrid,
-    zoomCanvas
-} from "./helpers/canvas-helper";
-import {generateId} from "../../../../../helpers/data-helper";
-import {lineCircle} from "./shapes/circle/config";
-import {useSelector} from "react-redux";
+    removeGrid,
+    setGrid,
+} from "./helpers/canvas-helper"
+import {generateId} from "../../../../../helpers/data-helper"
+import {lineCircle} from "./shapes/circle/config"
+import {useSelector} from "react-redux"
+import ResizeSensor from 'resize-sensor'
 
 let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
-let canvas, zoom = 1;
-let _line, isDown, currentFigureType;
-let polygonMode = true;
+let canvas, zoom = 1
+let _line, isDown, currentFigureType
+let polygonMode = true
 let pointArray = []
 let lineArray = []
-let activeLine;
-let activeShape = false;
-let canDrawLine = false;
-let canDrawPolygon = false;
-let _curX, _curY;
-let currentName;
-let mapDistance = null;
+let activeLine
+let activeShape = false
+let canDrawLine = false
+let canDrawPolygon = false
+let _curX, _curY
+let currentName
+let mapDistance = null
 
 export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
 
@@ -50,9 +51,9 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
 
         setMap()
 
-        window.onresize = (event) => {
+        new ResizeSensor(document.getElementById('div-canvas'), function(){
             fitResponsiveCanvas()
-        };
+        });
 
         loadObjects(objects)
 
@@ -60,7 +61,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         canvas.on('mouse:move', onMouseMove)
         canvas.on('mouse:up', onMouseUp)
         canvas.on('object:moving', objectMoving)
-        canvas.on('mouse:wheel', onMouseWheel);
+        canvas.on('mouse:wheel', onMouseWheel)
 
     }, [])
 
@@ -86,11 +87,11 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             activeLine = null
         } else if (objectType === "network") {
             canvas.defaultCursor = 'crosshair'
-            canDrawLine = true;
+            canDrawLine = true
         } else if (objectType === "none") {
             canvas.defaultCursor = 'default'
-            canDrawPolygon = false;
-            canDrawLine = false;
+            canDrawPolygon = false
+            canDrawLine = false
         }
     }, [objectType])
 
@@ -118,7 +119,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             canvas.renderAll()
 
             fitResponsiveCanvas()
-        });
+        })
     }
 
     const loadObjects = (objects) => {
@@ -144,54 +145,56 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     }
 
     function setViewportTransform(zoom, isPan = false, opt = null) {
-        let vpt = canvas.viewportTransform;
+        let vpt = canvas.viewportTransform
         if (zoom < canvas.getHeight() / MAP_HEIGHT) {
-            vpt[4] = canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2;
-            vpt[5] = canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
+            vpt[4] = canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2
+            vpt[5] = canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2
         } else {
             if (isPan) {
-                const e = opt.e;
-                vpt[4] += e.clientX - canvas.lastPosX;
-                vpt[5] += e.clientY - canvas.lastPosY;
+                const e = opt.e
+                vpt[4] += e.clientX - canvas.lastPosX
+                vpt[5] += e.clientY - canvas.lastPosY
             }
 
             if (vpt[4] >= 0) {
-                vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2;
+                vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2
             } else if (vpt[4] < canvas.getWidth() - MAP_WIDTH * zoom) {
-                vpt[4] = canvas.getWidth() - MAP_WIDTH * zoom;
+                vpt[4] = canvas.getWidth() - MAP_WIDTH * zoom
             }
             if (vpt[5] >= 0) {
-                vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2;
+                vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2
             } else if (vpt[5] < canvas.getHeight() - MAP_HEIGHT * zoom) {
-                vpt[5] = canvas.getHeight() - MAP_HEIGHT * zoom;
+                vpt[5] = canvas.getHeight() - MAP_HEIGHT * zoom
             }
         }
         canvas.renderAll()
     }
 
     function fitResponsiveCanvas() {
-        let containerSize = {
-            width: document.getElementById('div-canvas').offsetWidth,
-            height: document.getElementById('div-canvas').offsetHeight
-        };
+        if (document.getElementById('div-canvas')) {
+            let containerSize = {
+                width: document.getElementById('div-canvas').offsetWidth,
+                height: document.getElementById('div-canvas').offsetHeight
+            }
 
-        canvas.setWidth(containerSize.width);
-        canvas.setHeight(containerSize.height);
+            canvas.setWidth(containerSize.width)
+            canvas.setHeight(containerSize.height)
 
-        const zoom = canvas.getZoom();
-        setViewportTransform(zoom, false, null)
+            const zoom = canvas.getZoom()
+            setViewportTransform(zoom, false, null)
+        }
     }
 
     const onMouseWheel = (opt) => {
         if (opt.e.ctrlKey === true) {
-            const delta = opt.e.deltaY;
-            let zoom = canvas.getZoom();
-            zoom *= 0.999 ** delta;
-            if (zoom > 20) zoom = 20;
-            if (zoom < 0.1) zoom = 0.1;
-            canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
-            opt.e.preventDefault();
-            opt.e.stopPropagation();
+            const delta = opt.e.deltaY
+            let zoom = canvas.getZoom()
+            zoom *= 0.999 ** delta
+            if (zoom > 20) zoom = 20
+            if (zoom < 0.1) zoom = 0.1
+            canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom)
+            opt.e.preventDefault()
+            opt.e.stopPropagation()
             setViewportTransform(zoom, false, null)
         }
     }
@@ -199,27 +202,27 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     const onMouseDown = (o) => {
 
         if (o.e.altKey === true) {
-            canvas.isDragging = true;
-            canvas.selection = false;
-            canvas.lastPosX = o.e.clientX;
-            canvas.lastPosY = o.e.clientY;
+            canvas.isDragging = true
+            canvas.selection = false
+            canvas.lastPosX = o.e.clientX
+            canvas.lastPosY = o.e.clientY
         }
 
         if (currentFigureType === "network" && canDrawLine) {
-            if (canvas.findTarget(o.e)) return;
+            if (canvas.findTarget(o.e)) return
             isDown = true
-            let pointer = canvas.getPointer(o);
-            let points = [pointer.x, pointer.y, pointer.x, pointer.y];
+            let pointer = canvas.getPointer(o)
+            let points = [pointer.x, pointer.y, pointer.x, pointer.y]
             let name = generateId()
             currentName = name
             _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance))
             _line.set({name: name, id: name, objectCaching: false})
-            canvas.add(_line);
-            canvas.moveTo(_line, -2);
+            canvas.add(_line)
+            canvas.moveTo(_line, -2)
             canvas.add(
                 makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, MAP_HEIGHT, mapDistance),
                 makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, MAP_HEIGHT, mapDistance)
-            );
+            )
             canvas.renderAll()
         } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
             if (o.target && o.target.id === pointArray[0].id) {
@@ -243,11 +246,11 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             }
         } else if (!canDrawLine && !canDrawPolygon) {
             if (o.target != null) {
-                let objType = o.target.get('type');
+                let objType = o.target.get('type')
                 if (objType === 'line') {
-                    //canvas.sendBackwards(o.target);
-                    _curX = o.e.clientX;
-                    _curY = o.e.clientY;
+                    //canvas.sendBackwards(o.target)
+                    _curX = o.e.clientX
+                    _curY = o.e.clientY
 
                 }
             }
@@ -257,38 +260,38 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     const onMouseMove = (o) => {
 
         if (canvas.isDragging) {
-            const zoom = canvas.getZoom();
+            const zoom = canvas.getZoom()
             setViewportTransform(zoom, true, o)
-            canvas.requestRenderAll();
-            canvas.lastPosX = o.e.clientX;
-            canvas.lastPosY = o.e.clientY;
+            canvas.requestRenderAll()
+            canvas.lastPosX = o.e.clientX
+            canvas.lastPosY = o.e.clientY
         }
 
         if (currentFigureType === "network") {
-            if (!isDown) return;
-            let pointer = canvas.getPointer(o);
-            _line.set({x2: pointer.x, y2: pointer.y});
+            if (!isDown) return
+            let pointer = canvas.getPointer(o)
+            _line.set({x2: pointer.x, y2: pointer.y})
             _line.circle2.set({left: pointer.x, top: pointer.y})
-            _line.circle2.setCoords();
-            _line.setCoords();
-            connectLineToOtherLine(canvas, o, _line.circle2);
-            canvas.renderAll();
+            _line.circle2.setCoords()
+            _line.setCoords()
+            connectLineToOtherLine(canvas, o, _line.circle2)
+            canvas.renderAll()
         } else if (currentFigureType === "consumer" || currentFigureType === "supplier") {
             if (activeLine && activeLine.class === "line") {
-                let pointer = canvas.getPointer(o);
-                activeLine.set({x2: pointer.x, y2: pointer.y});
+                let pointer = canvas.getPointer(o)
+                activeLine.set({x2: pointer.x, y2: pointer.y})
 
-                let points = activeShape.get("points");
+                let points = activeShape.get("points")
                 points[pointArray.length] = {
                     x: pointer.x,
                     y: pointer.y
                 }
                 activeShape.set({
                     points: points
-                });
-                canvas.renderAll();
+                })
+                canvas.renderAll()
             }
-            //canvas.renderAll();
+            //canvas.renderAll()
         }
     }
 
@@ -318,7 +321,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             line.circle2 = circle
         }
         circle.moveTo(-2)
-        circle.setCoords();
+        circle.setCoords()
         return circle
     }
 
@@ -326,64 +329,64 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         if (!e.e.altKey) {
             if (currentFigureType === "none") {
                 const zoom = canvas.getZoom()
-                let p = e.target;
+                let p = e.target
 
-                limitCanvasBoundary(p, MAP_WIDTH, MAP_HEIGHT);
+                limitCanvasBoundary(p, MAP_WIDTH, MAP_HEIGHT)
 
-                let objType = p.get('type');
+                let objType = p.get('type')
 
                 if (objType === 'circle') {
-                    connectLineToOtherLine(canvas, e, p);
+                    connectLineToOtherLine(canvas, e, p)
 
                 } else if (objType === 'line') {
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
 
-                    limitCanvasBoundary(p.circle1, MAP_WIDTH, MAP_HEIGHT);
-                    limitCanvasBoundary(p.circle2, MAP_WIDTH, MAP_HEIGHT);
+                    limitCanvasBoundary(p.circle1, MAP_WIDTH, MAP_HEIGHT)
+                    limitCanvasBoundary(p.circle2, MAP_WIDTH, MAP_HEIGHT)
 
                     p.circle1.set({
                         'left': (p.circle1.left - _curXm),
                         'top': (p.circle1.top - _curYm)
-                    });
-                    p.circle1.setCoords();
+                    })
+                    p.circle1.setCoords()
 
                     p.circle2.set({
                         'left': (p.circle2.left - _curXm),
                         'top': (p.circle2.top - _curYm)
-                    });
-                    p.circle2.setCoords();
+                    })
+                    p.circle2.setCoords()
 
                     p && p.set({
                         'x1': p.circle1.left,
                         'y1': p.circle1.top
-                    });
+                    })
 
                     p && p.set({
                         'x2': p.circle2.left,
                         'y2': p.circle2.top
-                    });
+                    })
 
-                    p.setCoords();
+                    p.setCoords()
 
-                    _curX = e.e.clientX;
-                    _curY = e.e.clientY;
+                    _curX = e.e.clientX
+                    _curY = e.e.clientY
 
-                    canvas.renderAll();
+                    canvas.renderAll()
                 } else if (objType === 'polygon') {
                     p.circle1.set({
                         left: p.getCenterPoint().x + 2 * (MAP_HEIGHT / mapDistance),
                         top: p.getCenterPoint().y
-                    });
+                    })
 
                     p.circle2.set({
                         left: p.getCenterPoint().x - 2 * (MAP_HEIGHT / mapDistance),
                         top: p.getCenterPoint().y
-                    });
-                    p.circle1.setCoords();
-                    p.circle2.setCoords();
-                    p.setCoords();
-                    canvas.renderAll();
+                    })
+                    p.circle1.setCoords()
+                    p.circle2.setCoords()
+                    p.setCoords()
+                    canvas.renderAll()
                 }
             }
         }

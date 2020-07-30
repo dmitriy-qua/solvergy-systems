@@ -20,11 +20,10 @@ export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNode
             </div>
         </ReflexElement>
 
-        <ReflexSplitter style={{backgroundColor: "#eceff1", width: 4, border: 0, zIndex: 0}}
-        />
+        <ReflexSplitter style={{backgroundColor: "#eceff1", width: 4, border: 0, zIndex: 0}}/>
 
         <ReflexElement className="right-pane"
-                       minSize="230"
+                       minSize="220"
                        maxSize="350"
                        size={treeWidth}
                        onStopResize={({domElement}) => setTreeWidth(domElement.offsetWidth)}
