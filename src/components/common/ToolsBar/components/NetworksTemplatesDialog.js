@@ -42,11 +42,11 @@ export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => 
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 600, height: 550, borderRadius: 2}}
+        style={{width: 550, height: 550, borderRadius: 2}}
         isOpen={dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
-
+            {!formType && <>
             <p className={styles.dialogText}>
                 Templates list:
             </p>
@@ -88,6 +88,7 @@ export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => 
                     Edit
                 </Button>
             </div>
+            </>}
 
             <br/>
 

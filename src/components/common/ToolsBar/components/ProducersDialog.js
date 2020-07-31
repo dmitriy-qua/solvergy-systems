@@ -49,48 +49,49 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
         isOpen={dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
+            {!nameTextFieldType && <>
+                <p className={styles.dialogText}>
+                    Producers list:
+                </p>
+                <SelectList data={producers}
+                            itemComponent={listItem}
+                            onChange={item => setSelectedProducer(item)}
+                            value={selectedProducer}
+                />
+                <br/>
 
-            <p className={styles.dialogText}>
-                Producers list:
-            </p>
-            <SelectList data={producers}
-                        itemComponent={listItem}
-                        onChange={item => setSelectedProducer(item)}
-                        value={selectedProducer}
-            />
-            <br/>
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    <Button intent={Intent.SUCCESS}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                setSelectedProducer(null)
+                                setNameTextFieldType("new")
+                            }}>
+                        Add new
+                    </Button>
 
-            <div style={{display: "flex", justifyContent: "center"}}>
-                <Button intent={Intent.SUCCESS}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            setSelectedProducer(null)
-                            setNameTextFieldType("new")
-                        }}>
-                    Add new
-                </Button>
+                    <Button intent={Intent.DANGER}
+                            disabled={!selectedProducer}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                const newProducersList = producers.filter(producer => producer.id !== selectedProducer.id)
+                                dispatch(setProducers(newProducersList))
+                                setNameTextFieldType(null)
+                                setSelectedProducer(null)
+                            }}>
+                        Delete
+                    </Button>
 
-                <Button intent={Intent.DANGER}
-                        disabled={!selectedProducer}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            const newProducersList = producers.filter(producer => producer.id !== selectedProducer.id)
-                            dispatch(setProducers(newProducersList))
-                            setNameTextFieldType(null)
-                            setSelectedProducer(null)
-                        }}>
-                    Delete
-                </Button>
-
-                <Button intent={Intent.NONE}
-                        disabled={!selectedProducer || nameTextFieldType === "new"}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            setNameTextFieldType("edit")
-                        }}>
-                    Rename
-                </Button>
-            </div>
+                    <Button intent={Intent.NONE}
+                            disabled={!selectedProducer || nameTextFieldType === "new"}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                setNameTextFieldType("edit")
+                            }}>
+                        Rename
+                    </Button>
+                </div>
+            </>}
 
             <br/>
 

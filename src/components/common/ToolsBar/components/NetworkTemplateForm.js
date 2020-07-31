@@ -22,7 +22,13 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
     const dispatch = useDispatch()
 
-    const initialTemplate = {name: "", diameter: "", insulationThickness: ""}
+    const initialTemplate = {
+        name: "",
+        diameter: "",
+        insulationThickness: "",
+        insulationType: "",
+        pipeLayingType: ""
+    }
 
     const [properties, setProperties] = useState(selectedTemplate ? selectedTemplate.properties : initialTemplate)
     const [nameTouched, setNameTouched] = useState(false)
@@ -33,12 +39,18 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
     const handleInsulationTypeSelect = (item) => {
         setSelectedInsulationTypeTouched(true)
-        setSelectedTemplate(item)
+        setProperties(prevState => ({
+            ...prevState,
+            insulationType: item
+        }))
     }
 
     const handlePipeLayingTypeSelect = (item) => {
         setSelectedPipeLayingTypeTouched(true)
-        setSelectedTemplate(item)
+        setProperties(prevState => ({
+            ...prevState,
+            pipeLayingType: item
+        }))
     }
 
     const renderInsulationTypeItem = (item) => {
@@ -66,11 +78,13 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
         setNameTouched(false)
         setDiameterTouched(false)
         setInsulationThicknessTouched(false)
+        setSelectedInsulationTypeTouched(false)
+        setSelectedPipeLayingTypeTouched(false)
     }
 
     return <>
         <ReflexContainer orientation="horizontal">
-            <ReflexElement size={78}>
+            <ReflexElement size={96}>
                 <div style={{paddingRight: 10, paddingLeft: 10}}>
                     <p className={styles.dialogText}>
                         Template name:
@@ -102,7 +116,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                     </FormGroup>
                 </div>
             </ReflexElement>
-            <ReflexElement size={78}>
+            <ReflexElement size={96}>
                 <ReflexContainer orientation="vertical">
                     <ReflexElement className="left-pane" style={{paddingRight: 10, paddingLeft: 10}}>
                         <p className={styles.dialogText}>
@@ -156,31 +170,38 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                                       fill
                                       intent={(!properties.insulationThickness && insulationThicknessTouched) ? Intent.DANGER : Intent.NONE}
                         />
-                        {(!properties.insulationThickness.diameter && insulationThicknessTouched) &&
+                        {(!properties.insulationThickness && insulationThicknessTouched) &&
                         <p className={styles.errorText}>Enter value...</p>}
                     </ReflexElement>
                 </ReflexContainer>
             </ReflexElement>
-            <ReflexElement size={78}>
-                <ReflexContainer orientation="vertical" >
+            <ReflexElement size={96}>
+                <ReflexContainer orientation="vertical">
 
                     <ReflexElement className="left-pane" style={{paddingRight: 10, paddingLeft: 10}}>
                         <p className={styles.dialogText}>
                             Type of network laying:
                         </p>
                         <Select
-                            items={templates}
+                            items={insulationTypes}
                             itemRenderer={renderInsulationTypeItem}
-                            activeItem={selectedTemplate && selectedTemplate.name}
+                            activeItem={properties.insulationType && properties.insulationType.name}
                             className="fullwidth"
-                            popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                            popoverProps={{
+                                minimal: true,
+                                portalClassName: "fullwidth",
+                                popoverClassName: "selectPopover"
+                            }}
                             filterable={false}
                             onItemSelect={handleInsulationTypeSelect}
                         >
                             <Button text={<span
-                                className={styles.selectText}>{selectedTemplate && selectedTemplate.name || "Select template..."}</span>}
+                                className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select template..."}</span>}
                                     rightIcon="caret-down" alignText="left" fill="{true}"/>
                         </Select>
+
+                        {(!properties.insulationType && selectedInsulationTypeTouched) &&
+                        <p className={styles.errorText}>Set insulation type!</p>}
                     </ReflexElement>
 
                     <ReflexElement className="right-pane" style={{paddingRight: 10, paddingLeft: 10}}>
@@ -188,29 +209,37 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                             Network insulation type:
                         </p>
                         <Select
-                            items={templates}
+                            items={pipeLayingTypes}
                             itemRenderer={renderPipeLayingTypeItem}
-                            activeItem={selectedTemplate && selectedTemplate.name}
+                            activeItem={properties.pipeLayingType && properties.pipeLayingType.name}
                             className="fullwidth"
-                            popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                            popoverProps={{
+                                minimal: true,
+                                portalClassName: "fullwidth",
+                                popoverClassName: "selectPopover"
+                            }}
                             filterable={false}
                             onItemSelect={handlePipeLayingTypeSelect}
                         >
                             <Button text={<span
-                                className={styles.selectText}>{selectedTemplate && selectedTemplate.name || "Select template..."}</span>}
+                                className={styles.selectText}>{properties.pipeLayingType && properties.pipeLayingType.name || "Select template..."}</span>}
                                     rightIcon="caret-down" alignText="left" fill="{true}"/>
                         </Select>
+
+                        {(!properties.pipeLayingType && selectedPipeLayingTypeTouched) &&
+                        <p className={styles.errorText}>Set pipe laying type!</p>}
                     </ReflexElement>
                 </ReflexContainer>
             </ReflexElement>
             <ReflexElement>
                 <div style={{display: "flex", justifyContent: "center"}}>
                     <Button intent={Intent.SUCCESS}
+                            disabled={Object.keys(properties).some(k => !properties[k])}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
                                 if (type === "new") {
                                     dispatch(addNewNetworkTemplate({
-                                        properties: {name: properties.name},
+                                        properties,
                                         id: "template_" + generateId()
                                     }))
                                 } else if (type === "edit") {
@@ -240,6 +269,45 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
     </>
 
 }
+
+const insulationTypes = [
+    {
+        name: "Glass wool",
+        thermalConductivityCoefficient: 0.042
+    },
+    {
+        name: "Basalt",
+        thermalConductivityCoefficient: 0.037
+    },
+    {
+        name: "Polystyrene",
+        thermalConductivityCoefficient: 0.04
+    },
+    {
+        name: "Polyurethane foam",
+        thermalConductivityCoefficient: 0.035
+    },
+    {
+        name: "Polyethylene",
+        thermalConductivityCoefficient: 0.03
+    },
+]
+
+const pipeLayingTypes = [
+    {
+        name: "Elevated",
+        type: "elevated"
+    },
+    {
+        name: "Underground (channelless)",
+        type: "channelless"
+    },
+    {
+        name: "Underground (channel)",
+        type: "channel"
+    },
+]
+
 
 const useStyles = createUseStyles({
     text: {
