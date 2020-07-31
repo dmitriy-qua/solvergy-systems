@@ -1,9 +1,9 @@
 import {
     ADD_NEW_CONSUMER, ADD_NEW_NETWORK,
     ADD_NEW_PRODUCER,
-    ADD_NEW_SUPPLIER,
+    ADD_NEW_SUPPLIER, ADD_NEW_TEMPLATE,
     CREATE_NEW_PROJECT,
-    SET_INITIAL_STATE, SET_PRODUCERS
+    SET_INITIAL_STATE, SET_PRODUCERS, SET_TEMPLATES
 } from "../constants/project";
 
 // let initialState = {
@@ -31,7 +31,7 @@ let initialState = {
             producers: [{name: "Main", id: "prod1"}, {name: "NotMain", id: "prod2"}]
         },
         templates: {
-            networks: [{name: "template 1", properties: null}]
+            networks: []
         }
     }
 }
@@ -107,6 +107,31 @@ const project = (state = initialState, action) => {
                     objects: {
                         ...state.project.objects,
                         producers: action.data
+                    }
+                }
+            }
+        case ADD_NEW_TEMPLATE:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    templates: {
+                        ...state.project.templates,
+                        networks: [
+                            ...state.project.templates.networks,
+                            action.data
+                        ]
+                    }
+                }
+            }
+        case SET_TEMPLATES:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    templates: {
+                        ...state.project.templates,
+                        networks: action.data
                     }
                 }
             }

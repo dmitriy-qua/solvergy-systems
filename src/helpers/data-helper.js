@@ -1,3 +1,5 @@
+import {setProducers} from "../redux/actions/project";
+
 const MIN = 99, MAX = 999999
 
 export const generateId = () => {
@@ -18,4 +20,22 @@ export const handleFileInputValueChange = (setValue ,setHasError) => e => {
     if (!e.target.files[0].path) {
         setHasError(true)
     }
+}
+
+export const updateObjectKey = (listToUpdate, selectedItem, value, valueKey) => {
+    const objectIndex = listToUpdate.findIndex(item => item.id === selectedItem.id)
+
+    const updatedObject = {
+        ...listToUpdate[objectIndex],
+        [valueKey]: value
+    }
+
+    const updatedList = [
+        ...listToUpdate.slice(0, objectIndex),
+        updatedObject,
+        ...listToUpdate.slice(objectIndex + 1),
+
+    ]
+
+   return updatedList
 }

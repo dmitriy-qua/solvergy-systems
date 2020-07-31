@@ -2,10 +2,10 @@ import {
     ADD_NEW_CONSUMER,
     ADD_NEW_NETWORK,
     ADD_NEW_PRODUCER,
-    ADD_NEW_SUPPLIER,
+    ADD_NEW_SUPPLIER, ADD_NEW_TEMPLATE,
     CREATE_NEW_PROJECT,
     SET_INITIAL_STATE,
-    SET_PRODUCERS
+    SET_PRODUCERS, SET_TEMPLATES
 } from "../constants/project";
 
 export const setInitialState = () => ({
@@ -39,5 +39,15 @@ export const setProducers = (data) => ({
 
 export const addNewNetwork = (data) => ({
     type: ADD_NEW_NETWORK,
+    data
+})
+
+export const addNewNetworkTemplate = (data) => ({
+    type: ADD_NEW_TEMPLATE,
+    data
+})
+
+export const setNetworkTemplates = (data) => ({
+    type: SET_TEMPLATES,
     data
 })

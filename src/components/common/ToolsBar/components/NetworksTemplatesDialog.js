@@ -3,60 +3,57 @@ import {
     Button,
     Classes,
     Dialog,
-    FormGroup,
-    InputGroup,
     Intent,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
-import {generateId} from "../../../../helpers/data-helper";
-import {addNewProducer, setProducers} from "../../../../redux/actions/project";
+import {setNetworkTemplates} from "../../../../redux/actions/project";
 import {NameTextFieldForm} from "./NameTextFieldForm";
+import {NetworkTemplateForm} from "./NetworkTemplateForm";
 
 
-export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
+export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
-    const producers = useSelector(state => state.project.project.objects.producers)
+    const templates = useSelector(state => state.project.project.templates.networks)
 
     let listItem = ({item}) => {
         return <span className={styles.selectText}>
-            {item.name}
+            {item.properties.name}
         </span>
     }
 
-    const [selectedProducer, setSelectedProducer] = useState(null)
-
-    const [nameTextFieldType, setNameTextFieldType] = useState(null)
+    const [selectedTemplate, setSelectedTemplate] = useState(null)
+    const [formType, setFormType] = useState(null)
 
     return <Dialog
         icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
             setDialogIsOpened(false)
         }}
-        title={<span className={styles.dialogTitle}>Manage producers</span>}
+        title={<span className={styles.dialogTitle}>Manage networks templates</span>}
         autoFocus={false}
         enforceFocus={false}
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 450, height: 550, borderRadius: 2}}
+        style={{width: 600, height: 550, borderRadius: 2}}
         isOpen={dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
 
             <p className={styles.dialogText}>
-                Producers list:
+                Templates list:
             </p>
-            <SelectList data={producers}
+            <SelectList data={templates}
                         itemComponent={listItem}
-                        onChange={item => setSelectedProducer(item)}
-                        value={selectedProducer}
+                        onChange={item => setSelectedTemplate(item)}
+                        value={selectedTemplate}
             />
             <br/>
 
@@ -64,41 +61,41 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
                 <Button intent={Intent.SUCCESS}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                         onClick={() => {
-                            setSelectedProducer(null)
-                            setNameTextFieldType("new")
+                            setSelectedTemplate(null)
+                            setFormType("new")
                         }}>
                     Add new
                 </Button>
 
                 <Button intent={Intent.DANGER}
-                        disabled={!selectedProducer}
+                        disabled={!selectedTemplate}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                         onClick={() => {
-                            const newProducersList = producers.filter(producer => producer.id !== selectedProducer.id)
-                            dispatch(setProducers(newProducersList))
-                            setNameTextFieldType(null)
-                            setSelectedProducer(null)
+                            const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
+                            dispatch(setNetworkTemplates(newTemplatesList))
+                            setFormType(null)
+                            setSelectedTemplate(null)
                         }}>
                     Delete
                 </Button>
 
                 <Button intent={Intent.NONE}
-                        disabled={!selectedProducer || nameTextFieldType === "new"}
+                        disabled={!selectedTemplate}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                         onClick={() => {
-                            setNameTextFieldType("edit")
+                            setFormType("edit")
                         }}>
-                    Rename
+                    Edit
                 </Button>
             </div>
 
             <br/>
 
-            {nameTextFieldType && <NameTextFieldForm setType={setNameTextFieldType}
-                                                     type={nameTextFieldType}
-                                                     producers={producers}
-                                                     selectedProducer={selectedProducer}
-                                                     setSelectedProducer={setSelectedProducer}/>}
+            {formType && <NetworkTemplateForm setType={setFormType}
+                                              type={formType}
+                                              templates={templates}
+                                              selectedTemplate={selectedTemplate}
+                                              setSelectedTemplate={setSelectedTemplate}/>}
 
 
         </div>

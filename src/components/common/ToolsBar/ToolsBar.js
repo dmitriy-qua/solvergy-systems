@@ -36,6 +36,7 @@ import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
 import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
 import {CreateNetworkDialog} from "./components/CreateNetworkDialog";
 import {ProducersDialog} from "./components/ProducersDialog";
+import {NetworksTemplatesDialog} from "./components/NetworksTemplatesDialog";
 
 
 export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject}) => {
@@ -48,6 +49,7 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
     const [createSupplierDialogIsOpened, setCreateSupplierDialogIsOpened] = useState(false)
     const [createNetworkDialogIsOpened, setCreateNetworkDialogIsOpened] = useState(false)
     const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
+    const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -237,13 +239,16 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                             setProducersDialogIsOpened(true)
                         }}/>
                 <ProducersDialog dialogIsOpened={producersDialogIsOpened}
-                                  setDialogIsOpened={setProducersDialogIsOpened}/>
+                                 setDialogIsOpened={setProducersDialogIsOpened}/>
 
                 <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         disabled={!project}
                         onClick={() => {
+                            setNetworksTemplatesDialogIsOpened(true)
                         }}/>
+                <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
+                                         setDialogIsOpened={setNetworksTemplatesDialogIsOpened}/>
 
             </NavbarGroup>}
         </Navbar>

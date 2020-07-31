@@ -7,7 +7,7 @@ import {
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {useDispatch, useSelector} from "react-redux"
-import {generateId} from "../../../../helpers/data-helper";
+import {generateId, updateObjectKey} from "../../../../helpers/data-helper";
 import {addNewProducer, setProducers} from "../../../../redux/actions/project";
 
 
@@ -25,7 +25,7 @@ export const NameTextFieldForm = ({type, setType, producers, selectedProducer, s
         setNameTouched(false)
     }
 
-    return <>
+    return <div style={{paddingRight: 10, paddingLeft: 10}}>
                 <p className={styles.dialogText}>
                     New producer name:
                 </p>
@@ -55,23 +55,10 @@ export const NameTextFieldForm = ({type, setType, producers, selectedProducer, s
                     <Button intent={Intent.SUCCESS}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
-                                if (type === "new") dispatch(addNewProducer({name, id: "producer_" + generateId()}))
-                                if (type === "edit") {
-
-                                    const producerIndex = producers.findIndex(producer => producer.id === selectedProducer.id)
-
-                                    const updatedProducer = {
-                                        ...producers[producerIndex],
-                                        name
-                                    }
-
-                                    const updatedProducers = [
-                                            ...producers.slice(0, producerIndex),
-                                        updatedProducer,
-                                            ...producers.slice(producerIndex + 1),
-
-                                        ]
-
+                                if (type === "new") {
+                                    dispatch(addNewProducer({name, id: "producer_" + generateId()}))
+                                } else if (type === "edit") {
+                                    const updatedProducers = updateObjectKey(producers, selectedProducer, name, "name")
                                     dispatch(setProducers(updatedProducers))
                                 }
 
@@ -93,7 +80,7 @@ export const NameTextFieldForm = ({type, setType, producers, selectedProducer, s
                     </Button>
 
                 </div>
-            </>
+            </div>
 
 }
 
