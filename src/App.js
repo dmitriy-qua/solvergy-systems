@@ -4,7 +4,7 @@ import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {NavigationBar} from "./components/common/Navigation/NavigationBar";
 import {Topology} from "./components/pages/Topology/Topology";
-import {Icon} from "@blueprintjs/core";
+import {Icon, Intent} from "@blueprintjs/core";
 import {FaObjectUngroup} from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {addObjectInTree} from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
@@ -24,6 +24,7 @@ const LEFT_MENU_WIDTH = 130
 //const FOOTER_HEIGHT = 50
 
 let creatingObjectData = null
+let currentToaster = null
 
 export const App = () => {
 
@@ -49,10 +50,16 @@ export const App = () => {
     const [currentPage, setCurrentPage] = useState("topology")
     const [gridIsVisible, setGridIsVisible] = useState(false)
 
+    const [toasts, setToasts] = useState([])
+    const [toaster, setToaster] = useState(null)
+
     const [nodes, setNodes] = useState(initialNodes)
 
     const startCreateObject = (objectType, name, properties) => {
         const id = objectType + "_" + generateId()
+
+        toaster.show({ message: `Start drawing "${objectType}".`, intent: Intent.PRIMARY, timeout: 3000 });
+        currentToaster = toaster
 
         switch (objectType) {
             case "consumer":
@@ -72,6 +79,9 @@ export const App = () => {
     }
 
     const finishCreateObject = (objectType, shape) => {
+
+        currentToaster.show({ message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000 });
+
         switch (objectType) {
             case "consumer":
                 const consumer = new Consumer(creatingObjectData.id, creatingObjectData.name, shape, "manual", creatingObjectData.consumption, "Gcal")
@@ -148,6 +158,8 @@ export const App = () => {
                                               setNodes={setNodes}
                                               setObjectType={setObjectType}
                                               finishCreateObject={finishCreateObject}
+                                              toasts={toasts}
+                                              setToaster={setToaster}
                                     />
                                 </Route>
                                 <Route path="/settings">
@@ -157,7 +169,6 @@ export const App = () => {
                                         </ReflexContainer>
                                     </ReflexElement>
                                 </Route>
-
                             </ReflexElement>
                         </ReflexContainer>
                     </BrowserRouter>

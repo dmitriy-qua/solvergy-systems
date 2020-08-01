@@ -47,57 +47,54 @@ export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => 
     >
         <div className={[Classes.DIALOG_BODY]}>
             {!formType && <>
-            <p className={styles.dialogText}>
-                Templates list:
-            </p>
-            <SelectList data={templates}
-                        itemComponent={listItem}
-                        onChange={item => setSelectedTemplate(item)}
-                        value={selectedTemplate}
-            />
-            <br/>
+                <p className={styles.dialogText}>
+                    Templates list:
+                </p>
+                <SelectList data={templates}
+                            itemComponent={listItem}
+                            onChange={item => setSelectedTemplate(item)}
+                            value={selectedTemplate}
+                />
+                <br/>
 
-            <div style={{display: "flex", justifyContent: "center"}}>
-                <Button intent={Intent.SUCCESS}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            setSelectedTemplate(null)
-                            setFormType("new")
-                        }}>
-                    Add new
-                </Button>
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    <Button intent={Intent.SUCCESS}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                setSelectedTemplate(null)
+                                setFormType("new")
+                            }}>
+                        Add new
+                    </Button>
 
-                <Button intent={Intent.DANGER}
-                        disabled={!selectedTemplate}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
-                            dispatch(setNetworkTemplates(newTemplatesList))
-                            setFormType(null)
-                            setSelectedTemplate(null)
-                        }}>
-                    Delete
-                </Button>
+                    <Button intent={Intent.DANGER}
+                            disabled={!selectedTemplate}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
+                                dispatch(setNetworkTemplates(newTemplatesList))
+                                setFormType(null)
+                                setSelectedTemplate(null)
+                            }}>
+                        Delete
+                    </Button>
 
-                <Button intent={Intent.NONE}
-                        disabled={!selectedTemplate}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                        onClick={() => {
-                            setFormType("edit")
-                        }}>
-                    Edit
-                </Button>
-            </div>
+                    <Button intent={Intent.NONE}
+                            disabled={!selectedTemplate}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                setFormType("edit")
+                            }}>
+                        Edit
+                    </Button>
+                </div>
             </>}
-
-            <br/>
 
             {formType && <NetworkTemplateForm setType={setFormType}
                                               type={formType}
                                               templates={templates}
                                               selectedTemplate={selectedTemplate}
                                               setSelectedTemplate={setSelectedTemplate}/>}
-
 
         </div>
         <div className={Classes.DIALOG_FOOTER}>

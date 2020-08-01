@@ -45,7 +45,7 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
             <MenuItem
                 key={generateId()}
                 onClick={() => handleTemplateSelect(item)}
-                text={item.name}
+                text={item.properties.name}
             />
         );
     }
@@ -97,14 +97,14 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
             <Select
                 items={templates}
                 itemRenderer={renderTemplateItem}
-                activeItem={selectedTemplate && selectedTemplate.name}
+                activeItem={selectedTemplate && selectedTemplate.properties.name}
                 className="fullwidth"
                 popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
                 filterable={false}
                 onItemSelect={handleTemplateSelect}
             >
                 <Button text={<span
-                    className={styles.selectText}>{selectedTemplate && selectedTemplate.name || "Select template..."}</span>}
+                    className={styles.selectText}>{selectedTemplate && selectedTemplate.properties.name || "Select template..."}</span>}
                         rightIcon="caret-down" alignText="left" fill="{true}"/>
             </Select>
 
@@ -116,11 +116,12 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
                 <Button intent={Intent.NONE}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
+                            resetStates()
                             setDialogIsOpened(false)
                         }}>
                     Close
                 </Button>
-                <Button disabled={false}
+                <Button disabled={!name || !selectedTemplate}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={"Create"}
                         intent={Intent.SUCCESS}

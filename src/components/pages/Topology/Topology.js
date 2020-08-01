@@ -2,9 +2,10 @@ import React, {useState} from "react";
 import {ReflexContainer, ReflexElement, ReflexSplitter} from "react-reflex";
 import {Canvas} from "./components/Canvas/Canvas";
 import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
+import {Position, Toast, Toaster} from "@blueprintjs/core";
 
 
-export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject}) => {
+export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject, toasts, setToaster}) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
 
@@ -17,6 +18,9 @@ export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNode
                         setObjectType={setObjectType}
                         finishCreateObject={finishCreateObject}
                 />
+                <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
+                    {toasts.map(toast => <Toast {...toast} />)}
+                </Toaster>
             </div>
         </ReflexElement>
 

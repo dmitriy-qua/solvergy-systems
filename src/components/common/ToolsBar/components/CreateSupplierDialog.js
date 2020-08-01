@@ -120,7 +120,7 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         }}>
                     Close
                 </Button>
-                <Button disabled={false}
+                <Button disabled={!name || !selectedProducer}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={"Create"}
                         intent={Intent.SUCCESS}

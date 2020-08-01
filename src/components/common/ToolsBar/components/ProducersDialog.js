@@ -3,16 +3,13 @@ import {
     Button,
     Classes,
     Dialog,
-    FormGroup,
-    InputGroup,
     Intent,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
-import {generateId} from "../../../../helpers/data-helper";
-import {addNewProducer, setProducers} from "../../../../redux/actions/project";
+import {setProducers} from "../../../../redux/actions/project";
 import {NameTextFieldForm} from "./NameTextFieldForm";
 
 
@@ -31,7 +28,6 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
     }
 
     const [selectedProducer, setSelectedProducer] = useState(null)
-
     const [nameTextFieldType, setNameTextFieldType] = useState(null)
 
     return <Dialog

@@ -120,7 +120,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                           fill
                           intent={(!consumption && consumptionTouched) ? Intent.DANGER : Intent.NONE}
             />
-            {(!consumption && consumptionTouched) && <p className={styles.errorText}>Enter value...</p>}
+            {(!consumption && consumptionTouched) && <span className={styles.errorText}>Enter value...</span>}
             <br/>
             <Switch checked={importFromSolvergyBuildings}
                     label={<div className={styles.switchTextContainer}><span className={styles.dialogText}>Import consumer data from
@@ -130,7 +130,11 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                             width={16} height={16}/>
 
                     </span></div>}
-                    onChange={() => setImportFromSolvergyBuildings(prevState => !prevState)}/>
+                    onChange={() => {
+                        setConsumption("")
+                        setConsumptionTouched(false)
+                        setImportFromSolvergyBuildings(prevState => !prevState)
+                    }}/>
             {importFromSolvergyBuildings && <>
                 <Select
                     items={userData}
@@ -146,8 +150,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                             rightIcon="caret-down" alignText="left" fill="{true}"/>
                 </Select>
 
-                {(!selectedUserDataItem && selectedUserDataItemTouched) &&
-                <p className={styles.errorText}>Set consumer data!</p>}
+                {(!selectedUserDataItem && selectedUserDataItemTouched) && <span className={styles.errorText}>Set consumer data!</span>}
             </>}
         </div>
         <div className={Classes.DIALOG_FOOTER}>
@@ -159,7 +162,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         }}>
                     Close
                 </Button>
-                <Button disabled={false}
+                <Button disabled={!name || !consumption}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={"Create"}
                         intent={Intent.SUCCESS}
@@ -210,7 +213,8 @@ const useStyles = createUseStyles({
         fontWeight: 500,
         color: "#c23030",
         fontSize: 10,
-        fontFamily: "Montserrat"
+        fontFamily: "Montserrat",
+        display: "block"
     },
     dialogTitle: {
         fontWeight: 600,

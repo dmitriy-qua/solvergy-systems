@@ -12,7 +12,6 @@ import {
     addNewNetworkTemplate,
     setNetworkTemplates,
 } from "../../../../redux/actions/project";
-import {ReflexContainer, ReflexElement} from "react-reflex";
 import {Select} from "@blueprintjs/select";
 
 
@@ -82,191 +81,178 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
         setSelectedPipeLayingTypeTouched(false)
     }
 
-    return <>
-        <ReflexContainer orientation="horizontal">
-            <ReflexElement size={96}>
-                <div style={{paddingRight: 10, paddingLeft: 10}}>
-                    <p className={styles.dialogText}>
-                        Template name:
-                    </p>
-                    <FormGroup
-                        disabled={false}
-                        helperText={(!properties.name && nameTouched) && "Please enter template name..."}
-                        intent={(!properties.name && nameTouched) ? Intent.DANGER : Intent.NONE}
-                        labelFor="name"
-                        fill
-                        className={styles.labelText}
-                    >
-                        <InputGroup id="name"
-                                    placeholder="Enter template name"
-                                    className={styles.labelText}
-                                    intent={(!properties.name && nameTouched) ? Intent.DANGER : Intent.NONE}
-                                    value={properties.name}
-                                    type={"text"}
-                                    leftIcon={"clipboard"}
-                                    onChange={e => {
-                                        e.persist()
-                                        setNameTouched(true)
-                                        setProperties(prevState => ({
-                                            ...prevState,
-                                            name: e.target.value
-                                        }))
-                                    }}
-                        />
-                    </FormGroup>
-                </div>
-            </ReflexElement>
-            <ReflexElement size={96}>
-                <ReflexContainer orientation="vertical">
-                    <ReflexElement className="left-pane" style={{paddingRight: 10, paddingLeft: 10}}>
-                        <p className={styles.dialogText}>
-                            Network outer diameter:
-                        </p>
-                        <NumericInput placeholder="Enter value in mm..."
-                                      onValueChange={(value) => {
-                                          setDiameterTouched(true)
-                                          setProperties(prevState => ({
-                                              ...prevState,
-                                              diameter: value
-                                          }))
-                                      }}
-                                      className={styles.inputText}
-                                      allowNumericCharactersOnly
-                                      selectAllOnIncrement
-                                      majorStepSize={10}
-                                      min={0}
-                                      minorStepSize={0.1}
-                                      stepSize={1}
-                                      value={properties.diameter}
-                                      leftIcon="full-circle"
-                                      fill
-                                      intent={(!properties.diameter && diameterTouched) ? Intent.DANGER : Intent.NONE}
-                        />
-                        {(!properties.diameter && diameterTouched) &&
-                        <p className={styles.errorText}>Enter value...</p>}
-                    </ReflexElement>
-
-                    <ReflexElement className="right-pane" style={{paddingRight: 10, paddingLeft: 10}}>
-                        <p className={styles.dialogText}>
-                            Network insulation thickness:
-                        </p>
-                        <NumericInput placeholder="Enter value in mm..."
-                                      onValueChange={(value) => {
-                                          setInsulationThicknessTouched(true)
-                                          setProperties(prevState => ({
-                                              ...prevState,
-                                              insulationThickness: value
-                                          }))
-                                      }}
-                                      className={styles.inputText}
-                                      allowNumericCharactersOnly
-                                      selectAllOnIncrement
-                                      majorStepSize={10}
-                                      min={0}
-                                      minorStepSize={0.1}
-                                      stepSize={1}
-                                      value={properties.insulationThickness}
-                                      leftIcon="ring"
-                                      fill
-                                      intent={(!properties.insulationThickness && insulationThicknessTouched) ? Intent.DANGER : Intent.NONE}
-                        />
-                        {(!properties.insulationThickness && insulationThicknessTouched) &&
-                        <p className={styles.errorText}>Enter value...</p>}
-                    </ReflexElement>
-                </ReflexContainer>
-            </ReflexElement>
-            <ReflexElement size={96}>
-                <ReflexContainer orientation="vertical">
-
-                    <ReflexElement className="left-pane" style={{paddingRight: 10, paddingLeft: 10}}>
-                        <p className={styles.dialogText}>
-                            Type of network laying:
-                        </p>
-                        <Select
-                            items={insulationTypes}
-                            itemRenderer={renderInsulationTypeItem}
-                            activeItem={properties.insulationType && properties.insulationType.name}
-                            className="fullwidth"
-                            popoverProps={{
-                                minimal: true,
-                                portalClassName: "fullwidth",
-                                popoverClassName: "selectPopover"
+    return <div style={{paddingRight: 10, paddingLeft: 10}}>
+        <div>
+            <p className={styles.dialogText}>
+                Template name:
+            </p>
+            <FormGroup
+                disabled={false}
+                helperText={(!properties.name && nameTouched) && "Please enter template name..."}
+                intent={(!properties.name && nameTouched) ? Intent.DANGER : Intent.NONE}
+                labelFor="name"
+                fill
+                className={styles.labelText}
+            >
+                <InputGroup id="name"
+                            placeholder="Enter template name"
+                            className={styles.labelText}
+                            intent={(!properties.name && nameTouched) ? Intent.DANGER : Intent.NONE}
+                            value={properties.name}
+                            type={"text"}
+                            leftIcon={"clipboard"}
+                            onChange={e => {
+                                e.persist()
+                                setNameTouched(true)
+                                setProperties(prevState => ({
+                                    ...prevState,
+                                    name: e.target.value
+                                }))
                             }}
-                            filterable={false}
-                            onItemSelect={handleInsulationTypeSelect}
-                        >
-                            <Button text={<span
-                                className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select template..."}</span>}
-                                    rightIcon="caret-down" alignText="left" fill="{true}"/>
-                        </Select>
+                />
+            </FormGroup>
+        </div>
 
-                        {(!properties.insulationType && selectedInsulationTypeTouched) &&
-                        <p className={styles.errorText}>Set insulation type!</p>}
-                    </ReflexElement>
+        <div style={{display: "flex"}}>
+            <div style={{flex: "50%", paddingRight: 10}}>
+                <p className={styles.dialogText}>
+                    Network outer diameter:
+                </p>
+                <NumericInput placeholder="Enter value in mm..."
+                              onValueChange={(value) => {
+                                  setDiameterTouched(true)
+                                  setProperties(prevState => ({
+                                      ...prevState,
+                                      diameter: value
+                                  }))
+                              }}
+                              className={styles.inputText}
+                              allowNumericCharactersOnly
+                              selectAllOnIncrement
+                              majorStepSize={10}
+                              min={0}
+                              minorStepSize={0.1}
+                              stepSize={1}
+                              value={properties.diameter}
+                              leftIcon="full-circle"
+                              fill
+                              intent={(!properties.diameter && diameterTouched) ? Intent.DANGER : Intent.NONE}
+                />
+                {(!properties.diameter && diameterTouched) && <span className={styles.errorText}>Enter value...</span>}
+            </div>
 
-                    <ReflexElement className="right-pane" style={{paddingRight: 10, paddingLeft: 10}}>
-                        <p className={styles.dialogText}>
-                            Network insulation type:
-                        </p>
-                        <Select
-                            items={pipeLayingTypes}
-                            itemRenderer={renderPipeLayingTypeItem}
-                            activeItem={properties.pipeLayingType && properties.pipeLayingType.name}
-                            className="fullwidth"
-                            popoverProps={{
-                                minimal: true,
-                                portalClassName: "fullwidth",
-                                popoverClassName: "selectPopover"
-                            }}
-                            filterable={false}
-                            onItemSelect={handlePipeLayingTypeSelect}
-                        >
-                            <Button text={<span
-                                className={styles.selectText}>{properties.pipeLayingType && properties.pipeLayingType.name || "Select template..."}</span>}
-                                    rightIcon="caret-down" alignText="left" fill="{true}"/>
-                        </Select>
+            <div style={{flex: "50%", paddingLeft: 10}}>
+                <p className={styles.dialogText}>
+                    Network insulation thickness:
+                </p>
+                <NumericInput placeholder="Enter value in mm..."
+                              onValueChange={(value) => {
+                                  setInsulationThicknessTouched(true)
+                                  setProperties(prevState => ({
+                                      ...prevState,
+                                      insulationThickness: value
+                                  }))
+                              }}
+                              className={styles.inputText}
+                              allowNumericCharactersOnly
+                              selectAllOnIncrement
+                              majorStepSize={10}
+                              min={0}
+                              minorStepSize={0.1}
+                              stepSize={1}
+                              value={properties.insulationThickness}
+                              leftIcon="ring"
+                              fill
+                              intent={(!properties.insulationThickness && insulationThicknessTouched) ? Intent.DANGER : Intent.NONE}
+                />
+                {(!properties.insulationThickness && insulationThicknessTouched) && <span className={styles.errorText}>Enter value...</span>}
+            </div>
 
-                        {(!properties.pipeLayingType && selectedPipeLayingTypeTouched) &&
-                        <p className={styles.errorText}>Set pipe laying type!</p>}
-                    </ReflexElement>
-                </ReflexContainer>
-            </ReflexElement>
-            <ReflexElement>
-                <div style={{display: "flex", justifyContent: "center"}}>
-                    <Button intent={Intent.SUCCESS}
-                            disabled={Object.keys(properties).some(k => !properties[k])}
-                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                            onClick={() => {
-                                if (type === "new") {
-                                    dispatch(addNewNetworkTemplate({
-                                        properties,
-                                        id: "template_" + generateId()
-                                    }))
-                                } else if (type === "edit") {
-                                    const updatedProducers = updateObjectKey(templates, selectedTemplate, properties, "properties")
-                                    dispatch(setNetworkTemplates(updatedProducers))
-                                }
+        </div>
 
-                                resetStates()
-                                setSelectedTemplate(null)
-                                setType(null)
-                            }}>
-                        {type === "new" ? "Create" : "Save"}
-                    </Button>
+        <div style={{display: "flex", marginTop: 12}}>
+            <div style={{flex: "50%", paddingRight: 10}}>
+                <p className={styles.dialogText}>
+                    Type of network laying:
+                </p>
+                <Select
+                    items={insulationTypes}
+                    itemRenderer={renderInsulationTypeItem}
+                    activeItem={properties.insulationType && properties.insulationType.name}
+                    className="fullwidth"
+                    popoverProps={{
+                        minimal: true,
+                        portalClassName: "fullwidth",
+                        popoverClassName: "selectPopover"
+                    }}
+                    filterable={false}
+                    onItemSelect={handleInsulationTypeSelect}
+                >
+                    <Button text={<span
+                        className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select template..."}</span>}
+                            rightIcon="caret-down" alignText="left" fill="{true}"/>
+                </Select>
 
-                    <Button intent={Intent.NONE}
-                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                            onClick={() => {
-                                setSelectedTemplate(null)
-                                resetStates()
-                                setType(null)
-                            }}>
-                        Cancel
-                    </Button>
-                </div>
-            </ReflexElement>
-        </ReflexContainer>
-    </>
+                {(!properties.insulationType && selectedInsulationTypeTouched) && <span className={styles.errorText}>Set insulation type!</span>}
+            </div>
+            <div style={{flex: "50%", paddingLeft: 10}}>
+                <p className={styles.dialogText}>
+                    Network insulation type:
+                </p>
+                <Select
+                    items={pipeLayingTypes}
+                    itemRenderer={renderPipeLayingTypeItem}
+                    activeItem={properties.pipeLayingType && properties.pipeLayingType.name}
+                    className="fullwidth"
+                    popoverProps={{
+                        minimal: true,
+                        portalClassName: "fullwidth",
+                        popoverClassName: "selectPopover"
+                    }}
+                    filterable={false}
+                    onItemSelect={handlePipeLayingTypeSelect}
+                >
+                    <Button text={<span
+                        className={styles.selectText}>{properties.pipeLayingType && properties.pipeLayingType.name || "Select template..."}</span>}
+                            rightIcon="caret-down" alignText="left" fill="{true}"/>
+                </Select>
+
+                {(!properties.pipeLayingType && selectedPipeLayingTypeTouched) && <span className={styles.errorText}>Set pipe laying type!</span>}
+            </div>
+        </div>
+        <div style={{display: "flex", justifyContent: "center", marginTop: 10}}>
+            <Button intent={Intent.SUCCESS}
+                    disabled={Object.keys(properties).some(k => !properties[k])}
+                    style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                    onClick={() => {
+                        if (type === "new") {
+                            dispatch(addNewNetworkTemplate({
+                                properties,
+                                id: "template_" + generateId()
+                            }))
+                        } else if (type === "edit") {
+                            const updatedProducers = updateObjectKey(templates, selectedTemplate, properties, "properties")
+                            dispatch(setNetworkTemplates(updatedProducers))
+                        }
+
+                        resetStates()
+                        setSelectedTemplate(null)
+                        setType(null)
+                    }}>
+                {type === "new" ? "Create" : "Save"}
+            </Button>
+
+            <Button intent={Intent.NONE}
+                    style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                    onClick={() => {
+                        setSelectedTemplate(null)
+                        resetStates()
+                        setType(null)
+                    }}>
+                Cancel
+            </Button>
+        </div>
+    </div>
 
 }
 
@@ -337,7 +323,8 @@ const useStyles = createUseStyles({
         fontWeight: 500,
         color: "#c23030",
         fontSize: 10,
-        fontFamily: "Montserrat"
+        fontFamily: "Montserrat",
+        display: "block"
     },
     dialogTitle: {
         fontWeight: 600,
