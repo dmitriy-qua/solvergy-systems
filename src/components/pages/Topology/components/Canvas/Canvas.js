@@ -29,7 +29,7 @@ let _curX, _curY
 let currentName
 let mapDistance = null
 
-export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject}) => {
+export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, selectObject}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -253,12 +253,20 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         } else if (!canDrawLine && !canDrawPolygon) {
             if (o.target != null) {
                 let objType = o.target.get('type')
+
+                if (objType !== 'circle') {
+                    selectObject(o.target)
+                    canvas.renderAll()
+                }
+
                 if (objType === 'line') {
                     //canvas.sendBackwards(o.target)
                     _curX = o.e.clientX
                     _curY = o.e.clientY
 
                 }
+            } else {
+                selectObject(o.target)
             }
         }
     }

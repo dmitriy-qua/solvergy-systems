@@ -7,7 +7,11 @@ import {Topology} from "./components/pages/Topology/Topology";
 import {Icon, Intent} from "@blueprintjs/core";
 import {FaObjectUngroup} from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
-import {addObjectInTree} from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
+import {
+    addObjectInTree,
+    forEachNode,
+    updateNodeProperty
+} from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
 import {useDispatch, useSelector} from "react-redux";
 import {successLogin} from "./redux/actions/auth";
@@ -25,6 +29,8 @@ const LEFT_MENU_WIDTH = 130
 
 let creatingObjectData = null
 let currentToaster = null
+let selectedObjectUnhook = null
+let nodesUnhook = null
 
 export const App = () => {
 
@@ -55,10 +61,53 @@ export const App = () => {
 
     const [nodes, setNodes] = useState(initialNodes)
 
+    const selectObject = (object) => {
+
+        //unselectAllNodes()
+
+        if (selectedObjectUnhook) {
+            selectedObjectUnhook.set({
+                stroke: "#333333"
+            })
+        }
+
+        if (object) {
+            object.set({
+                stroke: "red"
+            })
+
+        }
+
+        selectedObjectUnhook = object
+        setSelectedObject(object)
+
+        //console.log(selectedObjectUnhook)
+    }
+
+
+    const unselectAllNodes = () => {
+        return forEachNode(nodes, n => (n.isSelected = false))
+    }
+
+    const getSelectedTreeNode = (object) => {
+        const unselectedNodes = unselectAllNodes()
+        return updateNodeProperty(unselectedNodes, object.id, "isSelected", true)
+    }
+
+    useEffect(() => {
+        if (selectedObject) {
+            const newNodes = getSelectedTreeNode(selectedObject)
+            setNodes(newNodes)
+        } else {
+            const newNodes = unselectAllNodes()
+            setNodes(newNodes)
+        }
+    }, [selectedObject])
+
     const startCreateObject = (objectType, name, properties) => {
         const id = objectType + "_" + generateId()
 
-        toaster.show({ message: `Start drawing "${objectType}".`, intent: Intent.PRIMARY, timeout: 3000 });
+        toaster.show({message: `Start drawing "${objectType}".`, intent: Intent.PRIMARY, timeout: 3000});
         currentToaster = toaster
 
         switch (objectType) {
@@ -80,7 +129,9 @@ export const App = () => {
 
     const finishCreateObject = (objectType, shape) => {
 
-        currentToaster.show({ message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000 });
+        currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
+
+        shape.set({id: creatingObjectData.id})
 
         switch (objectType) {
             case "consumer":
@@ -160,6 +211,7 @@ export const App = () => {
                                               finishCreateObject={finishCreateObject}
                                               toasts={toasts}
                                               setToaster={setToaster}
+                                              selectObject={selectObject}
                                     />
                                 </Route>
                                 <Route path="/settings">

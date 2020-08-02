@@ -1,6 +1,7 @@
 import {Tree, Icon} from "@blueprintjs/core";
 import React, {useState} from "react";
 import {createUseStyles} from "react-jss";
+import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
 
 
 export const ObjectsTree = ({nodes, setNodes}) => {
@@ -27,34 +28,6 @@ export const ObjectsTree = ({nodes, setNodes}) => {
     const handleNodeExpand = (nodeData) => {
         const newNodes = updateNodeProperty(nodes, nodeData.id, "isExpanded", true)
         setNodes(newNodes)
-    }
-
-    const updateNodeProperty = (nodes, id, key, value) => {
-        const nodesCopy = [...nodes]
-        nodesCopy.forEach(function recursiveNodeUpdate(node) {
-            if (id === node.id) {
-                node[key] = value
-            }
-
-            Array.isArray(node.childNodes) && node.childNodes.forEach(recursiveNodeUpdate);
-        });
-
-        return nodesCopy
-    }
-
-    const forEachNode = (nodes, callback) => {
-        if (nodes == null) {
-            return;
-        }
-
-        const nodesCopy = [...nodes]
-
-        for (const node of nodesCopy) {
-            callback(node);
-            forEachNode(node.childNodes, callback);
-        }
-
-        return nodesCopy
     }
 
     return <Tree

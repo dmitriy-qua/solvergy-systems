@@ -45,3 +45,31 @@ const getObjectIcon = (objectType) => {
         default: return null
     }
 }
+
+export const updateNodeProperty = (nodes, id, key, value) => {
+    const nodesCopy = [...nodes]
+    nodesCopy.forEach(function recursiveNodeUpdate(node) {
+        if (id === node.id) {
+            node[key] = value
+        }
+
+        Array.isArray(node.childNodes) && node.childNodes.forEach(recursiveNodeUpdate);
+    });
+
+    return nodesCopy
+}
+
+export const forEachNode = (nodes, callback) => {
+    if (nodes == null) {
+        return;
+    }
+
+    const nodesCopy = [...nodes]
+
+    for (const node of nodesCopy) {
+        callback(node);
+        forEachNode(node.childNodes, callback);
+    }
+
+    return nodesCopy
+}

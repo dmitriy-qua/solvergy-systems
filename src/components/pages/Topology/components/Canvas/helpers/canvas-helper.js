@@ -187,6 +187,7 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
         fill: 'blue'
     })
     polygon.circle2 = circle2
+
     canvas.add(circle2)
 
     canvas.moveTo(polygon, 3)
