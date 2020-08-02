@@ -29,11 +29,28 @@ let _curX, _curY
 let currentName
 let mapDistance = null
 
-export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, setSelectedObject}) => {
+export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, setSelectedObject, setObjectToDelete, objectToDelete}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
     }, [map_Distance])
+
+    useEffect(() => {
+        if (objectToDelete) {
+            console.log(canvas.getObjects())
+
+            console.log(objectToDelete)
+            canvas.remove(objectToDelete.circle1)
+            canvas.remove(objectToDelete.circle2)
+            canvas.remove(objectToDelete)
+
+            canvas.renderAll()
+
+            console.log(canvas.getObjects())
+
+            setObjectToDelete(null)
+        }
+    }, [objectToDelete])
 
     const objects = useSelector(state => state.project.project && state.project.project.objects)
 
@@ -91,6 +108,8 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     }, [objectType])
 
     const setMap = () => {
+        canvas.clear()
+
         const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
         fabric.Image.fromURL(imagePath, (img) => {
 
@@ -114,11 +133,11 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             canvas.renderAll()
 
             fitResponsiveCanvas()
-            loadObjects(objects)
+            loadObjects(canvas, objects)
         })
     }
 
-    const loadObjects = (objects) => {
+    const loadObjects = (canvas, objects) => {
         objects.consumers.forEach((item) => {
             canvas.add(item.shape)
             canvas.add(item.shape.circle1)
@@ -140,9 +159,9 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
         })
 
         objects.networks.forEach((item) => {
-            canvas.moveTo(item.shape.circle1, -2)
-            canvas.moveTo(item.shape.circle2, -2)
-            canvas.moveTo(item.shape, -1)
+            // canvas.moveTo(item.shape.circle1, -2)
+            // canvas.moveTo(item.shape.circle2, -2)
+            // canvas.moveTo(item.shape, -1)
 
             canvas.add(item.shape)
             canvas.add(item.shape.circle1)
@@ -222,13 +241,12 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             currentName = name
             _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance))
             _line.set({name: name, id: name, objectCaching: false})
-            canvas.moveTo(_line, -2)
             canvas.add(_line)
-
             canvas.add(
                 makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, MAP_HEIGHT, mapDistance),
                 makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, MAP_HEIGHT, mapDistance)
             )
+            //canvas.moveTo(_line, -2)
             canvas.renderAll()
         } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
             if (o.target && o.target.id === pointArray[0].id) {

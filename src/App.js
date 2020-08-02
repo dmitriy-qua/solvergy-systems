@@ -9,7 +9,7 @@ import {FaObjectUngroup} from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {
     addObjectInTree,
-    forEachNode,
+    forEachNode, forEachNodeFilter,
     updateNodeProperty
 } from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
@@ -17,7 +17,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {successLogin} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
-import {addNewConsumer, addNewNetwork, addNewSupplier} from "./redux/actions/project";
+import {
+    addNewConsumer,
+    addNewNetwork,
+    addNewSupplier,
+    setObjects,
+} from "./redux/actions/project";
 import Supplier from "./objects/supplier";
 import HeatNetwork from "./objects/heat-network";
 import {BrowserRouter, Route} from "react-router-dom";
@@ -62,13 +67,32 @@ export const App = () => {
 
     const [nodes, setNodes] = useState(initialNodes)
 
+    const [objectToDelete, setObjectToDelete] = useState(null)
+
     const getSelectedNode = (node) => {
-        const selectedObjectNode = objects[`${node.objectType}s`].find(object => object.id === node.id)
-        setSelectedObject(selectedObjectNode.shape)
+        if (node.objectType !== undefined) {
+            const objectType = `${node.objectType}s`
+            const selectedObjectNode = objects[objectType].find(object => object.id === node.id)
+            setSelectedObject(selectedObjectNode.shape)
+        } else {
+            setSelectedObject(null)
+        }
+    }
+
+    const deleteObject = (selectedObject) => {
+        const objectType = `${selectedObject.objectType}s`
+        const newObjects = objects[objectType].filter(object => object.id !== selectedObject.id)
+        dispatch(setObjects({objectType, newObjects}))
+
+        const newNodes = forEachNodeFilter(nodes, selectedObject.id)
+
+        setNodes(newNodes)
+        setObjectToDelete(selectedObject)
+        setSelectedObject(null)
     }
 
     const selectObject = (object) => {
-        if (selectedObjectUnhook) {
+        if (selectedObjectUnhook && selectedObjectUnhook.canvas) {
             selectedObjectUnhook.set({
                 stroke: "#333333"
             })
@@ -134,7 +158,7 @@ export const App = () => {
 
         currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
 
-        shape.set({id: creatingObjectData.id})
+        shape.set({id: creatingObjectData.id, objectType})
 
         switch (objectType) {
             case "consumer":
@@ -177,6 +201,7 @@ export const App = () => {
                           project={project}
                           selectedObject={selectedObject}
                           startCreateObject={startCreateObject}
+                          deleteObject={deleteObject}
                 />
             </ReflexElement>
 
@@ -216,6 +241,8 @@ export const App = () => {
                                               setToaster={setToaster}
                                               setSelectedObject={setSelectedObject}
                                               getSelectedNode={getSelectedNode}
+                                              setObjectToDelete={setObjectToDelete}
+                                              objectToDelete={objectToDelete}
                                     />
                                 </Route>
                                 <Route path="/settings">

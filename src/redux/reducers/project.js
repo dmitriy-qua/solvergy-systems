@@ -2,8 +2,8 @@ import {
     ADD_NEW_CONSUMER, ADD_NEW_NETWORK,
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER, ADD_NEW_TEMPLATE,
-    CREATE_NEW_PROJECT,
-    SET_INITIAL_STATE, SET_PRODUCERS, SET_TEMPLATES
+    CREATE_NEW_PROJECT, SET_CONSUMERS,
+    SET_INITIAL_STATE, SET_OBJECTS, SET_PRODUCERS, SET_TEMPLATES
 } from "../constants/project";
 
 // let initialState = {
@@ -55,6 +55,17 @@ const project = (state = initialState, action) => {
             return {
                 ...state,
                 project: action.data
+            }
+        case SET_OBJECTS:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    objects: {
+                        ...state.project.objects,
+                        [action.data.objectType]: action.data.newObjects
+                    }
+                }
             }
         case ADD_NEW_CONSUMER:
             return {

@@ -74,3 +74,23 @@ export const forEachNode = (nodes, callback) => {
 
     return nodesCopy
 }
+
+export const forEachNodeFilter = (nodes, id) => {
+    if (nodes == null) {
+        return;
+    }
+
+    const nodesCopy = [...nodes]
+
+    for (const node of nodesCopy) {
+        if (node.id === id) {
+            const index = nodes.indexOf(node)
+            if (index > -1) {
+                nodes.splice(index, 1);
+            }
+        }
+        forEachNodeFilter(node.childNodes, id);
+    }
+
+    return nodesCopy
+}

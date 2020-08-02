@@ -3,14 +3,20 @@ import {
     ADD_NEW_NETWORK,
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER, ADD_NEW_TEMPLATE,
-    CREATE_NEW_PROJECT,
-    SET_INITIAL_STATE,
-    SET_PRODUCERS, SET_TEMPLATES
+    CREATE_NEW_PROJECT, SET_CONSUMERS,
+    SET_INITIAL_STATE, SET_NETWORKS, SET_OBJECTS,
+    SET_PRODUCERS, SET_SUPPLIERS, SET_TEMPLATES
 } from "../constants/project";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
 })
+
+export const setObjects = (data) => ({
+    type: SET_OBJECTS,
+    data
+})
+
 
 export const createNewProject = (data) => ({
     type: CREATE_NEW_PROJECT,

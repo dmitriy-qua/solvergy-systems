@@ -39,7 +39,7 @@ import {ProducersDialog} from "./components/ProducersDialog";
 import {NetworksTemplatesDialog} from "./components/NetworksTemplatesDialog";
 
 
-export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject}) => {
+export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject, deleteObject}) => {
 
     const styles = useStyles()
 
@@ -98,7 +98,8 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
             <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>}
                       text="Delete object"
                       disabled={!selectedObject || !project}
-                      intent={Intent.DANGER}/>
+                      intent={Intent.DANGER}
+                      onClick={() => deleteObject(selectedObject)}/>
         </Menu>
     }
 
