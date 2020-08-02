@@ -5,7 +5,7 @@ import {ObjectsTree} from "./components/Canvas/components/ObjectsTree";
 import {Position, Toast, Toaster} from "@blueprintjs/core";
 
 
-export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject, toasts, setToaster, selectObject}) => {
+export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNodes, setObjectType, finishCreateObject, toasts, setToaster, setSelectedObject, getSelectedNode}) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
 
@@ -17,7 +17,7 @@ export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNode
                         map_Distance={mapDistance}
                         setObjectType={setObjectType}
                         finishCreateObject={finishCreateObject}
-                        selectObject={selectObject}
+                        setSelectedObject={setSelectedObject}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}
@@ -36,6 +36,8 @@ export const Topology = ({objectType, gridIsVisible, mapDistance, nodes, setNode
             <div className="pane-content">
                 <ObjectsTree nodes={nodes}
                              setNodes={setNodes}
+                             getSelectedNode={getSelectedNode}
+
                 />
             </div>
         </ReflexElement>

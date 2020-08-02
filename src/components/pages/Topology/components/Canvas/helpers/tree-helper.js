@@ -33,6 +33,7 @@ const getNewObjectData = (objectType, objectName, id, producerName) => {
     return {
         id,
         icon: getObjectIcon(objectType),
+        objectType,
         label: producerName ? objectName + " ("+ producerName + ")" : objectName,
     }
 }

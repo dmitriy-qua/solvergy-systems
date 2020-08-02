@@ -25,6 +25,9 @@ function createWindow() {
   mainWindow.on('closed', () => mainWindow = null);
 }
 
+process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false;
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {

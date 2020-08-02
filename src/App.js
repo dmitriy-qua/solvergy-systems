@@ -46,6 +46,7 @@ export const App = () => {
 
 
     const project = useSelector(state => state.project.project)
+    const objects = useSelector(state => state.project.project.objects)
 
     const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
     const consumers = useSelector(state => state.project.project && state.project.project.objects.consumers)
@@ -61,27 +62,27 @@ export const App = () => {
 
     const [nodes, setNodes] = useState(initialNodes)
 
+    const getSelectedNode = (node) => {
+        const selectedObjectNode = objects[`${node.objectType}s`].find(object => object.id === node.id)
+        setSelectedObject(selectedObjectNode.shape)
+    }
+
     const selectObject = (object) => {
-
-        //unselectAllNodes()
-
         if (selectedObjectUnhook) {
             selectedObjectUnhook.set({
                 stroke: "#333333"
             })
+            selectedObjectUnhook.canvas.renderAll()
         }
 
         if (object) {
             object.set({
                 stroke: "red"
             })
-
+            object.canvas.renderAll()
         }
 
         selectedObjectUnhook = object
-        setSelectedObject(object)
-
-        //console.log(selectedObjectUnhook)
     }
 
 
@@ -96,9 +97,11 @@ export const App = () => {
 
     useEffect(() => {
         if (selectedObject) {
+            selectObject(selectedObject)
             const newNodes = getSelectedTreeNode(selectedObject)
             setNodes(newNodes)
         } else {
+            selectObject(null)
             const newNodes = unselectAllNodes()
             setNodes(newNodes)
         }
@@ -211,7 +214,8 @@ export const App = () => {
                                               finishCreateObject={finishCreateObject}
                                               toasts={toasts}
                                               setToaster={setToaster}
-                                              selectObject={selectObject}
+                                              setSelectedObject={setSelectedObject}
+                                              getSelectedNode={getSelectedNode}
                                     />
                                 </Route>
                                 <Route path="/settings">

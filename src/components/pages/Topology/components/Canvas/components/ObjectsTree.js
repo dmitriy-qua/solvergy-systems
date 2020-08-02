@@ -4,19 +4,20 @@ import {createUseStyles} from "react-jss";
 import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
 
 
-export const ObjectsTree = ({nodes, setNodes}) => {
+export const ObjectsTree = ({nodes, setNodes, getSelectedNode}) => {
 
     const styles = useStyles()
 
     const handleNodeClick = (nodeData, _nodePath, e) => {
-        const originallySelected = nodeData.isSelected;
+        //const originallySelected = nodeData.isSelected;
         if (!e.shiftKey) {
             const newNodes = forEachNode(nodes, n => (n.isSelected = false))
             setNodes(newNodes)
         }
 
-        const newNodes = updateNodeProperty(nodes, nodeData.id, "isSelected", originallySelected == null ? true : !originallySelected)
+        const newNodes = updateNodeProperty(nodes, nodeData.id, "isSelected", true)
         setNodes(newNodes)
+        getSelectedNode(nodeData)
     }
 
     const handleNodeCollapse = (nodeData) => {
