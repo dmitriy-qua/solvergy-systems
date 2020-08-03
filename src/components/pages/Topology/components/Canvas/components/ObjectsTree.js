@@ -1,46 +1,27 @@
-import {Tree,
-    Icon,
-    Classes,
-    ContextMenu,
-    Menu,
-    MenuDivider,
-    MenuItem
-} from "@blueprintjs/core";
+import {Tree, ContextMenu} from "@blueprintjs/core";
 import React, {useState} from "react";
 import {createUseStyles} from "react-jss";
 import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
+import {ObjectContextMenu} from "../../../../../common/ContextMenu/ObjectContextMenu";
 
 
-export const ObjectsTree = ({nodes, setNodes, getSelectedNode}) => {
+export const ObjectsTree = ({nodes, setNodes, getSelectedNode, selectedObject, deleteObject, objects}) => {
 
     const styles = useStyles()
 
     const showContextMenu = (nodeData, path, e) => {
-        e.preventDefault();
-        // invoke static API, getting coordinates from mouse event
-        ContextMenu.show(
-            <Menu>
-                <MenuItem icon="search-around" text="Search around..." />
-                <MenuItem icon="search" text="Object viewer" />
-                <MenuItem icon="graph-remove" text="Remove" />
-                <MenuItem icon="group-objects" text="Group" />
-                <MenuDivider />
-                <MenuItem disabled={true} text="Clicked on node" />
-            </Menu>,
-            { left: e.clientX, top: e.clientY }
-        );
+        handleNodeClick(nodeData, path, e, true)
     };
 
-    const handleNodeClick = (nodeData, _nodePath, e) => {
+    const handleNodeClick = (nodeData, _nodePath, e, isRightClick = false) => {
         //const originallySelected = nodeData.isSelected;
-        if (!e.shiftKey) {
-            const newNodes = forEachNode(nodes, n => (n.isSelected = false))
-            setNodes(newNodes)
-        }
 
-        const newNodes = updateNodeProperty(nodes, nodeData.id, "isSelected", true)
+        let newNodes = forEachNode(nodes, n => (n.isSelected = false))
         setNodes(newNodes)
-        getSelectedNode(nodeData)
+
+        newNodes = updateNodeProperty(nodes, nodeData.id, "isSelected", true)
+        setNodes(newNodes)
+        getSelectedNode(nodeData, e, isRightClick)
     }
 
     const handleNodeCollapse = (nodeData) => {

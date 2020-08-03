@@ -14,6 +14,7 @@ import {generateId} from "../../../../../helpers/data-helper"
 import {lineCircle} from "./shapes/circle/config"
 import {useSelector} from "react-redux"
 import ResizeSensor from 'resize-sensor'
+import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMenu";
 
 let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
@@ -29,13 +30,25 @@ let canDrawPolygon = false
 let _curX, _curY
 let currentName
 let mapDistance = null
+let currentObjects = []
+let currentNodes = []
 
 
-export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, setSelectedObject, setObjectToDelete, objectToDelete}) => {
+export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, setSelectedObject, setObjectToDelete, objectToDelete, selectedObject, deleteObject, nodes}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
     }, [map_Distance])
+
+    useEffect(() => {
+        currentNodes = nodes
+    }, [nodes])
+
+    const objects = useSelector(state => state.project.project && state.project.project.objects)
+
+    useEffect(() => {
+        currentObjects = objects
+    }, [objects])
 
     useEffect(() => {
         if (objectToDelete) {
@@ -46,8 +59,6 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             setObjectToDelete(null)
         }
     }, [objectToDelete])
-
-    const objects = useSelector(state => state.project.project && state.project.project.objects)
 
     useEffect(() => {
 
@@ -208,19 +219,21 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
     }
 
     const showContextMenu = (o) => {
-        console.log(o)
         o.e.preventDefault();
-        ContextMenu.show(
-            <Menu>
-                <MenuItem icon="search-around" text="Search around..." />
-                <MenuItem icon="search" text="Object viewer" />
-                <MenuItem icon="graph-remove" text="Remove" />
-                <MenuItem icon="group-objects" text="Group" />
-                <MenuDivider />
-                <MenuItem disabled={true} text="Clicked on node" />
-            </Menu>,
-            { left: o.e.clientX, top: o.e.clientY }
-        );
+
+        if (o.target && (o.target.type === "polygon" || o.target.type === "line")) {
+            setSelectedObject(o.target)
+            canvas.renderAll()
+
+            ContextMenu.show(
+                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects} nodes={currentNodes}/>,
+                { left: o.e.clientX, top: o.e.clientY }
+            );
+        } else {
+            setSelectedObject(o.target)
+            canvas.renderAll()
+        }
+
     }
 
     const onMouseWheel = (opt) => {
@@ -303,6 +316,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
                     }
                 } else {
                     setSelectedObject(o.target)
+                    canvas.renderAll()
                 }
             }
         }

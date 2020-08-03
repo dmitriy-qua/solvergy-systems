@@ -34,6 +34,8 @@ const getNewObjectData = (objectType, objectName, id, producerName) => {
         id,
         icon: getObjectIcon(objectType),
         objectType,
+        childNodes: [],
+        hasCaret: false,
         label: producerName ? objectName + " ("+ producerName + ")" : objectName,
     }
 }
@@ -76,21 +78,20 @@ export const forEachNode = (nodes, callback) => {
 }
 
 export const forEachNodeFilter = (nodes, id) => {
-    if (nodes == null) {
-        return;
+
+    nodes.childNodes = nodes.childNodes
+        .filter((child) => {
+            return child.id !== id
+        })
+        .map((child) => {
+            return forEachNodeFilter(child, id)
+        })
+
+    if (nodes.childNodes.length === 0 && nodes.hasCaret) {
+        nodes.isExpanded = false
+        nodes.disabled = true
     }
 
-    const nodesCopy = [...nodes]
-
-    for (const node of nodesCopy) {
-        if (node.id === id) {
-            const index = nodes.indexOf(node)
-            if (index > -1) {
-                nodes.splice(index, 1);
-            }
-        }
-        forEachNodeFilter(node.childNodes, id);
-    }
-
-    return nodesCopy
+    return nodes;
 }
+

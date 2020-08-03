@@ -4,7 +4,7 @@ import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {NavigationBar} from "./components/common/Navigation/NavigationBar";
 import {Topology} from "./components/pages/Topology/Topology";
-import {Icon, Intent} from "@blueprintjs/core";
+import {ContextMenu, Icon, Intent} from "@blueprintjs/core";
 import {FaObjectUngroup} from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {
@@ -27,6 +27,7 @@ import Supplier from "./objects/supplier";
 import HeatNetwork from "./objects/heat-network";
 import {BrowserRouter, Route} from "react-router-dom";
 import {Redirect} from "react-router";
+import {ObjectContextMenu} from "./components/common/ContextMenu/ObjectContextMenu";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
@@ -51,7 +52,7 @@ export const App = () => {
 
 
     const project = useSelector(state => state.project.project)
-    const objects = useSelector(state => state.project.project.objects)
+    const objects = useSelector(state => state.project.project && state.project.project.objects)
 
     const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
     const consumers = useSelector(state => state.project.project && state.project.project.objects.consumers)
@@ -69,24 +70,33 @@ export const App = () => {
 
     const [objectToDelete, setObjectToDelete] = useState(null)
 
-    const getSelectedNode = (node) => {
+    const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
             const objectType = `${node.objectType}s`
             const selectedObjectNode = objects[objectType].find(object => object.id === node.id)
             setSelectedObject(selectedObjectNode.shape)
+
+            if (isRightClick) {
+                ContextMenu.show(
+                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject} objects={objects} nodes={nodes}/>,
+                    { left: e.clientX, top: e.clientY }
+                );
+            }
+
         } else {
             setSelectedObject(null)
         }
     }
 
-    const deleteObject = (selectedObject) => {
+    const deleteObject = (selectedObject, objects, nodes) => {
+
         const objectType = `${selectedObject.objectType}s`
         const newObjects = objects[objectType].filter(object => object.id !== selectedObject.id)
         dispatch(setObjects({objectType, newObjects}))
 
-        const newNodes = forEachNodeFilter(nodes, selectedObject.id)
+        const newNodes = forEachNodeFilter(nodes[0], selectedObject.id)
 
-        setNodes(newNodes)
+        setNodes([newNodes])
         setObjectToDelete(selectedObject)
         setSelectedObject(null)
     }
@@ -243,6 +253,9 @@ export const App = () => {
                                               getSelectedNode={getSelectedNode}
                                               setObjectToDelete={setObjectToDelete}
                                               objectToDelete={objectToDelete}
+                                              selectedObject={selectedObject}
+                                              deleteObject={deleteObject}
+                                              objects={objects}
                                     />
                                 </Route>
                                 <Route path="/settings">
