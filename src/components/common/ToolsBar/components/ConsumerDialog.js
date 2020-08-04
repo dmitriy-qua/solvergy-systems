@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Button,
     Classes,
@@ -14,14 +14,17 @@ import {createUseStyles} from "react-jss";
 import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
-import {generateId} from "../../../../helpers/data-helper";
+import {generateId, updateObject} from "../../../../helpers/data-helper";
+import {setObjects} from "../../../../redux/actions/project";
 
 
-export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject}) => {
+export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
+
+    const consumers = useSelector(state => state.project.project.objects.consumers)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
@@ -32,6 +35,15 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const [importFromSolvergyBuildings, setImportFromSolvergyBuildings] = useState(false)
     const [selectedUserDataItem, setSelectedUserDataItem] = useState(null)
     const [selectedUserDataItemTouched, setSelectedUserDataItemTouched] = useState(false)
+
+    useEffect(() => {
+        if (dialogIsOpened === "edit" && selectedObject) {
+            const object = consumers.find(object => object.id === selectedObject.id)
+
+            setName(object.name)
+            setConsumption(object.properties.consumption)
+        }
+    }, [selectedObject, dialogIsOpened])
 
     const resetStates = () => {
         setName("")
@@ -115,7 +127,7 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                           min={0}
                           minorStepSize={0.1}
                           stepSize={1}
-                          value={consumption ? consumption : ""}
+                          value={consumption}
                           leftIcon="flow-end"
                           fill
                           intent={(!consumption && consumptionTouched) ? Intent.DANGER : Intent.NONE}
@@ -165,10 +177,16 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                 </Button>
                 <Button disabled={!name || !consumption}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
-                        text={"Create"}
+                        text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
-                            startCreateObject("consumer", name, {consumption})
+                            if (dialogIsOpened === "edit") {
+                                const updatedConsumers = updateObject(consumers, selectedObject.id, {name, properties: {consumption}})
+                                dispatch(setObjects({objectType: "consumers", newObjects: updatedConsumers}))
+                                updateNodeLabel(selectedObject.id, name)
+                            } else if (dialogIsOpened === "new") {
+                                startCreateObject("consumer", name, {consumption})
+                            }
                             resetStates()
                             setDialogIsOpened(null)
                         }}>

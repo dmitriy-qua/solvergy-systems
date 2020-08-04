@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Button,
     Classes,
@@ -12,21 +12,35 @@ import {createUseStyles} from "react-jss";
 import {GiTeePipe} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
-import {generateId} from "../../../../helpers/data-helper";
+import {generateId, updateObject} from "../../../../helpers/data-helper";
+import {setObjects} from "../../../../redux/actions/project";
 
-export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
-    const templates = useSelector(state => state.project.project && state.project.project.templates.networks)
+    const templates = useSelector(state => state.project.project.templates.networks)
+    const networks = useSelector(state => state.project.project.objects.networks)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
 
     const [selectedTemplate, setSelectedTemplate] = useState(null)
     const [selectedTemplateTouched, setSelectedTemplateTouched] = useState(false)
+
+    useEffect(() => {
+        if (dialogIsOpened === "edit" && selectedObject) {
+            const object = networks.find(object => object.id === selectedObject.id)
+
+            setName(object.name)
+
+            const template = templates.find(template => template.id === object.templateId)
+
+            setSelectedTemplate(template)
+        }
+    }, [selectedObject, dialogIsOpened])
 
     const resetStates = () => {
         setName("")
@@ -123,10 +137,17 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                 </Button>
                 <Button disabled={!name || !selectedTemplate}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
-                        text={"Create"}
+                        text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
-                            startCreateObject("network", name, {templateId: selectedTemplate.id})
+                            if (dialogIsOpened === "edit") {
+                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id})
+                                dispatch(setObjects({objectType: "networks", newObjects: updatedNetworks}))
+                                updateNodeLabel(selectedObject.id, name)
+                            } else if (dialogIsOpened === "new") {
+                                startCreateObject("network", name, {templateId: selectedTemplate.id})
+                            }
+
                             resetStates()
                             setDialogIsOpened(null)
                         }}>

@@ -39,3 +39,21 @@ export const updateObjectKey = (listToUpdate, selectedItem, value, valueKey) => 
 
    return updatedList
 }
+
+export const updateObject = (listToUpdate, selectedItemId, newData) => {
+    const objectIndex = listToUpdate.findIndex(item => item.id === selectedItemId)
+
+    const updatedObject = {
+        ...listToUpdate[objectIndex],
+        ...newData
+    }
+
+    const updatedList = [
+        ...listToUpdate.slice(0, objectIndex),
+        updatedObject,
+        ...listToUpdate.slice(objectIndex + 1),
+
+    ]
+
+    return updatedList
+}

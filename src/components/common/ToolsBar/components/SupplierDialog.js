@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Button,
     Classes,
@@ -12,21 +12,34 @@ import {createUseStyles} from "react-jss";
 import {GiFactory} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
-import {generateId} from "../../../../helpers/data-helper";
+import {generateId, updateObject} from "../../../../helpers/data-helper";
+import {setObjects} from "../../../../redux/actions/project";
 
-export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
-
-    const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
+    const suppliers = useSelector(state => state.project.project.objects.suppliers)
+    const producers = useSelector(state => state.project.project.objects.producers)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
 
     const [selectedProducer, setSelectedProducer] = useState(null)
     const [selectedProducerTouched, setSelectedProducerTouched] = useState(false)
+
+    useEffect(() => {
+        if (dialogIsOpened === "edit" && selectedObject) {
+            const object = suppliers.find(object => object.id === selectedObject.id)
+
+            setName(object.name)
+
+            const producer = producers.find(producer => producer.id === object.producerId)
+
+            setSelectedProducer(producer)
+        }
+    }, [selectedObject, dialogIsOpened])
 
     const resetStates = () => {
         setName("")
@@ -123,10 +136,17 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                 </Button>
                 <Button disabled={!name || !selectedProducer}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
-                        text={"Create"}
+                        text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
-                            startCreateObject("supplier", name, {producerId: selectedProducer.id})
+                            if (dialogIsOpened === "edit") {
+                                const updatedSuppliers = updateObject(suppliers, selectedObject.id, {name, producerId: selectedProducer.id})
+                                dispatch(setObjects({objectType: "suppliers", newObjects: updatedSuppliers}))
+                                updateNodeLabel(selectedObject.id, name)
+                            } else if (dialogIsOpened === "new") {
+                                startCreateObject("supplier", name, {producerId: selectedProducer.id})
+                            }
+
                             resetStates()
                             setDialogIsOpened(null)
                         }}>

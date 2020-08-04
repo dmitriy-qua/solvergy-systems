@@ -60,7 +60,6 @@ export const App = () => {
     const objects = useSelector(state => state.project.project && state.project.project.objects)
 
     const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
-    const consumers = useSelector(state => state.project.project && state.project.project.objects.consumers)
     const mapDistance = useSelector(state => state.project.project && state.project.project.map.mapDistance)
 
     const [objectType, setObjectType] = useState("none")
@@ -112,10 +111,7 @@ export const App = () => {
         setSelectedObject(null)
     }
 
-    const editObject = (selectedObject, objects) => {
-        const objectType = `${selectedObject.objectType}s`
-        const object = objects[objectType].find(object => object.id === selectedObject.id)
-
+    const editObject = (selectedObject) => {
         switch (selectedObject.objectType) {
             case "consumer":
                 setConsumerDialogType("edit")
@@ -219,6 +215,11 @@ export const App = () => {
         creatingObjectData = null
     }
 
+    const updateNodeLabel = (id, name) => {
+        const newNodes = updateNodeProperty(nodes, id, "label", name)
+        setNodes(newNodes)
+    }
+
     return <div className="App">
         <ReflexContainer orientation="horizontal" windowResizeAware={true}>
 
@@ -295,17 +296,23 @@ export const App = () => {
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
                                                     dialogIsOpened={consumerDialogType}
-                                                    setDialogIsOpened={setConsumerDialogType}/>
+                                                    setDialogIsOpened={setConsumerDialogType}
+                                                    updateNodeLabel={updateNodeLabel}
+                                    />
 
                                     <SupplierDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
                                                     dialogIsOpened={supplierDialogType}
-                                                    setDialogIsOpened={setSupplierDialogType}/>
+                                                    setDialogIsOpened={setSupplierDialogType}
+                                                    updateNodeLabel={updateNodeLabel}
+                                    />
 
                                     <NetworkDialog startCreateObject={startCreateObject}
                                                    selectedObject={selectedObject}
                                                    dialogIsOpened={networkDialogType}
-                                                   setDialogIsOpened={setNetworkDialogType}/>
+                                                   setDialogIsOpened={setNetworkDialogType}
+                                                   updateNodeLabel={updateNodeLabel}
+                                    />
 
                                     <ProducersDialog dialogIsOpened={producersDialogIsOpened}
                                                      setDialogIsOpened={setProducersDialogIsOpened}/>

@@ -1,7 +1,6 @@
 import React from 'react'
 import {Icon} from "@blueprintjs/core";
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
-import {useSelector} from "react-redux";
 
 export const addObjectInTree = (objectType, objectName, id, producerName = null) => prevState => {
 
