@@ -5,7 +5,7 @@ import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
 import {ObjectContextMenu} from "../../../../../common/ContextMenu/ObjectContextMenu";
 
 
-export const ObjectsTree = ({nodes, setNodes, getSelectedNode, selectedObject, deleteObject, objects}) => {
+export const ObjectsTree = ({nodes, setNodes, getSelectedNode}) => {
 
     const styles = useStyles()
 
@@ -17,9 +17,9 @@ export const ObjectsTree = ({nodes, setNodes, getSelectedNode, selectedObject, d
         //const originallySelected = nodeData.isSelected;
 
         let newNodes = forEachNode(nodes, n => (n.isSelected = false))
-        setNodes(newNodes)
+        //setNodes(newNodes)
 
-        newNodes = updateNodeProperty(nodes, nodeData.id, "isSelected", true)
+        newNodes = updateNodeProperty(newNodes, nodeData.id, "isSelected", true)
         setNodes(newNodes)
         getSelectedNode(nodeData, e, isRightClick)
     }

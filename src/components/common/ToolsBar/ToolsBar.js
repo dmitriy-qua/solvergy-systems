@@ -32,24 +32,30 @@ import {
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
 import {useSelector} from "react-redux";
-import {CreateConsumerDialog} from "./components/CreateConsumerDialog";
-import {CreateSupplierDialog} from "./components/CreateSupplierDialog";
-import {CreateNetworkDialog} from "./components/CreateNetworkDialog";
-import {ProducersDialog} from "./components/ProducersDialog";
-import {NetworksTemplatesDialog} from "./components/NetworksTemplatesDialog";
 
-
-export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible, setGridIsVisible, project, selectedObject, startCreateObject, deleteObject}) => {
+export const ToolsBar = ({
+                             objectType,
+                             setObjectType,
+                             headerHeight,
+                             gridIsVisible,
+                             setGridIsVisible,
+                             project,
+                             selectedObject,
+                             startCreateObject,
+                             deleteObject,
+                             objects,
+                             nodes,
+                             setConsumerDialogType,
+                             setSupplierDialogType,
+                             setNetworkDialogType,
+                             setProducersDialogIsOpened,
+                             setNetworksTemplatesDialogIsOpened,
+                             currentPage
+}) => {
 
     const styles = useStyles()
 
     const isAuth = useSelector(state => state.auth.isAuth)
-
-    const [createConsumerDialogIsOpened, setCreateConsumerDialogIsOpened] = useState(false)
-    const [createSupplierDialogIsOpened, setCreateSupplierDialogIsOpened] = useState(false)
-    const [createNetworkDialogIsOpened, setCreateNetworkDialogIsOpened] = useState(false)
-    const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
-    const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -74,15 +80,15 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Consumer"
-                          onClick={() => setCreateConsumerDialogIsOpened(true)}/>
+                          onClick={() => setConsumerDialogType("new")}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Supplier"
-                          onClick={() => setCreateSupplierDialogIsOpened(true)}/>
+                          onClick={() => setSupplierDialogType("new")}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
                           disabled={!project}
                           text="Network"
-                          onClick={() => setCreateNetworkDialogIsOpened(true)}/>
+                          onClick={() => setNetworkDialogType("new")}/>
             </MenuItem>
 
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
@@ -99,7 +105,7 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                       text="Delete object"
                       disabled={!selectedObject || !project}
                       intent={Intent.DANGER}
-                      onClick={() => deleteObject(selectedObject)}/>
+                      onClick={() => deleteObject(selectedObject, objects, nodes)}/>
         </Menu>
     }
 
@@ -176,7 +182,7 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                 </Popover>
             </NavbarGroup>
 
-            {project && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
+            {project && currentPage === "topology" && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
                 <Button active={gridIsVisible}
                         disabled={!project}
@@ -192,14 +198,12 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                         disabled={!project}
                         onClick={() => {
                             if (objectType !== "consumer") {
-                                setCreateConsumerDialogIsOpened(true)
+                                setConsumerDialogType("new")
                             } else {
                                 setObjectType("none")
                             }
                         }}/>
-                <CreateConsumerDialog startCreateObject={startCreateObject}
-                                      dialogIsOpened={createConsumerDialogIsOpened}
-                                      setDialogIsOpened={setCreateConsumerDialogIsOpened}/>
+
 
                 <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
                         active={objectType === "supplier"}
@@ -207,14 +211,12 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                         disabled={!project}
                         onClick={() => {
                             if (objectType !== "supplier") {
-                                setCreateSupplierDialogIsOpened(true)
+                                setSupplierDialogType("new")
                             } else {
                                 setObjectType("none")
                             }
                         }}/>
-                <CreateSupplierDialog startCreateObject={startCreateObject}
-                                      dialogIsOpened={createSupplierDialogIsOpened}
-                                      setDialogIsOpened={setCreateSupplierDialogIsOpened}/>
+
 
                 <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
                         active={objectType === "network"}
@@ -222,14 +224,12 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                         disabled={!project}
                         onClick={() => {
                             if (objectType !== "network") {
-                                setCreateNetworkDialogIsOpened(true)
+                                setNetworkDialogType("new")
                             } else {
                                 setObjectType("none")
                             }
                         }}/>
-                <CreateNetworkDialog startCreateObject={startCreateObject}
-                                     dialogIsOpened={createNetworkDialogIsOpened}
-                                     setDialogIsOpened={setCreateNetworkDialogIsOpened}/>
+
 
                 <NavbarDivider/>
 
@@ -239,8 +239,7 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                         onClick={() => {
                             setProducersDialogIsOpened(true)
                         }}/>
-                <ProducersDialog dialogIsOpened={producersDialogIsOpened}
-                                 setDialogIsOpened={setProducersDialogIsOpened}/>
+
 
                 <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
@@ -248,8 +247,6 @@ export const ToolsBar = ({objectType, setObjectType, headerHeight, gridIsVisible
                         onClick={() => {
                             setNetworksTemplatesDialogIsOpened(true)
                         }}/>
-                <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
-                                         setDialogIsOpened={setNetworksTemplatesDialogIsOpened}/>
 
             </NavbarGroup>}
         </Navbar>

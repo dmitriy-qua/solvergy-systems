@@ -14,7 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
 import {generateId} from "../../../../helpers/data-helper";
 
-export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
 
     const styles = useStyles()
 
@@ -53,7 +53,7 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
     return <Dialog
         icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
-            setDialogIsOpened(false)
+            setDialogIsOpened(null)
         }}
         title={<span className={styles.dialogTitle}>Create network</span>}
         autoFocus={false}
@@ -62,7 +62,7 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
         canOutsideClickClose={false}
         usePortal={true}
         style={{width: 450, height: 450, borderRadius: 2}}
-        isOpen={dialogIsOpened}
+        isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
 
@@ -117,7 +117,7 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
                             resetStates()
-                            setDialogIsOpened(false)
+                            setDialogIsOpened(null)
                         }}>
                     Close
                 </Button>
@@ -128,7 +128,7 @@ export const CreateNetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCre
                         onClick={() => {
                             startCreateObject("network", name, {templateId: selectedTemplate.id})
                             resetStates()
-                            setDialogIsOpened(false)
+                            setDialogIsOpened(null)
                         }}>
                 </Button>
             </div>

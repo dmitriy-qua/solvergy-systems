@@ -34,7 +34,20 @@ let currentObjects = []
 let currentNodes = []
 
 
-export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, finishCreateObject, setSelectedObject, setObjectToDelete, objectToDelete, selectedObject, deleteObject, nodes}) => {
+export const Canvas = ({
+                           objectType,
+                           gridIsVisible,
+                           map_Distance,
+                           setObjectType,
+                           finishCreateObject,
+                           setSelectedObject,
+                           setObjectToDelete,
+                           objectToDelete,
+                           selectedObject,
+                           deleteObject,
+                           nodes,
+                           editObject
+}) => {
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -226,7 +239,7 @@ export const Canvas = ({objectType, gridIsVisible, map_Distance, setObjectType, 
             canvas.renderAll()
 
             ContextMenu.show(
-                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects} nodes={currentNodes}/>,
+                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects} nodes={currentNodes} editObject={editObject}/>,
                 { left: o.e.clientX, top: o.e.clientY }
             );
         } else {

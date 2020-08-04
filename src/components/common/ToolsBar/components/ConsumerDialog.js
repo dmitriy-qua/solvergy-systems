@@ -17,7 +17,7 @@ import {Select} from "@blueprintjs/select";
 import {generateId} from "../../../../helpers/data-helper";
 
 
-export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject}) => {
 
     const styles = useStyles()
 
@@ -61,7 +61,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
     return <Dialog
         icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
-            setDialogIsOpened(false)
+            setDialogIsOpened(null)
         }}
         title={<span className={styles.dialogTitle}>Create consumer</span>}
         autoFocus={false}
@@ -70,7 +70,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
         canOutsideClickClose={false}
         usePortal={true}
         style={{width: 450, height: 450, borderRadius: 2}}
-        isOpen={dialogIsOpened}
+        isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
 
@@ -158,7 +158,8 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                 <Button intent={Intent.NONE}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
-                            setDialogIsOpened(false)
+                            resetStates()
+                            setDialogIsOpened(null)
                         }}>
                     Close
                 </Button>
@@ -169,7 +170,7 @@ export const CreateConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         onClick={() => {
                             startCreateObject("consumer", name, {consumption})
                             resetStates()
-                            setDialogIsOpened(false)
+                            setDialogIsOpened(null)
                         }}>
                 </Button>
             </div>

@@ -14,7 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
 import {generateId} from "../../../../helpers/data-helper";
 
-export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
+export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject}) => {
 
     const styles = useStyles()
 
@@ -53,7 +53,7 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
     return <Dialog
         icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
-            setDialogIsOpened(false)
+            setDialogIsOpened(null)
         }}
         title={<span className={styles.dialogTitle}>Create supplier</span>}
         autoFocus={false}
@@ -62,7 +62,7 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
         canOutsideClickClose={false}
         usePortal={true}
         style={{width: 450, height: 450, borderRadius: 2}}
-        isOpen={dialogIsOpened}
+        isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
 
@@ -116,7 +116,8 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                 <Button intent={Intent.NONE}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
-                            setDialogIsOpened(false)
+                            resetStates()
+                            setDialogIsOpened(null)
                         }}>
                     Close
                 </Button>
@@ -127,7 +128,7 @@ export const CreateSupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCr
                         onClick={() => {
                             startCreateObject("supplier", name, {producerId: selectedProducer.id})
                             resetStates()
-                            setDialogIsOpened(false)
+                            setDialogIsOpened(null)
                         }}>
                 </Button>
             </div>

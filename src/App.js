@@ -28,6 +28,11 @@ import HeatNetwork from "./objects/heat-network";
 import {BrowserRouter, Route} from "react-router-dom";
 import {Redirect} from "react-router";
 import {ObjectContextMenu} from "./components/common/ContextMenu/ObjectContextMenu";
+import {ConsumerDialog} from "./components/common/ToolsBar/components/ConsumerDialog";
+import {SupplierDialog} from "./components/common/ToolsBar/components/SupplierDialog";
+import {NetworkDialog} from "./components/common/ToolsBar/components/NetworkDialog";
+import {ProducersDialog} from "./components/common/ToolsBar/components/ProducersDialog";
+import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/NetworksTemplatesDialog";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 130
@@ -70,6 +75,12 @@ export const App = () => {
 
     const [objectToDelete, setObjectToDelete] = useState(null)
 
+    const [consumerDialogType, setConsumerDialogType] = useState(null)
+    const [supplierDialogType, setSupplierDialogType] = useState(null)
+    const [networkDialogType, setNetworkDialogType] = useState(null)
+    const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
+    const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
+
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
             const objectType = `${node.objectType}s`
@@ -78,7 +89,7 @@ export const App = () => {
 
             if (isRightClick) {
                 ContextMenu.show(
-                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject} objects={objects} nodes={nodes}/>,
+                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject} objects={objects} nodes={nodes} editObject={editObject}/>,
                     { left: e.clientX, top: e.clientY }
                 );
             }
@@ -101,24 +112,38 @@ export const App = () => {
         setSelectedObject(null)
     }
 
-    const selectObject = (object) => {
+    const editObject = (selectedObject, objects) => {
+        const objectType = `${selectedObject.objectType}s`
+        const object = objects[objectType].find(object => object.id === selectedObject.id)
+
+        switch (selectedObject.objectType) {
+            case "consumer":
+                setConsumerDialogType("edit")
+                break
+            case "supplier":
+                setSupplierDialogType("edit")
+                break
+            case "network":
+                setNetworkDialogType("edit")
+                break
+            default:
+                break
+        }
+    }
+
+    const selectShape = (object) => {
         if (selectedObjectUnhook && selectedObjectUnhook.canvas) {
-            selectedObjectUnhook.set({
-                stroke: "#333333"
-            })
+            selectedObjectUnhook.set({stroke: "#333333"})
             selectedObjectUnhook.canvas.renderAll()
         }
 
         if (object) {
-            object.set({
-                stroke: "red"
-            })
+            object.set({stroke: "red"})
             object.canvas.renderAll()
         }
 
         selectedObjectUnhook = object
     }
-
 
     const unselectAllNodes = () => {
         return forEachNode(nodes, n => (n.isSelected = false))
@@ -131,11 +156,11 @@ export const App = () => {
 
     useEffect(() => {
         if (selectedObject) {
-            selectObject(selectedObject)
+            selectShape(selectedObject)
             const newNodes = getSelectedTreeNode(selectedObject)
             setNodes(newNodes)
         } else {
-            selectObject(null)
+            selectShape(null)
             const newNodes = unselectAllNodes()
             setNodes(newNodes)
         }
@@ -212,6 +237,15 @@ export const App = () => {
                           selectedObject={selectedObject}
                           startCreateObject={startCreateObject}
                           deleteObject={deleteObject}
+                          editObject={editObject}
+                          objects={objects}
+                          nodes={nodes}
+                          setConsumerDialogType={setConsumerDialogType}
+                          setSupplierDialogType={setSupplierDialogType}
+                          setNetworkDialogType={setNetworkDialogType}
+                          setProducersDialogIsOpened={setProducersDialogIsOpened}
+                          setNetworksTemplatesDialogIsOpened={setNetworksTemplatesDialogIsOpened}
+                          currentPage={currentPage}
                 />
             </ReflexElement>
 
@@ -256,7 +290,29 @@ export const App = () => {
                                               selectedObject={selectedObject}
                                               deleteObject={deleteObject}
                                               objects={objects}
+                                              editObject={editObject}
                                     />
+                                    <ConsumerDialog startCreateObject={startCreateObject}
+                                                    selectedObject={selectedObject}
+                                                    dialogIsOpened={consumerDialogType}
+                                                    setDialogIsOpened={setConsumerDialogType}/>
+
+                                    <SupplierDialog startCreateObject={startCreateObject}
+                                                    selectedObject={selectedObject}
+                                                    dialogIsOpened={supplierDialogType}
+                                                    setDialogIsOpened={setSupplierDialogType}/>
+
+                                    <NetworkDialog startCreateObject={startCreateObject}
+                                                   selectedObject={selectedObject}
+                                                   dialogIsOpened={networkDialogType}
+                                                   setDialogIsOpened={setNetworkDialogType}/>
+
+                                    <ProducersDialog dialogIsOpened={producersDialogIsOpened}
+                                                     setDialogIsOpened={setProducersDialogIsOpened}/>
+
+                                    <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
+                                                             setDialogIsOpened={setNetworksTemplatesDialogIsOpened}/>
+
                                 </Route>
                                 <Route path="/settings">
                                     <ReflexElement>
