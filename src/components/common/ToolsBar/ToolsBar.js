@@ -7,7 +7,7 @@ import {
     Navbar,
     NavbarDivider,
     NavbarGroup,
-    Popover
+    Popover, Tooltip, Position
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {
@@ -27,11 +27,14 @@ import {
     FaQuestionCircle,
     FaUsersCog,
     FaBorderAll,
-    FaLayerGroup
+    FaLayerGroup,
+    FaCoins
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
 import {useSelector} from "react-redux";
+
+const TOOLTIP_HOVER_OPEN_DELAY = 750
 
 export const ToolsBar = ({
                              objectType,
@@ -50,8 +53,9 @@ export const ToolsBar = ({
                              setNetworkDialogType,
                              setProducersDialogIsOpened,
                              setNetworksTemplatesDialogIsOpened,
+                             setSuppliersTemplatesDialogIsOpened,
                              currentPage
-}) => {
+                         }) => {
 
     const styles = useStyles()
 
@@ -75,6 +79,13 @@ export const ToolsBar = ({
             <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}/>
             <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}/>
             <MenuDivider/>
+            <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
+                      text="Set grid"
+                      active={gridIsVisible}
+                      disabled={!project}
+                      onClick={() => setGridIsVisible(prevState => !prevState)}
+            />
+            <MenuDivider/>
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
@@ -92,6 +103,8 @@ export const ToolsBar = ({
             </MenuItem>
 
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
+                      disabled={!project}/>
+            <MenuItem icon={<FaCoins size={"1rem"} className={"bp3-icon"}/>} text="Suppliers templates..."
                       disabled={!project}/>
             <MenuItem icon={<FaLayerGroup size={"1rem"} className={"bp3-icon"}/>} text="Networks templates..."
                       disabled={!project}/>
@@ -182,71 +195,199 @@ export const ToolsBar = ({
                 </Popover>
             </NavbarGroup>
 
-            {project && currentPage === "topology" && <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
+            {project && currentPage === "topology" &&
+            <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
-                <Button active={gridIsVisible}
+                <Tooltip content="Undo"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
                         disabled={!project}
-                        icon={<Icon icon={<FaBorderAll size={16} className={"bp3-icon material-icon"}/>}/>}
+                        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
-                        onClick={() => setGridIsVisible(prevState => !prevState)}/>
+                        onClick={() => {
+                        }}/>
+                </Tooltip>
+
+                <Tooltip content="Redo"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
+                        disabled={!project}
+                        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL]}
+                        onClick={() => {
+                        }}/>
+                </Tooltip>
+
+                <NavbarDivider/>
+                <Tooltip content="Set grid"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button active={gridIsVisible}
+                            disabled={!project}
+                            icon={<Icon icon={<FaBorderAll size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL]}
+                            onClick={() => setGridIsVisible(prevState => !prevState)}/>
+                </Tooltip>
 
                 <NavbarDivider/>
 
-                <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
-                        active={objectType === "consumer"}
-                        className={[Classes.MINIMAL]}
-                        disabled={!project}
-                        onClick={() => {
-                            if (objectType !== "consumer") {
-                                setConsumerDialogType("new")
-                            } else {
-                                setObjectType("none")
-                            }
-                        }}/>
+                <Tooltip content="Create consumer"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
+                            active={objectType === "consumer"}
+                            className={[Classes.MINIMAL]}
+                            disabled={!project}
+                            onClick={() => {
+                                if (objectType !== "consumer") {
+                                    setConsumerDialogType("new")
+                                } else {
+                                    setObjectType("none")
+                                }
+                            }}/>
+                </Tooltip>
 
+                <Tooltip content="Create supplier"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
+                            active={objectType === "supplier"}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            disabled={!project}
+                            onClick={() => {
+                                if (objectType !== "supplier") {
+                                    setSupplierDialogType("new")
+                                } else {
+                                    setObjectType("none")
+                                }
+                            }}/>
+                </Tooltip>
 
-                <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
-                        active={objectType === "supplier"}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!project}
-                        onClick={() => {
-                            if (objectType !== "supplier") {
-                                setSupplierDialogType("new")
-                            } else {
-                                setObjectType("none")
-                            }
-                        }}/>
-
-
-                <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
-                        active={objectType === "network"}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!project}
-                        onClick={() => {
-                            if (objectType !== "network") {
-                                setNetworkDialogType("new")
-                            } else {
-                                setObjectType("none")
-                            }
-                        }}/>
+                <Tooltip content="Create heat network"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
+                            active={objectType === "network"}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            disabled={!project}
+                            onClick={() => {
+                                if (objectType !== "network") {
+                                    setNetworkDialogType("new")
+                                } else {
+                                    setObjectType("none")
+                                }
+                            }}/>
+                </Tooltip>
 
 
                 <NavbarDivider/>
 
-                <Button icon={<Icon icon={<FaUsersCog size={16} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!project}
-                        onClick={() => {
-                            setProducersDialogIsOpened(true)
-                        }}/>
+                <Tooltip content="Manage producers"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<FaUsersCog size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            disabled={!project}
+                            onClick={() => {
+                                setProducersDialogIsOpened(true)
+                            }}/>
+                </Tooltip>
 
+                <Tooltip content="Suppliers templates"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM_RIGHT}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<FaCoins size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            disabled={!project}
+                            onClick={() => {
+                                setSuppliersTemplatesDialogIsOpened(true)
+                            }}/>
+                </Tooltip>
 
-                <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        disabled={!project}
-                        onClick={() => {
-                            setNetworksTemplatesDialogIsOpened(true)
-                        }}/>
+                <Tooltip content="Networks templates"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM_RIGHT}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button icon={<Icon icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            disabled={!project}
+                            onClick={() => {
+                                setNetworksTemplatesDialogIsOpened(true)
+                            }}/>
+                </Tooltip>
 
             </NavbarGroup>}
         </Navbar>

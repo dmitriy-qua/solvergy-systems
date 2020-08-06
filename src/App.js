@@ -33,9 +33,10 @@ import {SupplierDialog} from "./components/common/ToolsBar/components/SupplierDi
 import {NetworkDialog} from "./components/common/ToolsBar/components/NetworkDialog";
 import {ProducersDialog} from "./components/common/ToolsBar/components/ProducersDialog";
 import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/NetworksTemplatesDialog";
+import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
 
 const HEADER_HEIGHT = 50
-const LEFT_MENU_WIDTH = 130
+const LEFT_MENU_WIDTH = 140
 //const FOOTER_HEIGHT = 50
 
 let creatingObjectData = null
@@ -79,6 +80,7 @@ export const App = () => {
     const [networkDialogType, setNetworkDialogType] = useState(null)
     const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
     const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
+    const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
 
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
@@ -88,8 +90,9 @@ export const App = () => {
 
             if (isRightClick) {
                 ContextMenu.show(
-                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject} objects={objects} nodes={nodes} editObject={editObject}/>,
-                    { left: e.clientX, top: e.clientY }
+                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject}
+                                       objects={objects} nodes={nodes} editObject={editObject}/>,
+                    {left: e.clientX, top: e.clientY}
                 );
             }
 
@@ -246,6 +249,7 @@ export const App = () => {
                           setNetworkDialogType={setNetworkDialogType}
                           setProducersDialogIsOpened={setProducersDialogIsOpened}
                           setNetworksTemplatesDialogIsOpened={setNetworksTemplatesDialogIsOpened}
+                          setSuppliersTemplatesDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
                           currentPage={currentPage}
                 />
             </ReflexElement>
@@ -319,6 +323,9 @@ export const App = () => {
 
                                     <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
                                                              setDialogIsOpened={setNetworksTemplatesDialogIsOpened}/>
+
+                                    <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
+                                                              setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>
 
                                 </Route>
                                 <Route path="/settings">

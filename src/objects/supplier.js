@@ -1,10 +1,11 @@
 export default class Supplier {
 
-    constructor(id, name, shape, producerId) {
+    constructor(id, name, shape, producerId, templateId) {
         this.id = id
         this.name = name
         this.shape = shape
         this.producerId = producerId
+        this.templateId = templateId
 
         this.properties = {
             energySourceTypeNumber: null,
@@ -60,79 +61,8 @@ export default class Supplier {
 //    toolTipPanel.Children.Add(new TextBlock { Text = "Коефіцієнт: " + capitalCostsCoefficient, Margin = new Thickness(2) })
 //}
 
-    setCoefficients = (capitalCostsCoefficient, salaryForWorkersCoefficient, salaryForAdministrationCoefficient, otherCostsCoefficient) => {
-        this.properties = {
-            ...this.properties,
-            capitalCostsCoefficient,
-            salaryForWorkersCoefficient,
-            salaryForAdministrationCoefficient,
-            otherCostsCoefficient
-        }
-    }
 
-    setEnergySourceCoefficients = () => {
-        switch (this.properties.energySourceTypeNumber) {
-            case 0:
-                this.setCoefficients(0.8, 0.6, 0.6, 0.3)
-                break
-            case 1:
-                this.setCoefficients(0.8, 0.6, 0.6, 0.3)
-                break
-            case 2:
-                this.setCoefficients(0.7, 0.85, 0.6, 0.65)
-                break
-            case 3:
-                this.setCoefficients(0.6, 0.8, 0.6, 0.6)
-                break
-            case 4:
-                this.setCoefficients(0.65, 0.9, 0.55, 0.5)
-                break
-            case 5:
-                this.setCoefficients(0.65, 0.85, 0.6, 0.65)
-                break
-            case 6:
-                this.setCoefficients(0.6, 0.8, 0.6, 0.55)
-                break
-            case 7:
-                this.setCoefficients(0.65, 0.85, 0.6, 0.65)
-                break
-            case 8:
-                this.setCoefficients(0.6, 0.8, 0.6, 0.5)
-                break
-            case 9:
-                this.setCoefficients(0.65, 0.7, 0.6, 0.55)
-                break
-            case 10:
-                this.setCoefficients(0.7, 0.87, 0.6, 0.5)
-                break
-            case 11:
-                this.setCoefficients(0.85, 0.35, 0.6, 0.3)
-                break
-            case 12:
-                this.setCoefficients(0.85, 0.35, 0.6, 0.35)
-                break
-            case 13:
-                this.setCoefficients(0.8, 0.33, 0.6, 0.45)
-                break
-            case 14:
-                this.setCoefficients(0.55, 0.5, 0.6, 0.4)
-                break
-            case 15:
-                this.setCoefficients(0.65, 0.8, 0.6, 0.45)
-                break
-            case 16:
-                this.setCoefficients(0.6, 0.8, 0.6, 0.4)
-                break
-            case 17:
-                this.setCoefficients(0.75, 0.85, 0.65, 0.5)
-                break
-            case 18:
-                this.setCoefficients(0.7, 0.8, 0.65, 0.55)
-                break
-            default:
-                break
-        }
-    }
+
 
     // CalculateSupplierCosts()
     // {

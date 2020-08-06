@@ -3,16 +3,18 @@ import { Icon } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {useHistory} from "react-router-dom";
 
-export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, icon}) => {
+export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, icon, disabled = false}) => {
 
     const styles = useStyles({currentPage, pageName})
 
     const history = useHistory()
 
     return <div onClick={() => {
-        history.push("/" + pageName);
-        setCurrentPage(pageName)
-    }} className={styles.navigationButton}>
+        if (!disabled) {
+            history.push("/" + pageName);
+            setCurrentPage(pageName)
+        }
+    }} className={disabled ? styles.disabledNavigationButton : styles.navigationButton}>
         <Icon icon={icon} iconSize={16}/>
         <span className={styles.text}>{label}</span>
     </div>
@@ -34,6 +36,18 @@ const useStyles = createUseStyles({
             backgroundColor: "#eceff1",
         },
         backgroundColor: props => props.currentPage === props.pageName ? "#eceff1" : "white",
+    },
+    disabledNavigationButton: {
+        width: "100%",
+        color: "#c2c2c2",
+        height: 110,
+        borderRadius: 0,
+        //borderBottom: "1px solid #efefef",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fbfbfb",
     },
     text: {
         marginTop: 12,

@@ -13,6 +13,8 @@ import {
     setNetworkTemplates,
 } from "../../../../redux/actions/project";
 import {Select} from "@blueprintjs/select";
+import {pipeLayingTypes} from "../../../data/pipe-laying-types";
+import {insulationTypes} from "../../../data/insulation-types";
 
 
 export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate, setSelectedTemplate}) => {
@@ -189,7 +191,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                     onItemSelect={handleInsulationTypeSelect}
                 >
                     <Button text={<span
-                        className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select template..."}</span>}
+                        className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select insulation type..."}</span>}
                             rightIcon="caret-down" alignText="left" fill="{true}"/>
                 </Select>
 
@@ -213,7 +215,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                     onItemSelect={handlePipeLayingTypeSelect}
                 >
                     <Button text={<span
-                        className={styles.selectText}>{properties.pipeLayingType && properties.pipeLayingType.name || "Select template..."}</span>}
+                        className={styles.selectText}>{properties.pipeLayingType && properties.pipeLayingType.name || "Select pipe laying type..."}</span>}
                             rightIcon="caret-down" alignText="left" fill="{true}"/>
                 </Select>
 
@@ -228,11 +230,11 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                         if (type === "new") {
                             dispatch(addNewNetworkTemplate({
                                 properties,
-                                id: "template_" + generateId()
+                                id: "network_template_" + generateId()
                             }))
                         } else if (type === "edit") {
-                            const updatedProducers = updateObjectKey(templates, selectedTemplate, properties, "properties")
-                            dispatch(setNetworkTemplates(updatedProducers))
+                            const updatedTemplates = updateObjectKey(templates, selectedTemplate, properties, "properties")
+                            dispatch(setNetworkTemplates(updatedTemplates))
                         }
 
                         resetStates()
@@ -255,45 +257,6 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
     </div>
 
 }
-
-const insulationTypes = [
-    {
-        name: "Glass wool",
-        thermalConductivityCoefficient: 0.042
-    },
-    {
-        name: "Basalt",
-        thermalConductivityCoefficient: 0.037
-    },
-    {
-        name: "Polystyrene",
-        thermalConductivityCoefficient: 0.04
-    },
-    {
-        name: "Polyurethane foam",
-        thermalConductivityCoefficient: 0.035
-    },
-    {
-        name: "Polyethylene",
-        thermalConductivityCoefficient: 0.03
-    },
-]
-
-const pipeLayingTypes = [
-    {
-        name: "Elevated",
-        type: "elevated"
-    },
-    {
-        name: "Underground (channelless)",
-        type: "channelless"
-    },
-    {
-        name: "Underground (channel)",
-        type: "channel"
-    },
-]
-
 
 const useStyles = createUseStyles({
     text: {

@@ -1,9 +1,9 @@
 import {
-    ADD_NEW_CONSUMER, ADD_NEW_NETWORK,
+    ADD_NEW_CONSUMER, ADD_NEW_NETWORK, ADD_NEW_NETWORK_TEMPLATE,
     ADD_NEW_PRODUCER,
-    ADD_NEW_SUPPLIER, ADD_NEW_TEMPLATE,
+    ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE, ADD_NEW_TEMPLATE,
     CREATE_NEW_PROJECT, SET_CONSUMERS,
-    SET_INITIAL_STATE, SET_OBJECTS, SET_PRODUCERS, SET_TEMPLATES
+    SET_INITIAL_STATE, SET_NETWORKS_TEMPLATES, SET_OBJECTS, SET_PRODUCERS, SET_SUPPLIERS_TEMPLATES, SET_TEMPLATES
 } from "../constants/project";
 
 // let initialState = {
@@ -38,13 +38,21 @@ let initialState = {
                     diameter: 100,
                     insulationThickness: 20,
                     insulationType: {
-                        name: "Polyethilen"
+                        name: "Polyethilen",
+                        thermalConductivityCoefficient: 0.04
                     },
                     pipeLayingType: {
-                        name: "Elevated"
+                        name: "Elevated",
+                        type: "elevated"
                     }
                 }
-            }]
+            }],
+            suppliers: [{
+                id: "supplier_template",
+                properties: {
+                    name: "sup"
+                }
+            }],
         }
     }
 }
@@ -134,7 +142,7 @@ const project = (state = initialState, action) => {
                     }
                 }
             }
-        case ADD_NEW_TEMPLATE:
+        case ADD_NEW_NETWORK_TEMPLATE:
             return {
                 ...state,
                 project: {
@@ -148,7 +156,7 @@ const project = (state = initialState, action) => {
                     }
                 }
             }
-        case SET_TEMPLATES:
+        case SET_NETWORKS_TEMPLATES:
             return {
                 ...state,
                 project: {
@@ -156,6 +164,31 @@ const project = (state = initialState, action) => {
                     templates: {
                         ...state.project.templates,
                         networks: action.data
+                    }
+                }
+            }
+        case ADD_NEW_SUPPLIER_TEMPLATE:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    templates: {
+                        ...state.project.templates,
+                        suppliers: [
+                            ...state.project.templates.suppliers,
+                            action.data
+                        ]
+                    }
+                }
+            }
+        case SET_SUPPLIERS_TEMPLATES:
+            return {
+                ...state,
+                project: {
+                    ...state.project,
+                    templates: {
+                        ...state.project.templates,
+                        suppliers: action.data
                     }
                 }
             }
