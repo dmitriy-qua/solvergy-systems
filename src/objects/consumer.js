@@ -1,10 +1,10 @@
 export default class Consumer {
 
-    constructor(id, name, shape, type, consumption, unit) {
+    constructor(id, name, shape, consumption, importFromSolvergyBuildings, buildingsResult) {
         this.id = id
         this.name = name
         this.shape = shape
-        this.properties = {type, consumption, unit}
+        this.properties = {importFromSolvergyBuildings, consumption, buildingsResult}
     }
 
     updateName = (name) => {

@@ -76,9 +76,11 @@ export const ToolsBar = ({
 
     const EditMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}/>
-            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}/>
-            <MenuDivider/>
+
+            {/*<MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}/>*/}
+            {/*<MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}/>*/}
+            {/*<MenuDivider/>*/}
+
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
                       text="Set grid"
                       active={gridIsVisible}
@@ -101,6 +103,8 @@ export const ToolsBar = ({
                           text="Network"
                           onClick={() => setNetworkDialogType("new")}/>
             </MenuItem>
+
+            <MenuDivider/>
 
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
                       disabled={!project}/>
@@ -198,45 +202,46 @@ export const ToolsBar = ({
             {project && currentPage === "topology" &&
             <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
-                <Tooltip content="Undo"
-                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
-                         position={Position.BOTTOM}
-                         usePortal={true}
-                         modifiers={{
-                             arrow: {enabled: true},
-                             flip: {enabled: false},
-                             keepTogether: {enabled: true},
-                             preventOverflow: {enabled: false},
-                         }}
-                >
-                    <Button
-                        disabled={!project}
-                        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL]}
-                        onClick={() => {
-                        }}/>
-                </Tooltip>
+                {/*<Tooltip content="Undo"*/}
+                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
+                {/*         position={Position.BOTTOM}*/}
+                {/*         usePortal={true}*/}
+                {/*         modifiers={{*/}
+                {/*             arrow: {enabled: true},*/}
+                {/*             flip: {enabled: false},*/}
+                {/*             keepTogether: {enabled: true},*/}
+                {/*             preventOverflow: {enabled: false},*/}
+                {/*         }}*/}
+                {/*>*/}
+                {/*    <Button*/}
+                {/*        disabled={!project}*/}
+                {/*        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
+                {/*        className={[Classes.MINIMAL]}*/}
+                {/*        onClick={() => {*/}
+                {/*        }}/>*/}
+                {/*</Tooltip>*/}
 
-                <Tooltip content="Redo"
-                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
-                         position={Position.BOTTOM}
-                         usePortal={true}
-                         modifiers={{
-                             arrow: {enabled: true},
-                             flip: {enabled: false},
-                             keepTogether: {enabled: true},
-                             preventOverflow: {enabled: false},
-                         }}
-                >
-                    <Button
-                        disabled={!project}
-                        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL]}
-                        onClick={() => {
-                        }}/>
-                </Tooltip>
+                {/*<Tooltip content="Redo"*/}
+                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
+                {/*         position={Position.BOTTOM}*/}
+                {/*         usePortal={true}*/}
+                {/*         modifiers={{*/}
+                {/*             arrow: {enabled: true},*/}
+                {/*             flip: {enabled: false},*/}
+                {/*             keepTogether: {enabled: true},*/}
+                {/*             preventOverflow: {enabled: false},*/}
+                {/*         }}*/}
+                {/*>*/}
+                {/*    <Button*/}
+                {/*        disabled={!project}*/}
+                {/*        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
+                {/*        className={[Classes.MINIMAL]}*/}
+                {/*        onClick={() => {*/}
+                {/*        }}/>*/}
+                {/*</Tooltip>*/}
 
-                <NavbarDivider/>
+                {/*<NavbarDivider/>*/}
+
                 <Tooltip content="Set grid"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}

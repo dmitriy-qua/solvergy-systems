@@ -19,7 +19,7 @@ import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMen
 let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
 let canvas, zoom = 1
-let _line, isDown, currentFigureType
+let _line, isDown, currentFigureType, currentCreatingObjectData
 let polygonMode = true
 let pointArray = []
 let lineArray = []
@@ -46,7 +46,8 @@ export const Canvas = ({
                            selectedObject,
                            deleteObject,
                            nodes,
-                           editObject
+                           editObject,
+                           creatingObjectData
 }) => {
 
     useEffect(() => {
@@ -111,6 +112,7 @@ export const Canvas = ({
 
     useEffect(() => {
         currentFigureType = objectType
+        currentCreatingObjectData = creatingObjectData
         if (objectType === "consumer" || objectType === "supplier") {
             canvas.defaultCursor = 'crosshair'
             canDrawPolygon = true
@@ -282,13 +284,12 @@ export const Canvas = ({
                 let pointer = canvas.getPointer(o)
                 let points = [pointer.x, pointer.y, pointer.x, pointer.y]
                 let name = generateId()
-                currentName = name
-                _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance))
-                _line.set({name: name, id: name, objectCaching: false})
+                _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType))
+                _line.set({id: name, objectCaching: false})
                 canvas.add(_line)
                 canvas.add(
-                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', name, MAP_HEIGHT, mapDistance),
-                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', currentName, MAP_HEIGHT, mapDistance)
+                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType),
+                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType)
                 )
                 //canvas.moveTo(_line, -2)
                 canvas.renderAll()
@@ -393,9 +394,9 @@ export const Canvas = ({
 
     }
 
-    const makeCircle = (left, top, line, type) => {
+    const makeCircle = (left, top, line, type, MAP_HEIGHT, mapDistance, networkType) => {
         const id = generateId()
-        const circle = new fabric.Circle(lineCircle(left, top, type, id, MAP_HEIGHT, mapDistance))
+        const circle = new fabric.Circle(lineCircle(left, top, type, id, MAP_HEIGHT, mapDistance, networkType))
         circle.line = line
         if (type === 'start') {
             line.circle1 = circle

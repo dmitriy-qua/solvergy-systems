@@ -6,7 +6,7 @@ import {
     FormGroup,
     InputGroup,
     Intent,
-    MenuItem,
+    MenuItem, NumericInput,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {GiFactory} from 'react-icons/gi';
@@ -22,35 +22,54 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const dispatch = useDispatch()
     const suppliers = useSelector(state => state.project.project.objects.suppliers)
     const producers = useSelector(state => state.project.project.objects.producers)
+    const templates = useSelector(state => state.project.project.templates.suppliers)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
 
+    const [capacity, setCapacity] = useState("")
+    const [capacityTouched, setCapacityTouched] = useState(false)
+
     const [selectedProducer, setSelectedProducer] = useState(null)
     const [selectedProducerTouched, setSelectedProducerTouched] = useState(false)
+
+    const [selectedTemplate, setSelectedTemplate] = useState(null)
+    const [selectedTemplateTouched, setSelectedTemplateTouched] = useState(false)
 
     useEffect(() => {
         if (dialogIsOpened === "edit" && selectedObject) {
             const object = suppliers.find(object => object.id === selectedObject.id)
 
             setName(object.name)
+            setCapacity(object.capacity)
 
             const producer = producers.find(producer => producer.id === object.producerId)
-
             setSelectedProducer(producer)
+
+            const template = templates.find(template => template.id === object.templateId)
+            setSelectedTemplate(template)
         }
     }, [selectedObject, dialogIsOpened])
 
     const resetStates = () => {
         setName("")
+        setCapacity("")
+        setCapacityTouched(false)
         setNameTouched(false)
         setSelectedProducer(null)
+        setSelectedTemplate(null)
         setSelectedProducerTouched(false)
+        setSelectedTemplateTouched(false)
     }
 
     const handleProducerSelect = (item) => {
         setSelectedProducerTouched(true)
         setSelectedProducer(item)
+    }
+
+    const handleTemplateSelect = (item) => {
+        setSelectedTemplateTouched(true)
+        setSelectedTemplate(item)
     }
 
     const renderProducerItem = (item) => {
@@ -59,6 +78,16 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                 key={generateId()}
                 onClick={() => handleProducerSelect(item)}
                 text={item.name}
+            />
+        );
+    }
+
+    const renderTemplateItem = (item) => {
+        return (
+            <MenuItem
+                key={generateId()}
+                onClick={() => handleTemplateSelect(item)}
+                text={item.properties.name}
             />
         );
     }
@@ -74,7 +103,7 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 450, height: 450, borderRadius: 2}}
+        style={{width: 450, height: 550, borderRadius: 2}}
         isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
@@ -105,6 +134,28 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
             </FormGroup>
 
             <p className={styles.dialogText}>
+                Station capacity, MW::
+            </p>
+            <NumericInput placeholder="Enter value in MW..."
+                          onValueChange={(value) => {
+                              setCapacityTouched(true)
+                              setCapacity(value)
+                          }}
+                          className={styles.inputText}
+                          allowNumericCharactersOnly
+                          selectAllOnIncrement
+                          majorStepSize={10}
+                          min={0}
+                          minorStepSize={0.1}
+                          stepSize={1}
+                          value={capacity}
+                          leftIcon="flow-linear"
+                          fill
+                          intent={(!capacity && capacityTouched) ? Intent.DANGER : Intent.NONE}
+            />
+            {(!capacity && capacityTouched) && <span className={styles.errorText}>Enter value...</span>}
+
+            <p className={styles.dialogText} style={{marginTop: 14}}>
                 Select producer:
             </p>
             <Select
@@ -123,6 +174,26 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
 
             {(!selectedProducer && selectedProducerTouched) &&
             <p className={styles.errorText}>Set producer!</p>}
+
+            <p className={styles.dialogText} style={{marginTop: 14}}>
+                Select supplier template:
+            </p>
+            <Select
+                items={templates}
+                itemRenderer={renderTemplateItem}
+                activeItem={selectedTemplate && selectedTemplate.properties.name}
+                className="fullwidth"
+                popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                filterable={false}
+                onItemSelect={handleTemplateSelect}
+            >
+                <Button text={<span
+                    className={styles.selectText}>{selectedTemplate && selectedTemplate.properties.name || "Select template..."}</span>}
+                        rightIcon="caret-down" alignText="left" fill="{true}"/>
+            </Select>
+
+            {(!selectedTemplate && selectedTemplateTouched) &&
+            <p className={styles.errorText}>Set template!</p>}
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -134,17 +205,17 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                         }}>
                     Close
                 </Button>
-                <Button disabled={!name || !selectedProducer}
+                <Button disabled={!name || !selectedProducer || !selectedTemplate || !capacity}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             if (dialogIsOpened === "edit") {
-                                const updatedSuppliers = updateObject(suppliers, selectedObject.id, {name, producerId: selectedProducer.id})
+                                const updatedSuppliers = updateObject(suppliers, selectedObject.id, {name, producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})
                                 dispatch(setObjects({objectType: "suppliers", newObjects: updatedSuppliers}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
-                                startCreateObject("supplier", name, {producerId: selectedProducer.id})
+                                startCreateObject("supplier", name, {producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})
                             }
 
                             resetStates()
@@ -188,7 +259,8 @@ const useStyles = createUseStyles({
         fontWeight: 500,
         color: "#c23030",
         fontSize: 10,
-        fontFamily: "Montserrat"
+        fontFamily: "Montserrat",
+        display: "block"
     },
     dialogTitle: {
         fontWeight: 600,

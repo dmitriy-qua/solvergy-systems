@@ -36,7 +36,7 @@ import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/N
 import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
 
 const HEADER_HEIGHT = 50
-const LEFT_MENU_WIDTH = 140
+const LEFT_MENU_WIDTH = 134
 //const FOOTER_HEIGHT = 50
 
 let creatingObjectData = null
@@ -132,12 +132,21 @@ export const App = () => {
 
     const selectShape = (object) => {
         if (selectedObjectUnhook && selectedObjectUnhook.canvas) {
-            selectedObjectUnhook.set({stroke: "#333333"})
+            if (selectedObjectUnhook.objectType === "network") {
+                if (selectedObjectUnhook.networkType === "supply") {
+                    selectedObjectUnhook.set({stroke: "red"})
+                } else {
+                    selectedObjectUnhook.set({stroke: "blue"})
+                }
+            } else {
+                selectedObjectUnhook.set({stroke: "#333333"})
+            }
+
             selectedObjectUnhook.canvas.renderAll()
         }
 
         if (object) {
-            object.set({stroke: "red"})
+            object.set({stroke: "green"})
             object.canvas.renderAll()
         }
 
@@ -173,13 +182,13 @@ export const App = () => {
 
         switch (objectType) {
             case "consumer":
-                creatingObjectData = {id, name, consumption: properties.consumption}
+                creatingObjectData = {id, name, consumption: properties.consumption, buildingsResult: properties.buildingsResult, importFromSolvergyBuildings: properties.importFromSolvergyBuildings}
                 break
             case "supplier":
-                creatingObjectData = {id, name, producerId: properties.producerId}
+                creatingObjectData = {id, name, producerId: properties.producerId, templateId: properties.templateId, capacity: properties.capacity}
                 break
             case "network":
-                creatingObjectData = {id, name, templateId: properties.templateId}
+                creatingObjectData = {id, name, templateId: properties.templateId, networkType: properties.networkType}
                 break
             default:
                 break
@@ -192,22 +201,42 @@ export const App = () => {
 
         currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
 
-        shape.set({id: creatingObjectData.id, objectType})
+        shape.set({id: creatingObjectData.id, objectType, networkType: creatingObjectData.networkType || null})
 
         switch (objectType) {
             case "consumer":
-                const consumer = new Consumer(creatingObjectData.id, creatingObjectData.name, shape, "manual", creatingObjectData.consumption, "Gcal")
+                const consumer = new Consumer(
+                    creatingObjectData.id,
+                    creatingObjectData.name,
+                    shape,
+                    creatingObjectData.consumption,
+                    creatingObjectData.importFromSolvergyBuildings,
+                    creatingObjectData.buildingsResult
+                )
                 dispatch(addNewConsumer(consumer))
                 setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
                 break
             case "supplier":
-                const supplier = new Supplier(creatingObjectData.id, creatingObjectData.name, shape, creatingObjectData.producerId)
+                const supplier = new Supplier(
+                    creatingObjectData.id,
+                    creatingObjectData.name,
+                    shape,
+                    creatingObjectData.capacity,
+                    creatingObjectData.producerId,
+                    creatingObjectData.templateId
+                )
                 const producer = producers.find(producer => producer.id === creatingObjectData.producerId)
                 dispatch(addNewSupplier(supplier))
                 setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, producer.name))
                 break
             case "network":
-                const network = new HeatNetwork(creatingObjectData.id, creatingObjectData.name, shape, creatingObjectData.templateId)
+                const network = new HeatNetwork(
+                    creatingObjectData.id,
+                    creatingObjectData.name,
+                    shape,
+                    creatingObjectData.templateId,
+                    creatingObjectData.networkType
+                )
                 dispatch(addNewNetwork(network))
                 setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
                 break
@@ -296,6 +325,7 @@ export const App = () => {
                                               deleteObject={deleteObject}
                                               objects={objects}
                                               editObject={editObject}
+                                              creatingObjectData={creatingObjectData}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}

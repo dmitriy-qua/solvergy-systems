@@ -39,7 +39,7 @@ const useStyles = createUseStyles({
     },
     disabledNavigationButton: {
         width: "100%",
-        color: "#c2c2c2",
+        color: "#b2b2b2",
         height: 110,
         borderRadius: 0,
         //borderBottom: "1px solid #efefef",

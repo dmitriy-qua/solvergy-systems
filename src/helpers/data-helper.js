@@ -57,3 +57,26 @@ export const updateObject = (listToUpdate, selectedItemId, newData) => {
 
     return updatedList
 }
+
+export const getLocationString = (city) => {
+    if (city) {
+
+        let locationString = ""
+
+        if (city[0].city) {
+            locationString += city[0].city + ", "
+        }
+
+        if (city[0].street) {
+            locationString += city[0].street + ", "
+        }
+
+        if (city[0].name) {
+            locationString += city[0].name
+        }
+
+        return locationString
+    } else {
+        return "Set location..."
+    }
+}

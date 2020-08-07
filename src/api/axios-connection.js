@@ -21,15 +21,7 @@ export const createAxiosInstance = async (withHeader = false, contentType = 'app
 };
 
 export const getToken = async () => {
-    let user = await localStorage.getItem('user').then(user => {
-        if (user) {
-            return JSON.parse(user).data
-        }
-    })
-
-    if (user && user.token) {
-        return user.token;
-    } else {
-        return "";
-    }
+    let user = await localStorage.getItem('user')
+    const userData = JSON.parse(user).data
+    return (userData && userData.token) ? userData.token : ''
 }

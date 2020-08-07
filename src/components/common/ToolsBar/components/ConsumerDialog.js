@@ -7,15 +7,16 @@ import {
     InputGroup,
     Intent,
     MenuItem,
-    NumericInput,
+    NumericInput, Spinner,
     Switch
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
-import {generateId, updateObject} from "../../../../helpers/data-helper";
+import {generateId, getLocationString, updateObject} from "../../../../helpers/data-helper";
 import {setObjects} from "../../../../redux/actions/project";
+import {getBuildingsResults} from "../../../../redux/actions/buildings";
 
 
 export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
@@ -25,6 +26,8 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const dispatch = useDispatch()
 
     const consumers = useSelector(state => state.project.project.objects.consumers)
+    const buildingsResults = useSelector(state => state.buildings.results)
+    const buildingsResultsIsLoading = useSelector(state => state.buildings.isLoading)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
@@ -60,12 +63,16 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
         setSelectedUserDataItem(item)
     }
 
+    const getBuildingsResultName = (selectedUserDataItem) => {
+       return `${selectedUserDataItem.projectInfo.name} (${getLocationString(selectedUserDataItem.projectInfo.city)})`
+    }
+
     const renderUserDataItem = (item) => {
         return (
             <MenuItem
                 key={generateId()}
                 onClick={() => handleUserDataElementSelect(item)}
-                text={item}
+                text={getBuildingsResultName(item)}
             />
         );
     }
@@ -135,7 +142,8 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
             {(!consumption && consumptionTouched) && <span className={styles.errorText}>Enter value...</span>}
             <br/>
             <Switch checked={importFromSolvergyBuildings}
-                    label={<div className={styles.switchTextContainer}><span className={styles.dialogText}>Import consumer data from
+                    label={<div className={styles.switchTextContainer}>
+                        <span className={styles.dialogText}>Import consumer data from
                     <span className={styles.bold}> Solvergy: Buildings </span><img
                             className={styles.solvergyBuildingsIcon}
                             src={require("./../../../../assets/images/solvergy-buildings-logo-sm.png")}
@@ -143,27 +151,38 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
 
                     </span></div>}
                     onChange={() => {
-                        setConsumption("")
-                        setConsumptionTouched(false)
+                        if (!importFromSolvergyBuildings) {
+                            dispatch(getBuildingsResults())
+                            setConsumption("")
+                            setConsumptionTouched(false)
+                        } else {
+                            setSelectedUserDataItem(null)
+                            setSelectedUserDataItemTouched(false)
+                        }
+
                         setImportFromSolvergyBuildings(prevState => !prevState)
                     }}/>
-            {importFromSolvergyBuildings && <>
-                <Select
-                    items={userData}
-                    itemRenderer={renderUserDataItem}
-                    activeItem={selectedUserDataItem}
-                    className="fullwidth"
-                    popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
-                    filterable={false}
-                    onItemSelect={handleUserDataElementSelect}
-                >
-                    <Button text={<span
-                        className={styles.selectText}>{selectedUserDataItem || "Select consumer data..."}</span>}
-                            rightIcon="caret-down" alignText="left" fill="{true}"/>
-                </Select>
+            {importFromSolvergyBuildings && (buildingsResultsIsLoading ?
+                <Spinner size={20}/>
+                :
+                <>
+                    <Select
+                        items={buildingsResults}
+                        itemRenderer={renderUserDataItem}
+                        activeItem={selectedUserDataItem && getBuildingsResultName(selectedUserDataItem)}
+                        className="fullwidth"
+                        popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                        filterable={false}
+                        onItemSelect={handleUserDataElementSelect}
+                    >
+                        <Button text={<span
+                            className={styles.selectText}>{selectedUserDataItem && getBuildingsResultName(selectedUserDataItem) || "Select consumer data..."}</span>}
+                                rightIcon="caret-down" alignText="left" fill="{true}"/>
+                    </Select>
 
-                {(!selectedUserDataItem && selectedUserDataItemTouched) && <span className={styles.errorText}>Set consumer data!</span>}
-            </>}
+                    {(!selectedUserDataItem && selectedUserDataItemTouched) &&
+                    <span className={styles.errorText}>Set consumer data!</span>}
+                </>)}
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -175,17 +194,20 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                         }}>
                     Close
                 </Button>
-                <Button disabled={!name || !consumption}
+                <Button disabled={!name || (!consumption && !selectedUserDataItem)}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             if (dialogIsOpened === "edit") {
-                                const updatedConsumers = updateObject(consumers, selectedObject.id, {name, properties: {consumption}})
+                                const updatedConsumers = updateObject(consumers, selectedObject.id, {
+                                    name,
+                                    properties: {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem}
+                                })
                                 dispatch(setObjects({objectType: "consumers", newObjects: updatedConsumers}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
-                                startCreateObject("consumer", name, {consumption})
+                                startCreateObject("consumer", name, {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem})
                             }
                             resetStates()
                             setDialogIsOpened(null)
@@ -195,10 +217,6 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
         </div>
     </Dialog>
 }
-
-const userData = [
-    "data 1"
-]
 
 const useStyles = createUseStyles({
     text: {

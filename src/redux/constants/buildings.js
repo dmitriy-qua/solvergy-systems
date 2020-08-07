@@ -1,0 +1,2 @@
+export const SET_BUILDINGS_RESULTS = "buildings/SET_BUILDINGS_RESULTS"
+export const TOGGLE_IS_LOADING = "buildings/TOGGLE_IS_LOADING"

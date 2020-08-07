@@ -6,8 +6,9 @@ import {
     FormGroup,
     InputGroup,
     Intent,
-    MenuItem,
+    MenuItem, Radio, RadioGroup
 } from "@blueprintjs/core";
+
 import {createUseStyles} from "react-jss";
 import {GiTeePipe} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux";
@@ -30,11 +31,14 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
     const [selectedTemplate, setSelectedTemplate] = useState(null)
     const [selectedTemplateTouched, setSelectedTemplateTouched] = useState(false)
 
+    const [networkType, setNetworkType] = useState(null)
+
     useEffect(() => {
         if (dialogIsOpened === "edit" && selectedObject) {
             const object = networks.find(object => object.id === selectedObject.id)
 
             setName(object.name)
+            setNetworkType(object.networkType)
 
             const template = templates.find(template => template.id === object.templateId)
 
@@ -47,6 +51,7 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
         setNameTouched(false)
         setSelectedTemplate(null)
         setSelectedTemplateTouched(false)
+        setNetworkType(null)
     }
 
     const handleTemplateSelect = (item) => {
@@ -124,6 +129,18 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
 
             {(!selectedTemplate && selectedTemplateTouched) &&
             <p className={styles.errorText}>Set template!</p>}
+
+            <p className={styles.dialogText} style={{marginTop: 14}}>
+                Network type:
+            </p>
+            <RadioGroup
+                onChange={e => setNetworkType(e.target.value)}
+                selectedValue={networkType}
+                inline
+            >
+                <Radio label="Supply" value="supply" />
+                <Radio label="Return" value="return" />
+            </RadioGroup>
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -135,17 +152,17 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                         }}>
                     Close
                 </Button>
-                <Button disabled={!name || !selectedTemplate}
+                <Button disabled={!name || !selectedTemplate || !networkType}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={dialogIsOpened === "new" ? "Create" : "Save"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             if (dialogIsOpened === "edit") {
-                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id})
+                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType})
                                 dispatch(setObjects({objectType: "networks", newObjects: updatedNetworks}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
-                                startCreateObject("network", name, {templateId: selectedTemplate.id})
+                                startCreateObject("network", name, {templateId: selectedTemplate.id, networkType})
                             }
 
                             resetStates()
