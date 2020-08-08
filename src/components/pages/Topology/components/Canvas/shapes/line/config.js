@@ -1,7 +1,7 @@
-const STROKE_WIDTH = 1.0
+const STROKE_WIDTH = 0.6
 
-export const lineGenerated = (mapHeight, mapDistance, networkType) => ({
-    strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),
+export const lineGenerated = (mapHeight, mapDistance, networkType, diameter) => ({
+    strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance) * (diameter / 100),
     //fill: 'red',
     stroke: networkType === "supply" ? 'red' : "blue",
     originX: 'center',

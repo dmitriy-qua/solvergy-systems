@@ -23,6 +23,9 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
     const dispatch = useDispatch()
 
+    const networks = useSelector(state => state.project && state.project.objects.networks)
+    const mapDistance = useSelector(state => state.project.map.mapDistance)
+
     const initialTemplate = {
         name: "",
         diameter: "",
@@ -233,6 +236,16 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                                 id: "network_template_" + generateId()
                             }))
                         } else if (type === "edit") {
+
+                            const templateNetworks = networks.map(network => network.templateId === selectedTemplate.id && network)
+
+                            templateNetworks.forEach(network => {
+                                network.shape.set({
+                                    strokeWidth: 0.6 * (2000 / mapDistance) * (properties.diameter / 100)
+                                })
+                                network.shape.canvas.renderAll()
+                            })
+
                             const updatedTemplates = updateObjectKey(templates, selectedTemplate, properties, "properties")
                             dispatch(setNetworkTemplates(updatedTemplates))
                         }

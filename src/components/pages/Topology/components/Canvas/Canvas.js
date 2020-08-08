@@ -284,7 +284,7 @@ export const Canvas = ({
                 let pointer = canvas.getPointer(o)
                 let points = [pointer.x, pointer.y, pointer.x, pointer.y]
                 let name = generateId()
-                _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType))
+                _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter))
                 _line.set({id: name, objectCaching: false})
                 canvas.add(_line)
                 canvas.add(

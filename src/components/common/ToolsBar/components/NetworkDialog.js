@@ -24,6 +24,7 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
 
     const templates = useSelector(state => state.project.templates.networks)
     const networks = useSelector(state => state.project.objects.networks)
+    const mapDistance = useSelector(state => state.project.map.mapDistance)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
@@ -158,7 +159,13 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             if (dialogIsOpened === "edit") {
-                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType})
+                                const template = templates.find(template => template.id === selectedTemplate.id)
+                                selectedObject.set({
+                                    strokeWidth: 0.6 * (2000 / mapDistance) * (template.properties.diameter / 100)
+                                })
+                                selectedObject.canvas.renderAll()
+
+                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType, shape: selectedObject})
                                 dispatch(setObjects({objectType: "networks", newObjects: updatedNetworks}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {

@@ -60,6 +60,9 @@ export const App = () => {
 
     const project = useSelector(state => state.project)
     const objects = useSelector(state => state.project && state.project.objects)
+    const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
+
+    console.log(objects)
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
     const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
@@ -191,7 +194,8 @@ export const App = () => {
                 creatingObjectData = {id, name, producerId: properties.producerId, templateId: properties.templateId, capacity: properties.capacity}
                 break
             case "network":
-                creatingObjectData = {id, name, templateId: properties.templateId, networkType: properties.networkType}
+                const networkTemplate = networkTemplates.find(template => template.id === properties.templateId)
+                creatingObjectData = {id, name, templateId: properties.templateId, networkType: properties.networkType, diameter: networkTemplate.properties.diameter}
                 break
             default:
                 break
