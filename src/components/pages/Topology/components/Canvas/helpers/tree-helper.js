@@ -2,9 +2,9 @@ import React from 'react'
 import {Icon} from "@blueprintjs/core";
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 
-export const addObjectInTree = (objectType, objectName, id, producerName = null) => prevState => {
+export const addObjectInTree = (objectType, objectName, id, info = null) => prevState => {
 
-    const object = getNewObjectData(objectType, objectName, id, producerName)
+    const object = getNewObjectData(objectType, objectName, id, info)
 
     const objectTypeIndex = prevState[0].childNodes.findIndex(objType => objType.id === objectType)
 
@@ -28,14 +28,14 @@ export const addObjectInTree = (objectType, objectName, id, producerName = null)
     }]
 }
 
-const getNewObjectData = (objectType, objectName, id, producerName) => {
+const getNewObjectData = (objectType, objectName, id, info) => {
     return {
         id,
         icon: getObjectIcon(objectType),
         objectType,
         childNodes: [],
         hasCaret: false,
-        label: producerName ? objectName + " ("+ producerName + ")" : objectName,
+        label: info ? objectName + " ("+ info + ")" : objectName,
     }
 }
 

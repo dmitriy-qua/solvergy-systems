@@ -4,7 +4,7 @@ import {
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE,
     CREATE_NEW_PROJECT,
-    SET_INITIAL_STATE,
+    SET_INITIAL_STATE, SET_MARKET_MODEL_SETTINGS,
     SET_NETWORKS_TEMPLATES,
     SET_OBJECTS,
     SET_PRODUCERS, SET_SUPPLIERS_TEMPLATES,
@@ -67,5 +67,10 @@ export const addNewSupplierTemplate = (data) => ({
 
 export const setSuppliersTemplates = (data) => ({
     type: SET_SUPPLIERS_TEMPLATES,
+    data
+})
+
+export const setMarketModelSettings = (data) => ({
+    type: SET_MARKET_MODEL_SETTINGS,
     data
 })

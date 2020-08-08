@@ -19,7 +19,7 @@ export const SuppliersTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) =>
 
     const dispatch = useDispatch()
 
-    const templates = useSelector(state => state.project.project.templates.suppliers)
+    const templates = useSelector(state => state.project.templates.suppliers)
 
     let listItem = ({item}) => {
         return <span className={styles.selectText}>

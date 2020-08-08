@@ -22,8 +22,8 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
 
     const dispatch = useDispatch()
 
-    const templates = useSelector(state => state.project.project.templates.networks)
-    const networks = useSelector(state => state.project.project.objects.networks)
+    const templates = useSelector(state => state.project.templates.networks)
+    const networks = useSelector(state => state.project.objects.networks)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)

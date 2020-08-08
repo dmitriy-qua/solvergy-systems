@@ -28,10 +28,13 @@ import {
     FaUsersCog,
     FaBorderAll,
     FaLayerGroup,
-    FaCoins
+    FaCoins,
+    FaCalculator,
+    FaChartBar,
+    FaSlidersH
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
-import {GoPlus, GoPencil, GoFileDirectory, GoGear} from 'react-icons/go';
+import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools, GoSettings} from 'react-icons/go';
 import {useSelector} from "react-redux";
 
 const TOOLTIP_HOVER_OPEN_DELAY = 750
@@ -54,11 +57,13 @@ export const ToolsBar = ({
                              setProducersDialogIsOpened,
                              setNetworksTemplatesDialogIsOpened,
                              setSuppliersTemplatesDialogIsOpened,
+                             setModelSettingsIsOpened,
                              currentPage
                          }) => {
 
     const styles = useStyles()
 
+    const modelSettings = useSelector(state => state.project && state.project.settings)
     const isAuth = useSelector(state => state.auth.isAuth)
 
     const FileMenu = () => {
@@ -81,13 +86,6 @@ export const ToolsBar = ({
             {/*<MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}/>*/}
             {/*<MenuDivider/>*/}
 
-            <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
-                      text="Set grid"
-                      active={gridIsVisible}
-                      disabled={!project}
-                      onClick={() => setGridIsVisible(prevState => !prevState)}
-            />
-            <MenuDivider/>
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
@@ -125,6 +123,26 @@ export const ToolsBar = ({
                       onClick={() => deleteObject(selectedObject, objects, nodes)}/>
         </Menu>
     }
+
+    const ToolsMenu = () => {
+        return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
+            <MenuItem intent={Intent.SUCCESS} icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>} text="Calculate project"/>
+            <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
+                      intent={modelSettings ? Intent.PRIMARY : Intent.WARNING}
+                      text="Model settings..."
+                      onClick={() => setModelSettingsIsOpened(true)}
+            />
+            <MenuItem disabled={true} icon={<FaChartBar size={"1rem"} className={"bp3-icon"}/>} text="Results..."/>
+            <MenuDivider/>
+            <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
+                      text="Set grid"
+                      active={gridIsVisible}
+                      disabled={!project}
+                      onClick={() => setGridIsVisible(prevState => !prevState)}
+            />
+        </Menu>
+    }
+
 
     const SettingsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -179,6 +197,23 @@ export const ToolsBar = ({
                 >
                     <Button className={[Classes.MINIMAL, styles.menuItemText]}
                             icon={<GoPencil size={"1rem"} className={"bp3-icon"}/>} text="Edit"/>
+                </Popover>
+
+                <Popover content={<ToolsMenu/>}
+                         position={"bottom-left"}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: false},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                         minimal
+                         hasBackdrop
+                         transitionDuration={100}
+                >
+                    <Button className={[Classes.MINIMAL, styles.menuItemText]}
+                            icon={<GoTools size={"1rem"} className={"bp3-icon"}/>} text="Tools"/>
                 </Popover>
 
                 <Popover content={<SettingsMenu/>}
@@ -241,6 +276,65 @@ export const ToolsBar = ({
                 {/*</Tooltip>*/}
 
                 {/*<NavbarDivider/>*/}
+
+                <Tooltip content="Calculate project"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button intent={Intent.SUCCESS}
+                        disabled={!project}
+                        icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL, styles.iconButton]}
+                        onClick={() => {}}/>
+                </Tooltip>
+
+                <Tooltip content="Model settings"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
+                        disabled={!project}
+                        intent={modelSettings ? Intent.PRIMARY : Intent.WARNING}
+                        icon={<Icon icon={<FaSlidersH size={16} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL, styles.iconButton]}
+                        onClick={() => setModelSettingsIsOpened(true)}
+                    />
+                </Tooltip>
+
+                <Tooltip content="Results"
+                         disabled={true}
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
+                            disabled={true}
+                            icon={<Icon icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            onClick={() => {}}/>
+                </Tooltip>
+
+                <NavbarDivider/>
 
                 <Tooltip content="Set grid"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}

@@ -20,7 +20,7 @@ export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => 
 
     const dispatch = useDispatch()
 
-    const templates = useSelector(state => state.project.project.templates.networks)
+    const templates = useSelector(state => state.project.templates.networks)
 
     let listItem = ({item}) => {
         return <span className={styles.selectText}>

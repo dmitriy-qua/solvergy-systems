@@ -19,7 +19,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
 
     const dispatch = useDispatch()
 
-    const producers = useSelector(state => state.project.project.objects.producers)
+    const producers = useSelector(state => state.project.objects.producers)
 
     let listItem = ({item}) => {
         return <span className={styles.selectText}>

@@ -3,9 +3,9 @@ import { Icon } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {useHistory} from "react-router-dom";
 
-export const NavigationButton = ({currentPage, setCurrentPage, pageName, label, icon, disabled = false}) => {
+export const NavigationButton = ({currentPage, setCurrentPage, pageName, pageNumber, label, icon, disabled = false}) => {
 
-    const styles = useStyles({currentPage, pageName})
+    const styles = useStyles({currentPage, pageName, pageNumber})
 
     const history = useHistory()
 

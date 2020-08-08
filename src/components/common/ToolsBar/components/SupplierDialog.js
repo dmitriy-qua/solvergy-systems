@@ -20,9 +20,9 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const styles = useStyles()
 
     const dispatch = useDispatch()
-    const suppliers = useSelector(state => state.project.project.objects.suppliers)
-    const producers = useSelector(state => state.project.project.objects.producers)
-    const templates = useSelector(state => state.project.project.templates.suppliers)
+    const suppliers = useSelector(state => state.project.objects.suppliers)
+    const producers = useSelector(state => state.project.objects.producers)
+    const templates = useSelector(state => state.project.templates.suppliers)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)

@@ -34,6 +34,7 @@ import {NetworkDialog} from "./components/common/ToolsBar/components/NetworkDial
 import {ProducersDialog} from "./components/common/ToolsBar/components/ProducersDialog";
 import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/NetworksTemplatesDialog";
 import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
+import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 134
@@ -57,11 +58,11 @@ export const App = () => {
     }, [])
 
 
-    const project = useSelector(state => state.project.project)
-    const objects = useSelector(state => state.project.project && state.project.project.objects)
+    const project = useSelector(state => state.project)
+    const objects = useSelector(state => state.project && state.project.objects)
 
-    const producers = useSelector(state => state.project.project && state.project.project.objects.producers)
-    const mapDistance = useSelector(state => state.project.project && state.project.project.map.mapDistance)
+    const producers = useSelector(state => state.project && state.project.objects.producers)
+    const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
 
     const [objectType, setObjectType] = useState("none")
     const [selectedObject, setSelectedObject] = useState(null)
@@ -81,6 +82,8 @@ export const App = () => {
     const [producersDialogIsOpened, setProducersDialogIsOpened] = useState(false)
     const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
     const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
+    const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
+
 
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
@@ -238,7 +241,7 @@ export const App = () => {
                     creatingObjectData.networkType
                 )
                 dispatch(addNewNetwork(network))
-                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
+                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, creatingObjectData.networkType))
                 break
             default:
                 break
@@ -279,6 +282,7 @@ export const App = () => {
                           setProducersDialogIsOpened={setProducersDialogIsOpened}
                           setNetworksTemplatesDialogIsOpened={setNetworksTemplatesDialogIsOpened}
                           setSuppliersTemplatesDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
+                          setModelSettingsIsOpened={setModelSettingsIsOpened}
                           currentPage={currentPage}
                 />
             </ReflexElement>
@@ -289,23 +293,25 @@ export const App = () => {
                         <ReflexContainer orientation="vertical"
                                          windowResizeAware={true}
                         >
-                            <ReflexElement className="left-pane"
-                                           size={LEFT_MENU_WIDTH}
-                                           minSize={LEFT_MENU_WIDTH}
-                                           maxSize={LEFT_MENU_WIDTH}
-                                           style={{borderRight: "4px solid #eceff1"}}
-                            >
-                                <NavigationBar currentPage={currentPage}
-                                               setCurrentPage={setCurrentPage}
-                                />
-                            </ReflexElement>
+                            {/*<ReflexElement className="left-pane"*/}
+                            {/*               size={LEFT_MENU_WIDTH}*/}
+                            {/*               minSize={LEFT_MENU_WIDTH}*/}
+                            {/*               maxSize={LEFT_MENU_WIDTH}*/}
+                            {/*               style={{borderRight: "4px solid #eceff1"}}*/}
+                            {/*>*/}
+                            {/*    <NavigationBar currentPage={currentPage}*/}
+                            {/*                   setCurrentPage={setCurrentPage}*/}
+                            {/*    />*/}
+                            {/*</ReflexElement>*/}
 
                             <ReflexElement>
 
                                 <Route
                                     exact
                                     path="/"
-                                    render={() => <Redirect to="/topology"/>}
+                                    render={() => {
+                                        return <Redirect to="/topology"/>
+                                    }}
                                 />
                                 <Route path="/topology">
                                     <Topology objectType={objectType}
@@ -357,13 +363,12 @@ export const App = () => {
                                     <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
                                                               setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>
 
+                                    <ModelSettings dialogIsOpened={modelSettingsIsOpened}
+                                                   setDialogIsOpened={setModelSettingsIsOpened}
+                                    />
                                 </Route>
-                                <Route path="/settings">
-                                    <ReflexElement>
-                                        <ReflexContainer orientation="vertical" windowResizeAware={true}>
+                                <Route path="/results">
 
-                                        </ReflexContainer>
-                                    </ReflexElement>
                                 </Route>
                             </ReflexElement>
                         </ReflexContainer>
@@ -374,16 +379,6 @@ export const App = () => {
                     <Start/>
                 </ReflexElement>
             }
-
-            {/*<ReflexElement className="footer"*/}
-            {/*               size={FOOTER_HEIGHT}*/}
-            {/*               minSize={FOOTER_HEIGHT}*/}
-            {/*               maxSize={FOOTER_HEIGHT}*/}
-            {/*               style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", display: "flex", alignItems: "center"}}>*/}
-            {/*    <div className="pane-content">*/}
-
-            {/*    </div>*/}
-            {/*</ReflexElement>*/}
         </ReflexContainer>
     </div>
 }

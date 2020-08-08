@@ -58,7 +58,7 @@ export const Canvas = ({
         currentNodes = nodes
     }, [nodes])
 
-    const objects = useSelector(state => state.project.project && state.project.project.objects)
+    const objects = useSelector(state => state.project && state.project.objects)
 
     useEffect(() => {
         currentObjects = objects

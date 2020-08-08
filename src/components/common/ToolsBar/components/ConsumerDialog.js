@@ -25,7 +25,7 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
 
     const dispatch = useDispatch()
 
-    const consumers = useSelector(state => state.project.project.objects.consumers)
+    const consumers = useSelector(state => state.project.objects.consumers)
     const buildingsResults = useSelector(state => state.buildings.results)
     const buildingsResultsIsLoading = useSelector(state => state.buildings.isLoading)
 

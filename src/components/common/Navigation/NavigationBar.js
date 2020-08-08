@@ -5,7 +5,7 @@ import MaterialIcon from "@mdi/react";
 import {mdiTune, mdiSitemap, mdiChartBar, mdiCashUsdOutline} from "@mdi/js";
 
 export const NavigationBar = ({currentPage, setCurrentPage}) => {
-
+    console.log(currentPage)
 
     return <div className="pane-content">
         <NavigationButton currentPage={currentPage}
