@@ -63,12 +63,19 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                 mapImageUri,
                 mapDistance
             },
+            results: null,
+            settings: null,
             objects: {
                 consumers: [],
                 suppliers: [],
                 networks: [],
                 producers: []
             },
+            templates: {
+                networks: [],
+                suppliers: []
+            }
+
         }
 
         dispatch(createNewProject(newProject))

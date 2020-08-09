@@ -9,6 +9,7 @@ export const Authentication = ({login, setLogin, password, setPassword}) => {
                 setLogin={setLogin}
                 password={password}
                 setPassword={setPassword}
+                isFromStartDialog={true}
         />
     </div>
 }

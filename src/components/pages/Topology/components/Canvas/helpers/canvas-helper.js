@@ -201,3 +201,11 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
 }
 
+export const calculateLineDistance = (line, mapDistance, mapHeight) => {
+    const a = Math.abs(line.x1 - line.x2)
+    const b = Math.abs(line.y1 - line.y2)
+    const c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+
+    return c * mapDistance / mapHeight
+}
+

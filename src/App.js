@@ -62,10 +62,13 @@ export const App = () => {
     const objects = useSelector(state => state.project && state.project.objects)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
 
-    console.log(objects)
+    //console.log(objects)
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
     const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
+
+    const [startDialog, setStartDialog] = useState(false)
+    const [authDialog, setAuthDialog] = useState(false)
 
     const [objectType, setObjectType] = useState("none")
     const [selectedObject, setSelectedObject] = useState(null)
@@ -86,7 +89,6 @@ export const App = () => {
     const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
     const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
     const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
-
 
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
@@ -288,6 +290,10 @@ export const App = () => {
                           setSuppliersTemplatesDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
                           setModelSettingsIsOpened={setModelSettingsIsOpened}
                           currentPage={currentPage}
+                          startDialog={startDialog}
+                          setStartDialog={setStartDialog}
+                          authDialog={authDialog}
+                          setAuthDialog={setAuthDialog}
                 />
             </ReflexElement>
 
@@ -336,6 +342,8 @@ export const App = () => {
                                               objects={objects}
                                               editObject={editObject}
                                               creatingObjectData={creatingObjectData}
+                                              authDialog={authDialog}
+                                              setAuthDialog={setAuthDialog}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
@@ -380,7 +388,10 @@ export const App = () => {
                 </ReflexElement>
                 :
                 <ReflexElement>
-                    <Start/>
+                    <Start startDialog={startDialog}
+                           setStartDialog={setStartDialog}
+                           authDialog={authDialog}
+                           setAuthDialog={setAuthDialog}/>
                 </ReflexElement>
             }
         </ReflexContainer>

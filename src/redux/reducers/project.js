@@ -17,55 +17,54 @@ import {
     SET_TEMPLATES
 } from "../constants/project";
 
-// let initialState = {
-//     project: null,
-// };
+let initialState = null
 
-let initialState = {
-    info: {
-        location: "Kyiv, Ukraine",
-        name: "New Project"
-    },
-    type: {
-        modelType: "System",
-        energySystemType: ["Heating"]
-    },
-    map: {
-        mapImageUri: "C:/Users/User/Desktop",
-        mapDistance: 1024
-    },
-    settings: null,
-    objects: {
-        consumers: [],
-        suppliers: [],
-        networks: [],
-        producers: [{name: "Main", id: "prod1"}, {name: "NotMain", id: "prod2"}]
-    },
-    templates: {
-        networks: [{
-            id: "networks_template",
-            properties: {
-                name: "first",
-                diameter: 100,
-                insulationThickness: 20,
-                insulationType: {
-                    name: "Polyethilen",
-                    thermalConductivityCoefficient: 0.04
-                },
-                pipeLayingType: {
-                    name: "Elevated",
-                    type: "elevated"
-                }
-            }
-        }],
-        suppliers: [{
-            id: "supplier_template",
-            properties: {
-                name: "sup"
-            }
-        }],
-    }
-}
+// let initialState = {
+//     info: {
+//         location: "Kyiv, Ukraine",
+//         name: "New Project"
+//     },
+//     type: {
+//         modelType: "System",
+//         energySystemType: ["Heating"]
+//     },
+//     map: {
+//         mapImageUri: "C:/Users/User/Desktop",
+//         mapDistance: 1024
+//     },
+//     settings: null,
+//     results: null,
+//     objects: {
+//         consumers: [],
+//         suppliers: [],
+//         networks: [],
+//         producers: [{name: "Main", id: "prod1"}, {name: "NotMain", id: "prod2"}]
+//     },
+//     templates: {
+//         networks: [{
+//             id: "networks_template",
+//             properties: {
+//                 name: "first",
+//                 diameter: 100,
+//                 insulationThickness: 20,
+//                 insulationType: {
+//                     name: "Polyethilen",
+//                     thermalConductivityCoefficient: 0.04
+//                 },
+//                 pipeLayingType: {
+//                     name: "Elevated",
+//                     type: "elevated"
+//                 }
+//             }
+//         }],
+//         suppliers: [{
+//             id: "supplier_template",
+//             properties: {
+//                 name: "sup"
+//             }
+//         }],
+//     }
+// }
 
 const project = (state = initialState, action) => {
     switch (action.type) {

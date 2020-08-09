@@ -3,7 +3,7 @@ import {ContextMenu, Menu, MenuDivider, MenuItem} from "@blueprintjs/core";
 import {fabric} from "fabric"
 import {lineGenerated} from "./shapes/line/config"
 import {
-    addPolygonPoint,
+    addPolygonPoint, calculateLineDistance,
     connectLineToOtherLine,
     generatePolygon,
     limitCanvasBoundary,
@@ -382,6 +382,8 @@ export const Canvas = ({
         });
 
         if (currentFigureType === "network" && canDrawLine) {
+            const distance = calculateLineDistance(_line, mapDistance, MAP_HEIGHT)
+            _line.set({distance})
             finishCreateObject(currentFigureType, _line)
             _line = null
             isDown = false
@@ -420,7 +422,10 @@ export const Canvas = ({
 
                 if (objType === 'circle') {
                     connectLineToOtherLine(canvas, e, p)
-
+                    const distance = calculateLineDistance(p.line, mapDistance, MAP_HEIGHT)
+                    p.line.set({distance})
+                    p.line.setCoords()
+                    canvas.renderAll()
                 } else if (objType === 'line') {
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
@@ -454,6 +459,9 @@ export const Canvas = ({
 
                     _curX = e.e.clientX
                     _curY = e.e.clientY
+
+                    const distance = calculateLineDistance(p, mapDistance, MAP_HEIGHT)
+                    p.set({distance})
 
                     canvas.renderAll()
                 } else if (objType === 'polygon') {

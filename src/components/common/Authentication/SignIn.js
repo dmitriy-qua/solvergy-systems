@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import {createUseStyles} from "react-jss";
 import {AuthForm} from "./AuthForm";
-import {Button} from "@blueprintjs/core";
+import {Button, Intent} from "@blueprintjs/core";
 import {useDispatch, useSelector} from "react-redux";
 import {logout, signIn} from "../../../redux/actions/auth";
 
-export const SignIn = ({login, setLogin, password, setPassword}) => {
+export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialog}) => {
 
     const user = useSelector(state => state.auth.user)
     const isAuth = useSelector(state => state.auth.isAuth)
@@ -50,19 +50,29 @@ export const SignIn = ({login, setLogin, password, setPassword}) => {
                 }
 
             </p>
-            <Button className={styles.button} onClick={() => dispatch(signIn({login, password}))}
-                    text={isSignInPage ? "Sign In" : "Sign Up"}/>
+            <Button className={styles.button}
+                    intent={Intent.SUCCESS}
+                    onClick={() => dispatch(signIn({login, password}))}
+                    text={isSignInPage ? "Sign in" : "Sign up"}/>
         </div>
     } else {
         return <div>
-            <p className={styles.infoText}>
-                You logged in as <span className={styles.infoName}>{user.login}</span>. Please, click next button.
-            </p>
+            {isFromStartDialog ?
+                <p className={styles.infoText}>
+                    You logged in as <span className={styles.infoName}>{user.login}</span>. Please, click next button.
+                </p>
+                :
+                <p className={styles.infoText}>
+                    You logged in as <span className={styles.infoName}>{user.login}</span>.
+                </p>
+            }
+
             <br/>
             <p className={styles.infoText}>
                 Logout to change user.
             </p>
             <Button className={styles.button}
+                    intent={Intent.DANGER}
                     onClick={() => {
                         setLogin("")
                         setPassword("")
@@ -80,7 +90,8 @@ const useStyles = createUseStyles({
         fontWeight: 600,
         fontSize: 13,
         fontFamily: 'Montserrat',
-        marginBottom: 20
+        marginBottom: 20,
+        height: 26
     },
     infoText: {
         fontWeight: 500,

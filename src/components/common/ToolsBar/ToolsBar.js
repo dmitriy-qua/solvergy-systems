@@ -58,17 +58,23 @@ export const ToolsBar = ({
                              setNetworksTemplatesDialogIsOpened,
                              setSuppliersTemplatesDialogIsOpened,
                              setModelSettingsIsOpened,
-                             currentPage
+                             currentPage,
+                             startDialog,
+                             setStartDialog,
+                             authDialog,
+                             setAuthDialog
                          }) => {
 
     const styles = useStyles()
 
     const modelSettings = useSelector(state => state.project && state.project.settings)
+    const results = useSelector(state => state.project && state.project.results)
     const isAuth = useSelector(state => state.auth.isAuth)
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..."/>
+            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..."
+                      onClick={() => setStartDialog(true)}/>
             <MenuDivider/>
             <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>} text="Open project..."/>
             <MenuDivider/>
@@ -126,13 +132,21 @@ export const ToolsBar = ({
 
     const ToolsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem intent={Intent.SUCCESS} icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>} text="Calculate project"/>
+            <MenuItem intent={Intent.SUCCESS}
+                      disabled={!project}
+                      icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>}
+                      text="Calculate project"
+            />
             <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
+                      disabled={!project}
                       intent={modelSettings ? Intent.PRIMARY : Intent.WARNING}
                       text="Model settings..."
                       onClick={() => setModelSettingsIsOpened(true)}
             />
-            <MenuItem disabled={true} icon={<FaChartBar size={"1rem"} className={"bp3-icon"}/>} text="Results..."/>
+            <MenuItem disabled={!results || !project}
+                      icon={<FaChartBar size={"1rem"} className={"bp3-icon"}/>}
+                      text="Results..."
+            />
             <MenuDivider/>
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
                       text="Set grid"
@@ -147,15 +161,11 @@ export const ToolsBar = ({
     const SettingsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
             <MenuItem icon={<FaWrench size={"1rem"} className={"bp3-icon"}/>} text="Preferences"/>
-
             <MenuDivider/>
-
-            {!isAuth && <MenuItem icon={<FaSignInAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign in..."/>}
-            {!isAuth && <MenuItem icon={<FaUserPlus size={"1rem"} className={"bp3-icon"}/>} text="Sign up..."/>}
-            {isAuth && <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>} text="Sign out"/>}
-
+            <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>}
+                      text={isAuth ? "Sign out" : "Sign in"}
+                      onClick={() => setAuthDialog(true)}/>
             <MenuDivider/>
-
             <MenuItem icon={<FaQuestionCircle size={"1rem"} className={"bp3-icon"}/>} text="Help..."/>
         </Menu>
     }
@@ -289,10 +299,11 @@ export const ToolsBar = ({
                          }}
                 >
                     <Button intent={Intent.SUCCESS}
-                        disabled={!project}
-                        icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        onClick={() => {}}/>
+                            disabled={!project}
+                            icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL, styles.iconButton]}
+                            onClick={() => {
+                            }}/>
                 </Tooltip>
 
                 <Tooltip content="Model settings"
@@ -316,7 +327,7 @@ export const ToolsBar = ({
                 </Tooltip>
 
                 <Tooltip content="Results"
-                         disabled={true}
+                         disabled={!results}
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
                          usePortal={true}
@@ -328,10 +339,11 @@ export const ToolsBar = ({
                          }}
                 >
                     <Button
-                            disabled={true}
-                            icon={<Icon icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}/>}
-                            className={[Classes.MINIMAL, styles.iconButton]}
-                            onClick={() => {}}/>
+                        disabled={true}
+                        icon={<Icon icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL, styles.iconButton]}
+                        onClick={() => {
+                        }}/>
                 </Tooltip>
 
                 <NavbarDivider/>
