@@ -7,27 +7,13 @@ export default class HeatNetwork {
         this.templateId = templateId
         this.networkType = networkType
         this.properties = {
-            length: null,
-            diameter: null,
-            pipeLayingType: null,
-            pipeLayingTypeNum: null,
-            materialType: null,
-            materialTypeNum: null,
-            isolationType: null,
-            isolationTypeNum: null,
-            isolationThickness: null,
             isNew: null,
-            lineColor: null,
             specificHeatLossT1: null,
             specificHeatLossT2: null,
             fullHeatLoss: null,
             fullHydraulicLoss: null,
             thermalConductivityCoefficient: null,
         }
-    }
-
-    updateName = (name) => {
-        this.name = name
     }
 
 
@@ -66,74 +52,6 @@ export default class HeatNetwork {
     //     }
     // }
 
-    // public void SetLineSize()
-    // {
-    //     if (diameter != null)
-    //     {
-    //         if (diameter < 100)
-    //             line.StrokeThickness = 0.3;
-    //         else if (diameter >= 100 && diameter < 200)
-    //             line.StrokeThickness = 0.5;
-    //         else if (diameter >= 200 && diameter < 300)
-    //             line.StrokeThickness = 0.7;
-    //         else if (diameter >= 300 && diameter < 400)
-    //             line.StrokeThickness = 0.9;
-    //         else if (diameter >= 400 && diameter < 500)
-    //             line.StrokeThickness = 1.1;
-    //         else if (diameter >= 500 && diameter < 600)
-    //             line.StrokeThickness = 1.3;
-    //         else if (diameter >= 600 && diameter < 700)
-    //             line.StrokeThickness = 1.5;
-    //         else if (diameter >= 700)
-    //             line.StrokeThickness = 1.7;
-    //     }
-    //
-    // }
-
-    // public void SetNetworkLength()
-    // {
-    //     if (MainWindow.RealLengthOfMap != null)
-    //     {
-    //         double KmPerPixel = (double)MainWindow.RealLengthOfMap / MainWindow.CanvasActualHeight;
-    //         length = Math.Sqrt(Math.Pow((line.X1 - line.X2), 2) + Math.Pow((line.Y1 - line.Y2), 2)) * KmPerPixel * 1000;
-    //
-    //     }
-    // }
-    //
-    // public void SetNetworkColor()
-    // {
-    //     if (isNew)
-    //         lineColor = Brushes.Brown;
-    //     else
-    //         lineColor = Brushes.Black;
-    // }
-
-    // public void SetNetworkCoefficients()
-    // {
-    //     switch (isolationTypeNum)
-    //     {
-    //         case 0:
-    //             thermalConductivityCoefficient = 0.042;
-    //             isolationType = "Стекловата";
-    //             break;
-    //         case 1:
-    //             thermalConductivityCoefficient = 0.037;
-    //             isolationType = "Базальт";
-    //             break;
-    //         case 2:
-    //             thermalConductivityCoefficient = 0.04;
-    //             isolationType = "Пінополістирол";
-    //             break;
-    //         case 3:
-    //             thermalConductivityCoefficient = 0.035;
-    //             isolationType = "Пенополіуретан";
-    //             break;
-    //         case 4:
-    //             thermalConductivityCoefficient = 0.03;
-    //             isolationType = "Поліетилен";
-    //             break;
-    //     }
-    // }
 
     // public void CalculateNetworkHeatLoss()
     // {

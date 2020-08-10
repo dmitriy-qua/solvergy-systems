@@ -1,6 +1,6 @@
 import {
     FAILURE_LOGIN,
-    FAILURE_SIGNUP,
+    FAILURE_SIGNUP, LOADED_PROJECT,
     LOGOUT,
     REQUEST_LOGIN,
     REQUEST_SIGNUP,
@@ -90,5 +90,10 @@ export function logout() {
 
 export const signout = () => ({
     type: LOGOUT,
+})
+
+export const setLoadedProjectId = (data) => ({
+    type: LOADED_PROJECT,
+    data
 })
 

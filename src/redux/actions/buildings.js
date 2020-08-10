@@ -4,7 +4,7 @@ import {ProjectsAPI} from "../../api/projects";
 export const getBuildingsResults = () => (dispatch) => {
     return new Promise(async (res) => {
         dispatch(toogleIsLoading(true))
-        const response = await ProjectsAPI.getUserResults()
+        const response = await ProjectsAPI.getUserBuildingsResults()
         dispatch(setBuildingsResults(response.data))
         dispatch(toogleIsLoading(false))
     });

@@ -47,7 +47,8 @@ export const Canvas = ({
                            deleteObject,
                            nodes,
                            editObject,
-                           creatingObjectData
+                           creatingObjectData,
+                           loadedProject
 }) => {
 
     useEffect(() => {
@@ -57,6 +58,10 @@ export const Canvas = ({
     useEffect(() => {
         currentNodes = nodes
     }, [nodes])
+
+    useEffect(() => {
+        if (canvas) setMap()
+    }, [loadedProject])
 
     const objects = useSelector(state => state.project && state.project.objects)
 

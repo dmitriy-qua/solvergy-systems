@@ -1,6 +1,6 @@
 import {
     APP_IS_LOADED,
-    FAILURE_LOGIN, FAILURE_SIGNUP,
+    FAILURE_LOGIN, FAILURE_SIGNUP, LOADED_PROJECT,
     LOGOUT,
     REQUEST_LOGIN,
     REQUEST_SIGNUP, SET_VERSION,
@@ -12,7 +12,8 @@ const initialState = {
     appIsLoaded: false,
     error: false,
     user: null,
-    version: null
+    version: null,
+    loadedProject: null
 }
 
 const auth = (state = initialState, action) => {
@@ -70,6 +71,11 @@ const auth = (state = initialState, action) => {
             return {
                 ...state,
                 appIsLoaded: true
+            }
+        case LOADED_PROJECT:
+            return {
+                ...state,
+                loadedProject: action.data
             }
         case SET_VERSION:
             return {

@@ -35,7 +35,8 @@ import {
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools, GoSettings} from 'react-icons/go';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
 
 const TOOLTIP_HOVER_OPEN_DELAY = 750
 
@@ -67,6 +68,8 @@ export const ToolsBar = ({
 
     const styles = useStyles()
 
+    const dispatch = useDispatch()
+
     const modelSettings = useSelector(state => state.project && state.project.settings)
     const results = useSelector(state => state.project && state.project.results)
     const isAuth = useSelector(state => state.auth.isAuth)
@@ -76,9 +79,16 @@ export const ToolsBar = ({
             <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..."
                       onClick={() => setStartDialog(true)}/>
             <MenuDivider/>
-            <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>} text="Open project..."/>
+            <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>}
+                      text="Open project..."
+                      onClick={() => dispatch(openProject("test"))}
+            />
             <MenuDivider/>
-            <MenuItem icon={<FaSave size={"1rem"} className={"bp3-icon"}/>} text="Save" disabled={!project}/>
+            <MenuItem icon={<FaSave size={"1rem"} className={"bp3-icon"}/>}
+                      text="Save"
+                      disabled={!project}
+                      onClick={() => dispatch(saveProject(project))}
+            />
             <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project}/>
             <MenuDivider/>
             <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit"/>
@@ -136,6 +146,7 @@ export const ToolsBar = ({
                       disabled={!project}
                       icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>}
                       text="Calculate project"
+                      onClick={() => dispatch(calculateProject(project))}
             />
             <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
                       disabled={!project}
@@ -302,8 +313,8 @@ export const ToolsBar = ({
                             disabled={!project}
                             icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
                             className={[Classes.MINIMAL, styles.iconButton]}
-                            onClick={() => {
-                            }}/>
+                            onClick={() => dispatch(calculateProject(project))}
+                    />
                 </Tooltip>
 
                 <Tooltip content="Model settings"

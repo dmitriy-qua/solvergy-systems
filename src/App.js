@@ -35,6 +35,7 @@ import {ProducersDialog} from "./components/common/ToolsBar/components/Producers
 import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/NetworksTemplatesDialog";
 import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
 import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
+import {AuthDialog} from "./components/common/Authentication/AuthDialog";
 
 const HEADER_HEIGHT = 50
 const LEFT_MENU_WIDTH = 134
@@ -61,8 +62,14 @@ export const App = () => {
     const project = useSelector(state => state.project)
     const objects = useSelector(state => state.project && state.project.objects)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
-
+    const isAuth = useSelector(state => state.auth.isAuth)
+    const loadedProject = useSelector(state => state.auth.loadedProject)
     //console.log(objects)
+
+    useEffect(() => {
+
+
+    }, [loadedProject])
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
     const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
@@ -298,7 +305,7 @@ export const App = () => {
             </ReflexElement>
 
 
-            {project ? <ReflexElement>
+            {project && isAuth ? <ReflexElement>
                     <BrowserRouter>
                         <ReflexContainer orientation="vertical"
                                          windowResizeAware={true}
@@ -344,6 +351,7 @@ export const App = () => {
                                               creatingObjectData={creatingObjectData}
                                               authDialog={authDialog}
                                               setAuthDialog={setAuthDialog}
+                                              loadedProject={loadedProject}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
@@ -377,6 +385,10 @@ export const App = () => {
 
                                     <ModelSettings dialogIsOpened={modelSettingsIsOpened}
                                                    setDialogIsOpened={setModelSettingsIsOpened}
+                                    />
+
+                                    <AuthDialog startDialog={authDialog}
+                                                setStartDialog={setAuthDialog}
                                     />
                                 </Route>
                                 <Route path="/results">

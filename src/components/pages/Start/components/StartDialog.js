@@ -9,7 +9,7 @@ import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
 import { ViewPager, Frame, Track, View } from 'react-view-pager'
 import {useDispatch, useSelector} from "react-redux";
-import {createNewProject} from "../../../../redux/actions/project";
+import {setProject} from "../../../../redux/actions/project";
 
 export const StartDialog = ({startDialog, setStartDialog}) => {
 
@@ -78,7 +78,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
 
         }
 
-        dispatch(createNewProject(newProject))
+        dispatch(setProject(newProject))
     }
 
 

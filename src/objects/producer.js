@@ -34,8 +34,5 @@ export default class Producer {
         }
     }
 
-    updateName = (name) => {
-        this.name = name
-    }
 
 }

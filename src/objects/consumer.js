@@ -7,11 +7,6 @@ export default class Consumer {
         this.properties = {importFromSolvergyBuildings, consumption, buildingsResult}
     }
 
-    updateName = (name) => {
-        this.name = name
-    }
-
-
     // SetTooltip()
     // {
     //

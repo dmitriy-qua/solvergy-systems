@@ -9,30 +9,6 @@ export default class Supplier {
         this.capacity = capacity
 
         this.properties = {
-            energySourceTypeNumber: null,
-            energySourceType: null,
-            capitalFixedCosts: null,
-            capitalVariableCostsPerOneMW: null,
-            capacity: null,
-            totalCapitalCosts: null,
-            capitalCostsCoefficient: null,
-            capitalConstantCostPerCapacity: null,
-            fuelConsumption: null,
-            fuelCost: null,
-            fuelVariableCostsPerGcal: null,
-            logisticsVariableCostsPerGcal: null,
-            powerVariableCostsPerGcal: null,
-            salaryForWorkersFixedCosts: null,
-            salaryForWorkersCoefficient: null,
-            salaryForWorkersConstantPerCapacity: null,
-            salaryForAdministrationFixedCosts: null,
-            salaryForAdministrationCoefficient: null,
-            salaryForAdministrationConstantPerCapacity: null,
-            otherFixedCosts: null,
-            otherCostsCoefficient: null,
-            otherCostsConstantPerCapacity: null,
-            depreciationFixedCosts: null,
-            depreciationYears: null,
             totalForecastedVariableCosts: null,
             totalForecastedFixedCosts: null,
             totalForecastedCosts: null,
@@ -46,11 +22,6 @@ export default class Supplier {
             bufCapacity: null
         }
     }
-
-    updateName = (name) => {
-        this.name = name
-    }
-
 
     // SetTooltip()
 //     toolTipPanel.Children.Add(new TextBlock { Text = name, FontSize = 16, Margin = new Thickness(2) })
