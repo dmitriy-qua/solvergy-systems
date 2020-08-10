@@ -1,28 +1,29 @@
 import React from 'react'
 import {Icon} from "@blueprintjs/core";
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
+import {FaObjectUngroup} from 'react-icons/fa';
 
-export const addObjectInTree = (objectType, objectName, id, info = null) => prevState => {
+export const addObjectInTree = (nodes, objectType, objectName, id, info = null) => {
 
     const object = getNewObjectData(objectType, objectName, id, info)
 
-    const objectTypeIndex = prevState[0].childNodes.findIndex(objType => objType.id === objectType)
+    const objectTypeIndex = nodes[0].childNodes.findIndex(objType => objType.id === objectType)
 
     const updatedObject = {
-        ...prevState[0].childNodes[objectTypeIndex],
+        ...nodes[0].childNodes[objectTypeIndex],
         disabled: false,
         childNodes: [
-            ...prevState[0].childNodes[objectTypeIndex].childNodes,
+            ...nodes[0].childNodes[objectTypeIndex].childNodes,
             object
         ]
     }
 
     return [{
-        ...prevState[0],
+        ...nodes[0],
         childNodes: [
-            ...prevState[0].childNodes.slice(0, objectTypeIndex),
+            ...nodes[0].childNodes.slice(0, objectTypeIndex),
             updatedObject,
-            ...prevState[0].childNodes.slice(objectTypeIndex + 1),
+            ...nodes[0].childNodes.slice(objectTypeIndex + 1),
 
         ]
     }]
@@ -39,11 +40,12 @@ const getNewObjectData = (objectType, objectName, id, info) => {
     }
 }
 
-const getObjectIcon = (objectType) => {
+export const getObjectIcon = (objectType) => {
     switch (objectType) {
         case "consumer":  return <Icon icon={<GiHouse size={16} className={"bp3-icon material-icon-tree"}/>}/>
         case "supplier":  return <Icon icon={<GiFactory size={16} className={"bp3-icon material-icon-tree"}/>}/>
         case "network":  return <Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon-tree"}/>}/>
+        case "objects":  return  <Icon icon={<FaObjectUngroup size={16} className={"bp3-icon material-icon-tree"}/>}/>
         default: return null
     }
 }

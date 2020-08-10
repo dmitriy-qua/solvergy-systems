@@ -20,7 +20,7 @@ import Consumer from "./objects/consumer";
 import {
     addNewConsumer,
     addNewNetwork,
-    addNewSupplier,
+    addNewSupplier, setNodes,
     setObjects,
 } from "./redux/actions/project";
 import Supplier from "./objects/supplier";
@@ -38,13 +38,12 @@ import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettin
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
 
 const HEADER_HEIGHT = 50
-const LEFT_MENU_WIDTH = 134
+//const LEFT_MENU_WIDTH = 134
 //const FOOTER_HEIGHT = 50
 
 let creatingObjectData = null
 let currentToaster = null
 let selectedObjectUnhook = null
-let nodesUnhook = null
 
 export const App = () => {
 
@@ -61,6 +60,7 @@ export const App = () => {
 
     const project = useSelector(state => state.project)
     const objects = useSelector(state => state.project && state.project.objects)
+    const nodes = useSelector(state => state.project && state.project.nodes)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
     const isAuth = useSelector(state => state.auth.isAuth)
     const loadedProject = useSelector(state => state.auth.loadedProject)
@@ -84,8 +84,6 @@ export const App = () => {
 
     const [toasts, setToasts] = useState([])
     const [toaster, setToaster] = useState(null)
-
-    const [nodes, setNodes] = useState(initialNodes)
 
     const [objectToDelete, setObjectToDelete] = useState(null)
 
@@ -124,7 +122,7 @@ export const App = () => {
 
         const newNodes = forEachNodeFilter(nodes[0], selectedObject.id)
 
-        setNodes([newNodes])
+        dispatch(setNodes([newNodes]))
         setObjectToDelete(selectedObject)
         setSelectedObject(null)
     }
@@ -181,11 +179,11 @@ export const App = () => {
         if (selectedObject) {
             selectShape(selectedObject)
             const newNodes = getSelectedTreeNode(selectedObject)
-            setNodes(newNodes)
+            dispatch(setNodes(newNodes))
         } else {
             selectShape(null)
             const newNodes = unselectAllNodes()
-            setNodes(newNodes)
+            dispatch(setNodes(newNodes))
         }
     }, [selectedObject])
 
@@ -219,6 +217,8 @@ export const App = () => {
 
         shape.set({id: creatingObjectData.id, objectType, networkType: creatingObjectData.networkType || null})
 
+        let newNodes = []
+
         switch (objectType) {
             case "consumer":
                 const consumer = new Consumer(
@@ -230,7 +230,8 @@ export const App = () => {
                     creatingObjectData.buildingsResult
                 )
                 dispatch(addNewConsumer(consumer))
-                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id))
+                newNodes = addObjectInTree(nodes, objectType, creatingObjectData.name, creatingObjectData.id)
+                dispatch(setNodes(newNodes))
                 break
             case "supplier":
                 const supplier = new Supplier(
@@ -243,7 +244,8 @@ export const App = () => {
                 )
                 const producer = producers.find(producer => producer.id === creatingObjectData.producerId)
                 dispatch(addNewSupplier(supplier))
-                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, producer.name))
+                newNodes = addObjectInTree(nodes, objectType, creatingObjectData.name, creatingObjectData.id, producer.name)
+                dispatch(setNodes(newNodes))
                 break
             case "network":
                 const network = new HeatNetwork(
@@ -254,7 +256,8 @@ export const App = () => {
                     creatingObjectData.networkType
                 )
                 dispatch(addNewNetwork(network))
-                setNodes(addObjectInTree(objectType, creatingObjectData.name, creatingObjectData.id, creatingObjectData.networkType))
+                newNodes = addObjectInTree(nodes, objectType, creatingObjectData.name, creatingObjectData.id, creatingObjectData.networkType)
+                dispatch(setNodes(newNodes))
                 break
             default:
                 break
@@ -265,7 +268,7 @@ export const App = () => {
 
     const updateNodeLabel = (id, name) => {
         const newNodes = updateNodeProperty(nodes, id, "label", name)
-        setNodes(newNodes)
+        dispatch(setNodes(newNodes))
     }
 
     return <div className="App">
@@ -335,7 +338,6 @@ export const App = () => {
                                               gridIsVisible={gridIsVisible}
                                               mapDistance={mapDistance}
                                               nodes={nodes}
-                                              setNodes={setNodes}
                                               setObjectType={setObjectType}
                                               finishCreateObject={finishCreateObject}
                                               toasts={toasts}
@@ -410,42 +412,4 @@ export const App = () => {
     </div>
 }
 
-const initialNodes = [
-    {
-        id: "objects",
-        hasCaret: true,
-        isExpanded: false,
-        secondaryLabel: <Icon icon={<FaObjectUngroup size={16} className={"bp3-icon material-icon-tree"}/>}/>,
-        label: "System objects",
-        childNodes: [
-            {
-                id: "consumer",
-                hasCaret: true,
-                isExpanded: false,
-                disabled: true,
-                secondaryLabel: <Icon icon={<GiHouse size={16} className={"bp3-icon material-icon-tree"}/>}/>,
-                label: "Consumers",
-                childNodes: [],
-            },
-            {
-                id: "supplier",
-                hasCaret: true,
-                isExpanded: false,
-                disabled: true,
-                secondaryLabel: <Icon icon={<GiFactory size={16} className={"bp3-icon material-icon-tree"}/>}/>,
-                label: "Suppliers",
-                childNodes: [],
-            },
-            {
-                id: "network",
-                hasCaret: true,
-                isExpanded: false,
-                disabled: true,
-                secondaryLabel: <Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon-tree"}/>}/>,
-                label: "Networks",
-                childNodes: [],
-            },
-        ],
-    },
-];
 

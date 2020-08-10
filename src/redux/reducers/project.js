@@ -8,12 +8,14 @@ import {
     CREATE_NEW_PROJECT,
     SET_INITIAL_STATE,
     SET_MARKET_MODEL_SETTINGS,
-    SET_NETWORKS_TEMPLATES,
+    SET_NETWORKS_TEMPLATES, SET_NODES,
     SET_OBJECTS,
     SET_PRODUCERS, SET_PROJECT,
     SET_PROJECT_RESULTS,
     SET_SUPPLIERS_TEMPLATES,
 } from "../constants/project";
+import {Icon} from "@blueprintjs/core";
+import {getObjectIcon} from "../../components/pages/Topology/components/Canvas/helpers/tree-helper";
 
 //let initialState = null
 
@@ -38,7 +40,44 @@ let initialState = {
     settings: null,
     results: null,
     canvas: null,
-    nodes: null,
+    nodes: [
+        {
+            id: "objects",
+            hasCaret: true,
+            isExpanded: false,
+            secondaryLabel: getObjectIcon("objects"),
+            label: "System objects",
+            childNodes: [
+                {
+                    id: "consumer",
+                    hasCaret: true,
+                    isExpanded: false,
+                    disabled: true,
+                    secondaryLabel: getObjectIcon("consumer"),
+                    label: "Consumers",
+                    childNodes: [],
+                },
+                {
+                    id: "supplier",
+                    hasCaret: true,
+                    isExpanded: false,
+                    disabled: true,
+                    secondaryLabel: getObjectIcon("supplier"),
+                    label: "Suppliers",
+                    childNodes: [],
+                },
+                {
+                    id: "network",
+                    hasCaret: true,
+                    isExpanded: false,
+                    disabled: true,
+                    secondaryLabel: getObjectIcon("network"),
+                    label: "Networks",
+                    childNodes: [],
+                },
+            ],
+        },
+    ],
     objects: {
         consumers: [],
         suppliers: [],
@@ -62,6 +101,11 @@ const project = (state = initialState, action) => {
                     ...state.objects,
                     [action.data.objectType]: action.data.newObjects
                 }
+            }
+        case SET_NODES:
+            return {
+                ...state,
+                nodes: action.data
             }
         case ADD_NEW_CONSUMER:
             return {

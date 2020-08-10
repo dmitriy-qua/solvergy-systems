@@ -3,11 +3,14 @@ import React, {useState} from "react";
 import {createUseStyles} from "react-jss";
 import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
 import {ObjectContextMenu} from "../../../../../common/ContextMenu/ObjectContextMenu";
+import {useDispatch} from "react-redux";
+import {setNodes} from "../../../../../../redux/actions/project";
 
-
-export const ObjectsTree = ({nodes, setNodes, getSelectedNode}) => {
+export const ObjectsTree = ({nodes, getSelectedNode}) => {
 
     const styles = useStyles()
+
+    const dispatch = useDispatch()
 
     const showContextMenu = (nodeData, path, e) => {
         handleNodeClick(nodeData, path, e, true)
@@ -20,19 +23,19 @@ export const ObjectsTree = ({nodes, setNodes, getSelectedNode}) => {
         //setNodes(newNodes)
 
         newNodes = updateNodeProperty(newNodes, nodeData.id, "isSelected", true)
-        setNodes(newNodes)
+        dispatch(setNodes(newNodes))
         getSelectedNode(nodeData, e, isRightClick)
     }
 
     const handleNodeCollapse = (nodeData) => {
         const newNodes = updateNodeProperty(nodes, nodeData.id, "isExpanded", false)
-        setNodes(newNodes)
+        dispatch(setNodes(newNodes))
     }
 
 
     const handleNodeExpand = (nodeData) => {
         const newNodes = updateNodeProperty(nodes, nodeData.id, "isExpanded", true)
-        setNodes(newNodes)
+        dispatch(setNodes(newNodes))
     }
 
     return <Tree

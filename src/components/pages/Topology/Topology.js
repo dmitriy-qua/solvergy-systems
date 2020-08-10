@@ -10,7 +10,6 @@ export const Topology = ({
                              gridIsVisible,
                              mapDistance,
                              nodes,
-                             setNodes,
                              setObjectType,
                              finishCreateObject,
                              toasts,
@@ -63,7 +62,6 @@ export const Topology = ({
         >
             <div className="pane-content">
                 <ObjectsTree nodes={nodes}
-                             setNodes={setNodes}
                              getSelectedNode={getSelectedNode}
 
                 />

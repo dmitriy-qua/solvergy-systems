@@ -4,7 +4,7 @@ import {
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE,
     SET_INITIAL_STATE, SET_MARKET_MODEL_SETTINGS,
-    SET_NETWORKS_TEMPLATES,
+    SET_NETWORKS_TEMPLATES, SET_NODES,
     SET_OBJECTS,
     SET_PRODUCERS, SET_PROJECT, SET_PROJECT_RESULTS, SET_SUPPLIERS_TEMPLATES,
 } from "../constants/project";
@@ -18,6 +18,11 @@ export const setInitialState = () => ({
 
 export const setObjects = (data) => ({
     type: SET_OBJECTS,
+    data
+})
+
+export const setNodes = (data) => ({
+    type: SET_NODES,
     data
 })
 
