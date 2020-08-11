@@ -1,9 +1,8 @@
 export default class Supplier {
 
-    constructor(id, name, shape, capacity, producerId, templateId) {
+    constructor(id, name, capacity, producerId, templateId) {
         this.id = id
         this.name = name
-        this.shape = shape
         this.producerId = producerId
         this.templateId = templateId
         this.capacity = capacity

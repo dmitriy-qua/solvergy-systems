@@ -153,7 +153,7 @@ export const addPolygonPoint = (o, mapHeight, mapDistance, activeShape, canvas, 
     return {pointArrayBuf: pointArray, lineArrayBuf: lineArray, activeLineBuf: activeLine, activeShapeBuf: activeShape}
 }
 
-export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, mapHeight, mapDistance, currentFigureType, finishCreateObject) => {
+export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, canvas, mapHeight, mapDistance, currentFigureType, finishCreateObject, currentCreatingObjectData, currentNodes) => {
     const points = [];
     $.each(pointArray, (index, point) => {
         points.push({
@@ -188,16 +188,17 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     })
     polygon.circle2 = circle2
 
+    polygon.set({id: currentCreatingObjectData.id, objectType: currentFigureType, objectCaching: false})
+
     canvas.add(circle2)
 
     canvas.moveTo(polygon, 3)
     canvas.moveTo(circle1, 4)
     canvas.moveTo(circle2, 4)
 
-
     canvas.renderAll()
 
-    finishCreateObject(currentFigureType, polygon)
+    finishCreateObject(currentFigureType, currentNodes)
 
 }
 
@@ -280,27 +281,27 @@ export const setMap = (canvas) => {
     return result
 }
 
-export const handleObjectSelection = (canvas, o, selectedObjectUnhook) => {
-    if (selectedObjectUnhook) {
-        if (selectedObjectUnhook.objectType === "network") {
-            if (selectedObjectUnhook.networkType === "supply") {
-                selectedObjectUnhook.set({stroke: "red"})
+export const handleObjectSelection = (canvas, shape, selectedObject) => {
+    if (selectedObject) {
+        if (selectedObject.objectType === "network") {
+            if (selectedObject.networkType === "supply") {
+                selectedObject.set({stroke: "red"})
             } else {
-                selectedObjectUnhook.set({stroke: "blue"})
+                selectedObject.set({stroke: "blue"})
             }
-        } else if (selectedObjectUnhook.objectType === "consumer" || selectedObjectUnhook.objectType === "supplier") {
-            selectedObjectUnhook.set({stroke: "#333333"})
+        } else if (selectedObject.objectType === "consumer" || selectedObject.objectType === "supplier") {
+            selectedObject.set({stroke: "#333333"})
         }
 
         canvas.renderAll()
     }
 
-    if (o.target && o.target.type !== "circle") {
-        o.target.set({stroke: "green"})
+    if (shape && shape.type !== "circle") {
+        shape.set({stroke: "green"})
         canvas.renderAll()
     }
 
-    return o.target
+    return shape
 }
 
 export const makeCircle = (left, top, line, type, mapHeight, mapDistance, networkType) => {

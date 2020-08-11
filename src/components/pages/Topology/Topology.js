@@ -31,7 +31,7 @@ export const Topology = ({
                              canvasState,
                              setCanvasState,
                              mapSize,
-                             setMapSize
+                             setMapSize,
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
@@ -78,6 +78,7 @@ export const Topology = ({
         >
             <div className="pane-content">
                 <ObjectsTree nodes={nodes}
+                             canvas={canvas}
                              getSelectedNode={getSelectedNode}
 
                 />

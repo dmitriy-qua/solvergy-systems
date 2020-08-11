@@ -5,8 +5,9 @@ import {forEachNode, updateNodeProperty} from "../helpers/tree-helper";
 import {ObjectContextMenu} from "../../../../../common/ContextMenu/ObjectContextMenu";
 import {useDispatch} from "react-redux";
 import {setNodes} from "../../../../../../redux/actions/project";
+import {handleObjectSelection} from "../helpers/canvas-helper";
 
-export const ObjectsTree = ({nodes, getSelectedNode}) => {
+export const ObjectsTree = ({nodes, getSelectedNode, canvas, selectedObjectUnhook, setSelectedObject}) => {
 
     const styles = useStyles()
 
@@ -24,6 +25,7 @@ export const ObjectsTree = ({nodes, getSelectedNode}) => {
 
         newNodes = updateNodeProperty(newNodes, nodeData.id, "isSelected", true)
         dispatch(setNodes(newNodes))
+
         getSelectedNode(nodeData, e, isRightClick)
     }
 

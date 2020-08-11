@@ -1,9 +1,8 @@
 export default class HeatNetwork {
 
-    constructor(id, name, shape, templateId, networkType) {
+    constructor(id, name, templateId, networkType) {
         this.id = id
         this.name = name
-        this.shape = shape
         this.templateId = templateId
         this.networkType = networkType
         this.properties = {

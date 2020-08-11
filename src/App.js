@@ -36,6 +36,7 @@ import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/N
 import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
 import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
+import {handleObjectSelection} from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -43,7 +44,6 @@ const HEADER_HEIGHT = 50
 
 let creatingObjectData = null
 let currentToaster = null
-let selectedObjectUnhook = null
 
 export const App = () => {
 
@@ -90,7 +90,6 @@ export const App = () => {
     const [canvasState, setCanvasState] = useState(initialState)
     const [mapSize, setMapSize] = useState({width: 2000, height: 2000})
 
-
     const [objectToDelete, setObjectToDelete] = useState(null)
 
     const [consumerDialogType, setConsumerDialogType] = useState(null)
@@ -103,13 +102,14 @@ export const App = () => {
 
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
-            const objectType = `${node.objectType}s`
-            const selectedObjectNode = objects[objectType].find(object => object.id === node.id)
-            setSelectedObject(selectedObjectNode.shape)
+            const selectedObjectNode = canvas.getObjects().find(object => object.id === node.id)
+
+            const newSelectedObject = handleObjectSelection(canvas, selectedObjectNode, selectedObject)
+            setSelectedObject(newSelectedObject)
 
             if (isRightClick) {
                 ContextMenu.show(
-                    <ObjectContextMenu selectedObject={selectedObjectNode.shape} deleteObject={deleteObject}
+                    <ObjectContextMenu selectedObject={selectedObjectNode} deleteObject={deleteObject}
                                        objects={objects} nodes={nodes} editObject={editObject}/>,
                     {left: e.clientX, top: e.clientY}
                 );
@@ -192,11 +192,9 @@ export const App = () => {
         setObjectType(objectType)
     }
 
-    const finishCreateObject = (objectType, shape) => {
+    const finishCreateObject = (objectType, nodes) => {
 
         currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
-
-        shape.set({id: creatingObjectData.id, objectType, networkType: creatingObjectData.networkType || null})
 
         let newNodes = []
 
@@ -205,7 +203,6 @@ export const App = () => {
                 const consumer = new Consumer(
                     creatingObjectData.id,
                     creatingObjectData.name,
-                    shape,
                     creatingObjectData.consumption,
                     creatingObjectData.importFromSolvergyBuildings,
                     creatingObjectData.buildingsResult
@@ -218,7 +215,6 @@ export const App = () => {
                 const supplier = new Supplier(
                     creatingObjectData.id,
                     creatingObjectData.name,
-                    shape,
                     creatingObjectData.capacity,
                     creatingObjectData.producerId,
                     creatingObjectData.templateId
@@ -232,7 +228,6 @@ export const App = () => {
                 const network = new HeatNetwork(
                     creatingObjectData.id,
                     creatingObjectData.name,
-                    shape,
                     creatingObjectData.templateId,
                     creatingObjectData.networkType
                 )

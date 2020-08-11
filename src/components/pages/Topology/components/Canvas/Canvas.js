@@ -29,12 +29,10 @@ let activeShape = false
 let canDrawLine = false
 let canDrawPolygon = false
 let _curX, _curY
-let currentName
+let currentSelectedObject = null
 let mapDistance = null
 let currentObjects = []
 let currentNodes = []
-let selectedObjectUnhook
-
 
 export const Canvas = ({
                            objectType,
@@ -58,7 +56,7 @@ export const Canvas = ({
                            canvasState,
                            setCanvasState,
                            mapSize,
-                           setMapSize
+                           setMapSize,
                        }) => {
 
     useEffect(() => {
@@ -68,6 +66,10 @@ export const Canvas = ({
     useEffect(() => {
         currentNodes = nodes
     }, [nodes])
+
+    useEffect(() => {
+        currentSelectedObject = selectedObject
+    }, [selectedObject])
 
     useEffect(() => {
         if (canvas) setMap()
@@ -218,6 +220,7 @@ export const Canvas = ({
 
     }
 
+
     useEffect(() => {
 
         if (canvas) {
@@ -228,13 +231,11 @@ export const Canvas = ({
     }, [canvasState])
 
     const onMouseDown = (canvas, height, width) => (o) => {
-
         if (o.button === 3) {
-            selectedObjectUnhook = handleObjectSelection(canvas, o, selectedObjectUnhook)
+            const newSelectedObject = handleObjectSelection(canvas, o.target, currentSelectedObject)
+            setSelectedObject(newSelectedObject)
             showContextMenu(o, canvas)
-        }
-
-        if (o.button === 1) {
+        } else if (o.button === 1) {
             if (o.e.altKey === true) {
                 canvas.isDragging = true
                 canvas.lastPosX = o.e.clientX
@@ -246,9 +247,13 @@ export const Canvas = ({
                 isDown = true
                 let pointer = canvas.getPointer(o)
                 let points = [pointer.x, pointer.y, pointer.x, pointer.y]
-                let name = generateId()
                 _line = new fabric.Line(points, lineGenerated(height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter))
-                _line.set({id: name, objectCaching: false})
+                _line.set({
+                    id: currentCreatingObjectData.id,
+                    objectType: currentFigureType,
+                    networkType: currentCreatingObjectData.networkType || null,
+                    objectCaching: false
+                })
                 canvas.add(_line)
                 canvas.add(
                     makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', height, mapDistance, currentCreatingObjectData.networkType),
@@ -258,7 +263,7 @@ export const Canvas = ({
                 canvas.renderAll()
             } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
                 if (o.target && o.target.id === pointArray[0].id) {
-                    generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, height, mapDistance, currentFigureType, finishCreateObject)
+                    generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, height, mapDistance, currentFigureType, finishCreateObject, currentCreatingObjectData, currentNodes)
                     activeLine = null
                     activeShape = null
                     polygonMode = false
@@ -277,24 +282,15 @@ export const Canvas = ({
                     activeShape = activeShapeBuf
                 }
             } else if (!canDrawLine && !canDrawPolygon) {
-                selectedObjectUnhook = handleObjectSelection(canvas, o, selectedObjectUnhook)
+                const newSelectedObject = handleObjectSelection(canvas, o.target, currentSelectedObject)
+                setSelectedObject(newSelectedObject)
 
                 if (o.target != null) {
-
                     let objType = o.target.get('type')
-
-                    if (objType !== 'circle') {
-                        setSelectedObject(o.target)
-                    }
-
                     if (objType === 'line') {
-                        //canvas.sendBackwards(o.target)
                         _curX = o.e.clientX
                         _curY = o.e.clientY
-
                     }
-                } else {
-                    setSelectedObject(o.target)
                 }
             }
         }
@@ -348,7 +344,7 @@ export const Canvas = ({
         if (currentFigureType === "network" && canDrawLine) {
             const distance = calculateLineDistance(_line, mapDistance, height)
             _line.set({distance})
-            finishCreateObject(currentFigureType, _line)
+            finishCreateObject(currentFigureType, currentNodes)
             _line = null
             isDown = false
             canDrawLine = false
