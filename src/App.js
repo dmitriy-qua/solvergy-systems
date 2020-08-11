@@ -1,5 +1,5 @@
 import './App.css'
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {NavigationBar} from "./components/common/Navigation/NavigationBar";
@@ -85,6 +85,12 @@ export const App = () => {
     const [toasts, setToasts] = useState([])
     const [toaster, setToaster] = useState(null)
 
+    const [canvas, setCanvas] = useState(null)
+    const [canvasHistory, setCanvasHistory] = useState([initialState])
+    const [canvasState, setCanvasState] = useState(initialState)
+    const [mapSize, setMapSize] = useState({width: 2000, height: 2000})
+
+
     const [objectToDelete, setObjectToDelete] = useState(null)
 
     const [consumerDialogType, setConsumerDialogType] = useState(null)
@@ -143,29 +149,6 @@ export const App = () => {
         }
     }
 
-    const selectShape = (object) => {
-        if (selectedObjectUnhook && selectedObjectUnhook.canvas) {
-            if (selectedObjectUnhook.objectType === "network") {
-                if (selectedObjectUnhook.networkType === "supply") {
-                    selectedObjectUnhook.set({stroke: "red"})
-                } else {
-                    selectedObjectUnhook.set({stroke: "blue"})
-                }
-            } else {
-                selectedObjectUnhook.set({stroke: "#333333"})
-            }
-
-            selectedObjectUnhook.canvas.renderAll()
-        }
-
-        if (object) {
-            object.set({stroke: "green"})
-            object.canvas.renderAll()
-        }
-
-        selectedObjectUnhook = object
-    }
-
     const unselectAllNodes = () => {
         return forEachNode(nodes, n => (n.isSelected = false))
     }
@@ -177,11 +160,9 @@ export const App = () => {
 
     useEffect(() => {
         if (selectedObject) {
-            selectShape(selectedObject)
             const newNodes = getSelectedTreeNode(selectedObject)
             dispatch(setNodes(newNodes))
         } else {
-            selectShape(null)
             const newNodes = unselectAllNodes()
             dispatch(setNodes(newNodes))
         }
@@ -271,6 +252,20 @@ export const App = () => {
         dispatch(setNodes(newNodes))
     }
 
+    const moveHistory = useCallback(
+        step => {
+            const currentStateIndex = canvasHistory.indexOf(canvasState);
+            const prevState = canvasHistory[currentStateIndex + step];
+            canvas.loadFromJSON(prevState);
+            setCanvasState(prevState);
+        },
+        [canvas, canvasState, canvasHistory, setCanvasState]
+    );
+
+    const onUndo = useCallback(() => moveHistory(-1), [moveHistory]);
+
+    const onRedo = useCallback(() => moveHistory(1), [moveHistory]);
+
     return <div className="App">
         <ReflexContainer orientation="horizontal" windowResizeAware={true}>
 
@@ -304,6 +299,8 @@ export const App = () => {
                           setStartDialog={setStartDialog}
                           authDialog={authDialog}
                           setAuthDialog={setAuthDialog}
+                          onUndo={onUndo}
+                          onRedo={onRedo}
                 />
             </ReflexElement>
 
@@ -354,6 +351,14 @@ export const App = () => {
                                               authDialog={authDialog}
                                               setAuthDialog={setAuthDialog}
                                               loadedProject={loadedProject}
+                                              canvas={canvas}
+                                              setCanvas={setCanvas}
+                                              canvasHistory={canvasHistory}
+                                              setCanvasHistory={setCanvasHistory}
+                                              canvasState={canvasState}
+                                              setCanvasState={setCanvasState}
+                                              mapSize={mapSize}
+                                              setMapSize={setMapSize}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
@@ -411,5 +416,10 @@ export const App = () => {
         </ReflexContainer>
     </div>
 }
+
+const initialState = {
+    version: "3.6.3",
+    objects: []
+};
 
 

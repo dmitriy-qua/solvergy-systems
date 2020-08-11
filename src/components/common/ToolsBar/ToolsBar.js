@@ -63,7 +63,9 @@ export const ToolsBar = ({
                              startDialog,
                              setStartDialog,
                              authDialog,
-                             setAuthDialog
+                             setAuthDialog,
+                             onUndo,
+                             onRedo
                          }) => {
 
     const styles = useStyles()
@@ -98,9 +100,9 @@ export const ToolsBar = ({
     const EditMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
 
-            {/*<MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}/>*/}
-            {/*<MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}/>*/}
-            {/*<MenuDivider/>*/}
+            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project} onClick={() => onUndo()}/>
+            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project} onClick={() => onRedo()}/>
+            <MenuDivider/>
 
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
@@ -258,45 +260,45 @@ export const ToolsBar = ({
             {project && currentPage === "topology" &&
             <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
-                {/*<Tooltip content="Undo"*/}
-                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
-                {/*         position={Position.BOTTOM}*/}
-                {/*         usePortal={true}*/}
-                {/*         modifiers={{*/}
-                {/*             arrow: {enabled: true},*/}
-                {/*             flip: {enabled: false},*/}
-                {/*             keepTogether: {enabled: true},*/}
-                {/*             preventOverflow: {enabled: false},*/}
-                {/*         }}*/}
-                {/*>*/}
-                {/*    <Button*/}
-                {/*        disabled={!project}*/}
-                {/*        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
-                {/*        className={[Classes.MINIMAL]}*/}
-                {/*        onClick={() => {*/}
-                {/*        }}/>*/}
-                {/*</Tooltip>*/}
+                <Tooltip content="Undo"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
+                        disabled={!project}
+                        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL]}
+                        onClick={() => onUndo()}
+                    />
+                </Tooltip>
 
-                {/*<Tooltip content="Redo"*/}
-                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
-                {/*         position={Position.BOTTOM}*/}
-                {/*         usePortal={true}*/}
-                {/*         modifiers={{*/}
-                {/*             arrow: {enabled: true},*/}
-                {/*             flip: {enabled: false},*/}
-                {/*             keepTogether: {enabled: true},*/}
-                {/*             preventOverflow: {enabled: false},*/}
-                {/*         }}*/}
-                {/*>*/}
-                {/*    <Button*/}
-                {/*        disabled={!project}*/}
-                {/*        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
-                {/*        className={[Classes.MINIMAL]}*/}
-                {/*        onClick={() => {*/}
-                {/*        }}/>*/}
-                {/*</Tooltip>*/}
+                <Tooltip content="Redo"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button
+                        disabled={!project}
+                        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL]}
+                        onClick={() => onRedo()}
+                    />
+                </Tooltip>
 
-                {/*<NavbarDivider/>*/}
+                <NavbarDivider/>
 
                 <Tooltip content="Calculate project"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}

@@ -59,7 +59,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
     canvas.renderAll();
 }
 
-export const limitCanvasBoundary = (currentObj, mapWidth, mapHeight) => {
+export const limitCanvasBoundary = (currentObj, mapHeight, mapWidth) => {
 
     const canvasHeight = mapHeight
     const canvasWidth = mapWidth
@@ -199,6 +199,122 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     finishCreateObject(currentFigureType, polygon)
 
+}
+
+export function setViewportTransform(canvas, zoom, isPan = false, opt = null, mapHeight, mapWidth) {
+    let vpt = canvas.viewportTransform
+    if (zoom < canvas.getHeight() / mapHeight) {
+        vpt[4] = canvas.getWidth() / 2 - mapWidth * zoom / 2
+        vpt[5] = canvas.getHeight() / 2 - mapHeight * zoom / 2
+    } else {
+        if (isPan) {
+            const e = opt.e
+            vpt[4] += e.clientX - canvas.lastPosX
+            vpt[5] += e.clientY - canvas.lastPosY
+        }
+
+        if (vpt[4] >= 0) {
+            vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - mapWidth * zoom / 2
+        } else if (vpt[4] < canvas.getWidth() - mapWidth * zoom) {
+            vpt[4] = canvas.getWidth() - mapWidth * zoom
+        }
+        if (vpt[5] >= 0) {
+            vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - mapHeight * zoom / 2
+        } else if (vpt[5] < canvas.getHeight() - mapHeight * zoom) {
+            vpt[5] = canvas.getHeight() - mapHeight * zoom
+        }
+    }
+    canvas.renderAll()
+}
+
+export function fitResponsiveCanvas(canvas, mapHeight, mapWidth) {
+    let containerSize = {
+        width: document.getElementById('div-canvas').offsetWidth,
+        height: document.getElementById('div-canvas').offsetHeight
+    }
+
+    canvas.setWidth(containerSize.width)
+    canvas.setHeight(containerSize.height)
+
+    const zoom = canvas.getZoom()
+    setViewportTransform(canvas, zoom, false, null, mapHeight, mapWidth)
+}
+
+export const setMap = (canvas) => {
+    canvas.clear()
+
+    const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+
+    const mapHeight = 2000
+    let mapWidth
+
+    const result = new Promise((resolve) => fabric.Image.fromURL(imagePath, (img) => {
+        const scaleY = mapHeight / img.height
+        const imageResolution = img.width / img.height
+        mapWidth = mapHeight * imageResolution
+
+        img.set({
+            id: "background",
+            scaleX: scaleY,
+            scaleY: scaleY,
+            stroke: '#cbcbcb',
+            strokeWidth: 2,
+            selectable: false,
+            hoverCursor: "default",
+            evented: false,
+        })
+
+        canvas.add(img)
+        canvas.sendToBack(img)
+        canvas.renderAll()
+
+        fitResponsiveCanvas(canvas, mapHeight, mapWidth)
+
+        resolve({mapHeight, mapWidth})
+
+        //loadObjects(canvas, objects)
+    })).then((result) => {
+        return result
+    })
+
+    return result
+}
+
+export const handleObjectSelection = (canvas, o, selectedObjectUnhook) => {
+    if (selectedObjectUnhook) {
+        if (selectedObjectUnhook.objectType === "network") {
+            if (selectedObjectUnhook.networkType === "supply") {
+                selectedObjectUnhook.set({stroke: "red"})
+            } else {
+                selectedObjectUnhook.set({stroke: "blue"})
+            }
+        } else if (selectedObjectUnhook.objectType === "consumer" || selectedObjectUnhook.objectType === "supplier") {
+            selectedObjectUnhook.set({stroke: "#333333"})
+        }
+
+        canvas.renderAll()
+    }
+
+    if (o.target && o.target.type !== "circle") {
+        o.target.set({stroke: "green"})
+        canvas.renderAll()
+    }
+
+    return o.target
+}
+
+export const makeCircle = (left, top, line, type, mapHeight, mapDistance, networkType) => {
+    const id = generateId()
+    const circle = new fabric.Circle(lineCircle(left, top, type, id, mapHeight, mapDistance, networkType))
+    circle.line = line
+    if (type === 'start') {
+        line.circle1 = circle
+    } else if (type === 'end') {
+        line.circle2 = circle
+    }
+    circle.moveTo(-2)
+    circle.setCoords()
+    return circle
 }
 
 export const calculateLineDistance = (line, mapDistance, mapHeight) => {

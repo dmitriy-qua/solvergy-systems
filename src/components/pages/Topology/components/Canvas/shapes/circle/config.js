@@ -25,7 +25,8 @@ export const circleGenerated = (mapHeight, mapDistance) => ({
     originY: 'center',
     hasBorders: false,
     hasControls: false,
-    objectCaching: false
+    objectCaching: false,
+    evented: false
 })
 
 export const lineCircle = (left, top, type, id, mapHeight, mapDistance, networkType) => ({

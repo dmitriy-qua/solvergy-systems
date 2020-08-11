@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useEffect, useRef, useState} from "react"
 import {ContextMenu, Menu, MenuDivider, MenuItem} from "@blueprintjs/core";
 import {fabric} from "fabric"
 import {lineGenerated} from "./shapes/line/config"
 import {
     addPolygonPoint, calculateLineDistance,
-    connectLineToOtherLine,
-    generatePolygon,
-    limitCanvasBoundary,
+    connectLineToOtherLine, fitResponsiveCanvas,
+    generatePolygon, handleObjectSelection,
+    limitCanvasBoundary, makeCircle,
     removeGrid,
-    setGrid,
+    setGrid, setMap, setViewportTransform,
 } from "./helpers/canvas-helper"
 import {generateId} from "../../../../../helpers/data-helper"
 import {lineCircle} from "./shapes/circle/config"
@@ -16,9 +16,10 @@ import {useSelector} from "react-redux"
 import ResizeSensor from 'resize-sensor'
 import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMenu";
 
-let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
+//let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
-let canvas, zoom = 1
+//let canvas
+let zoom = 1
 let _line, isDown, currentFigureType, currentCreatingObjectData
 let polygonMode = true
 let pointArray = []
@@ -32,6 +33,7 @@ let currentName
 let mapDistance = null
 let currentObjects = []
 let currentNodes = []
+let selectedObjectUnhook
 
 
 export const Canvas = ({
@@ -48,8 +50,16 @@ export const Canvas = ({
                            nodes,
                            editObject,
                            creatingObjectData,
-                           loadedProject
-}) => {
+                           loadedProject,
+                           canvas,
+                           setCanvas,
+                           canvasHistory,
+                           setCanvasHistory,
+                           canvasState,
+                           setCanvasState,
+                           mapSize,
+                           setMapSize
+                       }) => {
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -79,184 +89,22 @@ export const Canvas = ({
         }
     }, [objectToDelete])
 
-    useEffect(() => {
-
-        canvas = new fabric.Canvas('c', {
-            selection: false,
-            preserveObjectStacking: true,
-            fireMiddleClick: true,
-            fireRightClick: true,
-            stopContextMenu: true,
-            renderOnAddRemove: false
-        })
-
-        canvas.setZoom(0.25)
-        setMap()
-        new ResizeSensor(document.getElementById('div-canvas'), function () {
-            fitResponsiveCanvas()
-        });
-
-        canvas.on('mouse:down', onMouseDown)
-        canvas.on('mouse:move', onMouseMove)
-        canvas.on('mouse:up', onMouseUp)
-        canvas.on('object:moving', objectMoving)
-        canvas.on('mouse:wheel', onMouseWheel)
-
-    }, [])
 
     useEffect(() => {
 
-        if (gridIsVisible) {
-            setGrid(canvas, 40, MAP_WIDTH, MAP_HEIGHT, mapDistance)
-        } else {
-            removeGrid(canvas)
+        if (canvas) {
+            const {height, width} = mapSize
+
+            if (gridIsVisible) {
+                setGrid(canvas, 40, width, height, mapDistance)
+            } else {
+                removeGrid(canvas)
+            }
         }
 
     }, [gridIsVisible])
 
-
-    useEffect(() => {
-        currentFigureType = objectType
-        currentCreatingObjectData = creatingObjectData
-        if (objectType === "consumer" || objectType === "supplier") {
-            canvas.defaultCursor = 'crosshair'
-            canDrawPolygon = true
-            polygonMode = true
-            pointArray = []
-            lineArray = []
-            activeLine = null
-        } else if (objectType === "network") {
-            canvas.defaultCursor = 'crosshair'
-            canDrawLine = true
-        } else if (objectType === "none") {
-            canvas.defaultCursor = 'default'
-            canDrawPolygon = false
-            canDrawLine = false
-        }
-    }, [objectType])
-
-    const setMap = () => {
-        canvas.clear()
-
-        const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
-        fabric.Image.fromURL(imagePath, (img) => {
-
-            const scaleY = MAP_HEIGHT / img.height
-            const imageResolution = img.width / img.height
-            MAP_WIDTH = MAP_HEIGHT * imageResolution
-
-            img.set({
-                id: "background",
-                scaleX: scaleY,
-                scaleY: scaleY,
-                stroke: '#cbcbcb',
-                strokeWidth: 2,
-                selectable: false,
-                hoverCursor: "default",
-                evented: false,
-            })
-
-            canvas.add(img)
-            canvas.sendToBack(img)
-            canvas.renderAll()
-
-            fitResponsiveCanvas()
-            loadObjects(canvas, objects)
-        })
-    }
-
-    const loadObjects = (canvas, objects) => {
-        objects.consumers.forEach((item) => {
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-
-            canvas.moveTo(item.shape, 3)
-            canvas.moveTo(item.shape.circle1, 4)
-            canvas.moveTo(item.shape.circle2, 4)
-        })
-
-        objects.suppliers.forEach((item) => {
-            canvas.moveTo(item.shape, 3)
-            canvas.moveTo(item.shape.circle1, 4)
-            canvas.moveTo(item.shape.circle2, 4)
-
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-        })
-
-        objects.networks.forEach((item) => {
-            // canvas.moveTo(item.shape.circle1, -2)
-            // canvas.moveTo(item.shape.circle2, -2)
-            // canvas.moveTo(item.shape, -1)
-
-            canvas.add(item.shape)
-            canvas.add(item.shape.circle1)
-            canvas.add(item.shape.circle2)
-        })
-
-        canvas.renderAll()
-    }
-
-    function setViewportTransform(zoom, isPan = false, opt = null) {
-        let vpt = canvas.viewportTransform
-        if (zoom < canvas.getHeight() / MAP_HEIGHT) {
-            vpt[4] = canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2
-            vpt[5] = canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2
-        } else {
-            if (isPan) {
-                const e = opt.e
-                vpt[4] += e.clientX - canvas.lastPosX
-                vpt[5] += e.clientY - canvas.lastPosY
-            }
-
-            if (vpt[4] >= 0) {
-                vpt[4] = isPan ? 0 : canvas.getWidth() / 2 - MAP_WIDTH * zoom / 2
-            } else if (vpt[4] < canvas.getWidth() - MAP_WIDTH * zoom) {
-                vpt[4] = canvas.getWidth() - MAP_WIDTH * zoom
-            }
-            if (vpt[5] >= 0) {
-                vpt[5] = isPan ? 0 : canvas.getHeight() / 2 - MAP_HEIGHT * zoom / 2
-            } else if (vpt[5] < canvas.getHeight() - MAP_HEIGHT * zoom) {
-                vpt[5] = canvas.getHeight() - MAP_HEIGHT * zoom
-            }
-        }
-        canvas.renderAll()
-    }
-
-    function fitResponsiveCanvas() {
-        let containerSize = {
-            width: document.getElementById('div-canvas').offsetWidth,
-            height: document.getElementById('div-canvas').offsetHeight
-        }
-
-        canvas.setWidth(containerSize.width)
-        canvas.setHeight(containerSize.height)
-
-        const zoom = canvas.getZoom()
-        setViewportTransform(zoom, false, null)
-    }
-
-    const showContextMenu = (o) => {
-        o.e.preventDefault();
-
-        if (o.target && (o.target.type === "polygon" || o.target.type === "line")) {
-            setSelectedObject(o.target)
-            canvas.renderAll()
-
-            ContextMenu.show(
-                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects} nodes={currentNodes} editObject={editObject}/>,
-                { left: o.e.clientX, top: o.e.clientY }
-            );
-        } else {
-            setSelectedObject(o.target)
-            canvas.renderAll()
-        }
-
-    }
-
-    const onMouseWheel = (opt) => {
+    const onMouseWheel = (canvas, height, width) => (opt) => {
         if (opt.e.ctrlKey === true) {
             const delta = opt.e.deltaY
             let zoom = canvas.getZoom()
@@ -266,14 +114,124 @@ export const Canvas = ({
             canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom)
             opt.e.preventDefault()
             opt.e.stopPropagation()
-            setViewportTransform(zoom, false, null)
+            setViewportTransform(canvas, zoom, false, null, height, width)
+
+            const newCanvasState = canvas.toJSON()
+            setCanvasState(newCanvasState)
         }
     }
 
-    const onMouseDown = (o) => {
+    const useFabric = (onChange) => {
+        const fabricRef = useRef();
+        const disposeRef = useRef();
+        return useCallback((node) => {
+            if (node) {
+                fabricRef.current = new fabric.Canvas(node, {
+                    selection: false,
+                    preserveObjectStacking: true,
+                    fireMiddleClick: true,
+                    fireRightClick: true,
+                    stopContextMenu: true,
+                    renderOnAddRemove: false
+                })
+
+                if (onChange) {
+                    disposeRef.current = onChange(fabricRef.current);
+                }
+            } else if (fabricRef.current) {
+                fabricRef.current.dispose();
+                if (disposeRef.current) {
+                    disposeRef.current();
+                    disposeRef.current = undefined;
+                }
+            }
+        }, []);
+    };
+
+    const canvasRef = useFabric(async (fabricCanvas) => {
+        //fabricCanvas.loadFromJSON(canvasState)
+        fabricCanvas.setZoom(0.25)
+
+        const {mapHeight, mapWidth} = await setMap(fabricCanvas)
+
+        setMapSize({width: mapWidth, height: mapHeight})
+
+        new ResizeSensor(document.getElementById('div-canvas'), function () {
+            fitResponsiveCanvas(fabricCanvas, mapHeight, mapWidth)
+        });
+
+        fabricCanvas.on('mouse:down', onMouseDown(fabricCanvas, mapHeight, mapWidth))
+        fabricCanvas.on('mouse:move', onMouseMove(fabricCanvas, mapHeight, mapWidth))
+        fabricCanvas.on('mouse:up', onMouseUp(fabricCanvas, mapHeight, mapWidth))
+        fabricCanvas.on('object:moving', objectMoving(fabricCanvas, mapHeight, mapWidth))
+        fabricCanvas.on('mouse:wheel', onMouseWheel(fabricCanvas, mapHeight, mapWidth))
+
+        setCanvas(fabricCanvas)
+    });
+
+    // let canvasDep
+    // if (canvas) canvasDep = canvas.getObjects() //{...Object.keys(canvas).map(key => canvas[key])}
+
+    // useEffect( () => {
+    //     //console.log(canvas)
+    // }, [canvasDep])
+
+    useEffect(() => {
+        if (canvas) {
+            currentFigureType = objectType
+            currentCreatingObjectData = creatingObjectData
+            if (objectType === "consumer" || objectType === "supplier") {
+                canvas.defaultCursor = 'crosshair'
+                canDrawPolygon = true
+                polygonMode = true
+                pointArray = []
+                lineArray = []
+                activeLine = null
+            } else if (objectType === "network") {
+                canvas.defaultCursor = 'crosshair'
+                canDrawLine = true
+            } else if (objectType === "none") {
+                canvas.defaultCursor = 'default'
+                canDrawPolygon = false
+                canDrawLine = false
+            }
+        }
+
+    }, [objectType])
+
+    const showContextMenu = (o, canvas) => {
+        o.e.preventDefault();
+
+        if (o.target && (o.target.type === "polygon" || o.target.type === "line")) {
+            setSelectedObject(o.target)
+            canvas.renderAll()
+
+            ContextMenu.show(
+                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
+                                   nodes={currentNodes} editObject={editObject}/>,
+                {left: o.e.clientX, top: o.e.clientY}
+            );
+        } else {
+            setSelectedObject(o.target)
+            canvas.renderAll()
+        }
+
+    }
+
+    useEffect(() => {
+
+        if (canvas) {
+            //console.log(JSON.stringify(canvasState))
+            //console.log(canvasState)
+        }
+
+    }, [canvasState])
+
+    const onMouseDown = (canvas, height, width) => (o) => {
 
         if (o.button === 3) {
-            showContextMenu(o)
+            selectedObjectUnhook = handleObjectSelection(canvas, o, selectedObjectUnhook)
+            showContextMenu(o, canvas)
         }
 
         if (o.button === 1) {
@@ -289,18 +247,18 @@ export const Canvas = ({
                 let pointer = canvas.getPointer(o)
                 let points = [pointer.x, pointer.y, pointer.x, pointer.y]
                 let name = generateId()
-                _line = new fabric.Line(points, lineGenerated(MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter))
+                _line = new fabric.Line(points, lineGenerated(height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter))
                 _line.set({id: name, objectCaching: false})
                 canvas.add(_line)
                 canvas.add(
-                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType),
-                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', MAP_HEIGHT, mapDistance, currentCreatingObjectData.networkType)
+                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', height, mapDistance, currentCreatingObjectData.networkType),
+                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', height, mapDistance, currentCreatingObjectData.networkType)
                 )
                 //canvas.moveTo(_line, -2)
                 canvas.renderAll()
             } else if ((currentFigureType === "consumer" || currentFigureType === "supplier") && canDrawPolygon) {
                 if (o.target && o.target.id === pointArray[0].id) {
-                    generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, MAP_HEIGHT, mapDistance, currentFigureType, finishCreateObject)
+                    generatePolygon(pointArray, lineArray, activeShape, activeLine, canvas, height, mapDistance, currentFigureType, finishCreateObject)
                     activeLine = null
                     activeShape = null
                     polygonMode = false
@@ -311,7 +269,7 @@ export const Canvas = ({
                         lineArrayBuf,
                         activeLineBuf,
                         activeShapeBuf
-                    } = addPolygonPoint(o, MAP_HEIGHT, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray)
+                    } = addPolygonPoint(o, height, mapDistance, activeShape, canvas, activeLine, pointArray, lineArray)
 
                     pointArray = pointArrayBuf
                     lineArray = lineArrayBuf
@@ -319,12 +277,14 @@ export const Canvas = ({
                     activeShape = activeShapeBuf
                 }
             } else if (!canDrawLine && !canDrawPolygon) {
+                selectedObjectUnhook = handleObjectSelection(canvas, o, selectedObjectUnhook)
+
                 if (o.target != null) {
+
                     let objType = o.target.get('type')
 
                     if (objType !== 'circle') {
                         setSelectedObject(o.target)
-                        canvas.renderAll()
                     }
 
                     if (objType === 'line') {
@@ -335,59 +295,58 @@ export const Canvas = ({
                     }
                 } else {
                     setSelectedObject(o.target)
-                    canvas.renderAll()
                 }
             }
         }
-
     }
 
-    const onMouseMove = (o) => {
-
-        if (canvas.isDragging) {
-            const zoom = canvas.getZoom()
-            setViewportTransform(zoom, true, o)
-            canvas.lastPosX = o.e.clientX
-            canvas.lastPosY = o.e.clientY
-            canvas.renderAll()
-        }
-
-        if (currentFigureType === "network") {
-            if (!isDown) return
-            let pointer = canvas.getPointer(o)
-            _line.set({x2: pointer.x, y2: pointer.y})
-            _line.circle2.set({left: pointer.x, top: pointer.y})
-            _line.circle2.setCoords()
-            _line.setCoords()
-            connectLineToOtherLine(canvas, o, _line.circle2)
-            canvas.renderAll()
-        } else if (currentFigureType === "consumer" || currentFigureType === "supplier") {
-            if (activeLine && activeLine.class === "line") {
-                let pointer = canvas.getPointer(o)
-                activeLine.set({x2: pointer.x, y2: pointer.y})
-
-                let points = activeShape.get("points")
-                points[pointArray.length] = {
-                    x: pointer.x,
-                    y: pointer.y
-                }
-                activeShape.set({
-                    points: points
-                })
+    const onMouseMove = (canvas, height, width) => (o) => {
+        if (canvas) {
+            if (canvas.isDragging) {
+                const zoom = canvas.getZoom()
+                setViewportTransform(canvas, zoom, true, o, height, width)
+                canvas.lastPosX = o.e.clientX
+                canvas.lastPosY = o.e.clientY
                 canvas.renderAll()
             }
-            //canvas.renderAll()
+
+            if (currentFigureType === "network") {
+                if (!isDown) return
+                let pointer = canvas.getPointer(o)
+                _line.set({x2: pointer.x, y2: pointer.y})
+                _line.circle2.set({left: pointer.x, top: pointer.y})
+                _line.circle2.setCoords()
+                _line.setCoords()
+                connectLineToOtherLine(canvas, o, _line.circle2)
+                canvas.renderAll()
+            } else if (currentFigureType === "consumer" || currentFigureType === "supplier") {
+                if (activeLine && activeLine.class === "line") {
+                    let pointer = canvas.getPointer(o)
+                    activeLine.set({x2: pointer.x, y2: pointer.y})
+
+                    let points = activeShape.get("points")
+                    points[pointArray.length] = {
+                        x: pointer.x,
+                        y: pointer.y
+                    }
+                    activeShape.set({
+                        points: points
+                    })
+                    canvas.renderAll()
+                }
+                //canvas.renderAll()
+            }
         }
     }
 
-    const onMouseUp = (o) => {
+    const onMouseUp = (canvas, height, width) => (o) => {
         canvas.isDragging = false
-        canvas.forEachObject(function(o) {
+        canvas.forEachObject(function (o) {
             o.setCoords();
         });
 
         if (currentFigureType === "network" && canDrawLine) {
-            const distance = calculateLineDistance(_line, mapDistance, MAP_HEIGHT)
+            const distance = calculateLineDistance(_line, mapDistance, height)
             _line.set({distance})
             finishCreateObject(currentFigureType, _line)
             _line = null
@@ -398,36 +357,21 @@ export const Canvas = ({
             canDrawPolygon = false
             setObjectType("none")
         }
-
     }
 
-    const makeCircle = (left, top, line, type, MAP_HEIGHT, mapDistance, networkType) => {
-        const id = generateId()
-        const circle = new fabric.Circle(lineCircle(left, top, type, id, MAP_HEIGHT, mapDistance, networkType))
-        circle.line = line
-        if (type === 'start') {
-            line.circle1 = circle
-        } else if (type === 'end') {
-            line.circle2 = circle
-        }
-        circle.moveTo(-2)
-        circle.setCoords()
-        return circle
-    }
-
-    const objectMoving = (e) => {
+    const objectMoving = (canvas, height, width) => (e) => {
         if (!e.e.altKey) {
             if (currentFigureType === "none") {
                 const zoom = canvas.getZoom()
                 let p = e.target
 
-                limitCanvasBoundary(p, MAP_WIDTH, MAP_HEIGHT)
+                limitCanvasBoundary(p, height, width)
 
                 let objType = p.get('type')
 
                 if (objType === 'circle') {
                     connectLineToOtherLine(canvas, e, p)
-                    const distance = calculateLineDistance(p.line, mapDistance, MAP_HEIGHT)
+                    const distance = calculateLineDistance(p.line, mapDistance, height)
                     p.line.set({distance})
                     p.line.setCoords()
                     canvas.renderAll()
@@ -435,8 +379,8 @@ export const Canvas = ({
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
 
-                    limitCanvasBoundary(p.circle1, MAP_WIDTH, MAP_HEIGHT)
-                    limitCanvasBoundary(p.circle2, MAP_WIDTH, MAP_HEIGHT)
+                    limitCanvasBoundary(p.circle1, height, width)
+                    limitCanvasBoundary(p.circle2, height, width)
 
                     p.circle1.set({
                         'left': (p.circle1.left - _curXm),
@@ -465,18 +409,18 @@ export const Canvas = ({
                     _curX = e.e.clientX
                     _curY = e.e.clientY
 
-                    const distance = calculateLineDistance(p, mapDistance, MAP_HEIGHT)
+                    const distance = calculateLineDistance(p, mapDistance, height)
                     p.set({distance})
 
                     canvas.renderAll()
                 } else if (objType === 'polygon') {
                     p.circle1.set({
-                        left: p.getCenterPoint().x + 2 * (MAP_HEIGHT / mapDistance),
+                        left: p.getCenterPoint().x + 2 * (height / mapDistance),
                         top: p.getCenterPoint().y
                     })
 
                     p.circle2.set({
-                        left: p.getCenterPoint().x - 2 * (MAP_HEIGHT / mapDistance),
+                        left: p.getCenterPoint().x - 2 * (height / mapDistance),
                         top: p.getCenterPoint().y
                     })
                     p.circle1.setCoords()
@@ -486,10 +430,10 @@ export const Canvas = ({
                 }
             }
         }
-
     }
 
     return <div className="canvas-container" id="div-canvas">
-        <canvas className="canvas" id="c" height={"800"} width={"800"}/>
+        <canvas ref={canvasRef} className="canvas" id="c" height={"800"} width={"800"}/>
     </div>
 }
+

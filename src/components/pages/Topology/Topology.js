@@ -23,7 +23,15 @@ export const Topology = ({
                              objects,
                              editObject,
                              creatingObjectData,
-                             loadedProject
+                             loadedProject,
+                             canvas,
+                             setCanvas,
+                             canvasHistory,
+                             setCanvasHistory,
+                             canvasState,
+                             setCanvasState,
+                             mapSize,
+                             setMapSize
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
@@ -45,6 +53,14 @@ export const Topology = ({
                         editObject={editObject}
                         creatingObjectData={creatingObjectData}
                         loadedProject={loadedProject}
+                        canvas={canvas}
+                        setCanvas={setCanvas}
+                        canvasHistory={canvasHistory}
+                        setCanvasHistory={setCanvasHistory}
+                        canvasState={canvasState}
+                        setCanvasState={setCanvasState}
+                        mapSize={mapSize}
+                        setMapSize={setMapSize}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}
