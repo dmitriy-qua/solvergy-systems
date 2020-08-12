@@ -65,7 +65,8 @@ export const ToolsBar = ({
                              authDialog,
                              setAuthDialog,
                              onUndo,
-                             onRedo
+                             onRedo,
+                             toaster
                          }) => {
 
     const styles = useStyles()
@@ -83,13 +84,19 @@ export const ToolsBar = ({
             <MenuDivider/>
             <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>}
                       text="Open project..."
-                      onClick={() => dispatch(openProject("test"))}
+                      onClick={() => {
+                          dispatch(openProject("test"))
+                          toaster.show({message: `Project opened.`, intent: Intent.SUCCESS, timeout: 3000})
+                      }}
             />
             <MenuDivider/>
             <MenuItem icon={<FaSave size={"1rem"} className={"bp3-icon"}/>}
                       text="Save"
                       disabled={!project}
-                      onClick={() => dispatch(saveProject(project))}
+                      onClick={() => {
+                          dispatch(saveProject(project))
+                          toaster.show({message: `Project saved.`, intent: Intent.SUCCESS, timeout: 3000})
+                      }}
             />
             <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project}/>
             <MenuDivider/>

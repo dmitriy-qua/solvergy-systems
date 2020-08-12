@@ -32,7 +32,7 @@ export const addObjectInTree = (nodes, objectType, objectName, id, info = null) 
 const getNewObjectData = (objectType, objectName, id, info) => {
     return {
         id,
-        icon: getObjectIcon(objectType),
+        //icon: getObjectIcon(objectType),
         objectType,
         childNodes: [],
         hasCaret: false,

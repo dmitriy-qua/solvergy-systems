@@ -42,6 +42,6 @@ export const lineCircle = (left, top, type, id, mapHeight, mapDistance, networkT
     originX: 'center',
     originY: 'center',
     objectCaching: false,
-    id: type,
-    name: id
+    id: id,
+    name: type
 })

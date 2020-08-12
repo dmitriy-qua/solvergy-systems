@@ -305,8 +305,7 @@ export const handleObjectSelection = (canvas, shape, selectedObject) => {
     return shape
 }
 
-export const makeCircle = (left, top, line, type, mapHeight, mapDistance, networkType) => {
-    const id = generateId()
+export const makeCircle = (left, top, line, type, mapHeight, mapDistance, networkType, id) => {
     const circle = new fabric.Circle(lineCircle(left, top, type, id, mapHeight, mapDistance, networkType))
     circle.line = line
     if (type === 'start') {

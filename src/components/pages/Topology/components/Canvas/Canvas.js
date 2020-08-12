@@ -74,7 +74,7 @@ export const Canvas = ({
     }, [selectedObject])
 
     useEffect(() => {
-
+        currentFigureType = "none"
     }, [loadedProject])
 
     const objects = useSelector(state => state.project && state.project.objects)
@@ -152,7 +152,6 @@ export const Canvas = ({
     canvasRef = useFabric(async (fabricCanvas) => {
         //fabricCanvas.loadFromJSON(canvasState)
         fabricCanvas.setZoom(0.25)
-
         const {mapHeight, mapWidth} = await setMap(fabricCanvas)
 
         setMapSize({width: mapWidth, height: mapHeight})
@@ -246,8 +245,8 @@ export const Canvas = ({
                 })
                 canvas.add(_line)
                 canvas.add(
-                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', height, mapDistance, currentCreatingObjectData.networkType),
-                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', height, mapDistance, currentCreatingObjectData.networkType)
+                    makeCircle(_line.get('x1'), _line.get('y1'), _line, 'start', height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.id),
+                    makeCircle(_line.get('x2'), _line.get('y2'), _line, 'end', height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.id)
                 )
                 //canvas.moveTo(_line, -2)
                 canvas.renderAll()
@@ -354,11 +353,23 @@ export const Canvas = ({
                 limitCanvasBoundary(p, height, width)
 
                 let objType = p.get('type')
-
                 if (objType === 'circle') {
                     connectLineToOtherLine(canvas, e, p)
                     const distance = calculateLineDistance(p.line, mapDistance, height)
                     p.line.set({distance})
+
+                    if (p.name === "start") {
+                        p.line.set({
+                            'x1': p.left,
+                            'y1': p.top
+                        })
+                    } else {
+                        p.line.set({
+                            'x2': p.left,
+                            'y2': p.top
+                        })
+                    }
+
                     p.line.setCoords()
                     canvas.renderAll()
                 } else if (objType === 'line') {

@@ -15,7 +15,7 @@ import {
 } from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
 import {useDispatch, useSelector} from "react-redux";
-import {successLogin} from "./redux/actions/auth";
+import {setLoadedProjectId, successLogin} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
 import {
@@ -74,26 +74,12 @@ export const App = () => {
     //console.log(objects)
 
     useEffect(() => {
-        console.log(project)
-        if (canvas) {
+        if (canvas && loadedProject) {
             canvas.clear()
-
-            fabric.util.enlivenObjects(project.canvas.objects, function (objects) {
-                objects.forEach(function (o) {
-                    canvas.add(o)
-
-                    fabric.util.enlivenObjects([o.circle1, o.circle2], function (objects) {
-                        objects.forEach(function (o) {
-                            canvas.add(o);
-                        });
-                    })
-                });
-
-                console.log(canvas.getObjects())
-                canvas.renderAll()
-            });
-
+            setEnlivenObjects(canvas, project.canvas.objects)
+            setNodes(project.nodes)
             setProjectState(project)
+            dispatch(setLoadedProjectId(null))
         }
     }, [loadedProject])
 
@@ -284,7 +270,7 @@ export const App = () => {
                 break
         }
 
-        const canvasState = canvas.toObject(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name"])
+        const canvasState = canvas.toObject(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "line"])
         dispatch(setCanvasState(canvasState))
         saveState()
         creatingObjectData = null
@@ -300,6 +286,43 @@ export const App = () => {
         dispatch(setNodes(newNodes))
     }
 
+    const setEnlivenObjects = (canvas, objects) => {
+
+        fabric.util.enlivenObjects(objects, function (objs) {
+            objs.forEach(function (o) {
+                o.hasBorders = false
+                o.hasControls = false
+                o.perPixelTargetFind = true
+                if (o.type === "polygon" || o.type === "line") {
+                    objs.forEach(object => {
+                        if (object.type === "circle" && object.id === o.id) {
+
+                            if (o.type === "polygon") object.evented = false
+
+                            if (object.name === "start") {
+                                o.circle1 = object
+                            } else if (object.name === "end") {
+                                o.circle2 = object
+                            }
+                        }
+                    })
+
+                    canvas.add(o)
+                    canvas.add(o.circle1)
+                    canvas.add(o.circle2)
+                } else if (o.type === "image") {
+                    o.evented = false
+                    canvas.add(o)
+                }
+                o.setCoords()
+            });
+
+            canvas.renderAll()
+
+            setObjectType("none")
+        });
+    }
+
     const moveHistory = useCallback(
         step => {
             const currentStateIndex = projectHistory.indexOf(projectState);
@@ -308,36 +331,10 @@ export const App = () => {
             if (prevState && prevState.canvas.objects.length > 0) {
                 dispatch(setProject(prevState))
                 //console.log(prevState.canvas)
-
-                canvas.clear()
-
-                fabric.util.enlivenObjects(prevState.canvas.objects, function (objects) {
-                    objects.forEach(function (o) {
-
-                        if (o.type === "polygon" || o.type === "line") {
-                            objects.forEach(object => {
-
-                                if (object.type === "circle" && object.id === o.id) {
-                                    if (object.name === "start") {
-                                        o.circle1 = object
-                                    } else if (object.name === "end") {
-                                        o.circle2 = object
-                                    }
-                                }
-                            })
-
-                            canvas.add(o)
-                            canvas.add(o.circle1)
-                            canvas.add(o.circle2)
-                        } else if (o.type === "image") {
-                            canvas.add(o)
-                        }
-                    });
-
-                    canvas.renderAll()
-                });
-
                 setProjectState(prevState)
+                canvas.clear()
+                setEnlivenObjects(canvas, prevState.canvas.objects)
+                setNodes(prevState.nodes)
             }
         },
         [canvas, projectState, projectHistory, setProjectState]
@@ -382,6 +379,7 @@ export const App = () => {
                           setAuthDialog={setAuthDialog}
                           onUndo={onUndo}
                           onRedo={onRedo}
+                          toaster={toaster}
                 />
             </ReflexElement>
 
