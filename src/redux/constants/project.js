@@ -1,6 +1,7 @@
 export const SET_PROJECT = 'project/SET_PROJECT'
 export const SET_OBJECTS = 'project/SET_OBJECTS'
 export const SET_NODES = 'project/SET_NODES'
+export const SET_CANVAS_STATE = 'project/SET_CANVAS_STATE'
 export const ADD_NEW_CONSUMER = 'project/ADD_NEW_CONSUMER'
 export const ADD_NEW_SUPPLIER = 'project/ADD_NEW_SUPPLIER'
 export const ADD_NEW_PRODUCER = 'project/ADD_NEW_PRODUCER'

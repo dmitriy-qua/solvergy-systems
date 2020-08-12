@@ -1,5 +1,6 @@
 import './App.css'
 import React, {useCallback, useEffect, useState} from 'react'
+import {fabric} from "fabric"
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {NavigationBar} from "./components/common/Navigation/NavigationBar";
@@ -20,8 +21,8 @@ import Consumer from "./objects/consumer";
 import {
     addNewConsumer,
     addNewNetwork,
-    addNewSupplier, setNodes,
-    setObjects,
+    addNewSupplier, setCanvasState, setNodes,
+    setObjects, setProject,
 } from "./redux/actions/project";
 import Supplier from "./objects/supplier";
 import HeatNetwork from "./objects/heat-network";
@@ -44,6 +45,7 @@ const HEADER_HEIGHT = 50
 
 let creatingObjectData = null
 let currentToaster = null
+let currentProject = null
 
 export const App = () => {
 
@@ -59,6 +61,11 @@ export const App = () => {
 
 
     const project = useSelector(state => state.project)
+
+    useEffect(() => {
+        currentProject = project
+    }, [project])
+
     const objects = useSelector(state => state.project && state.project.objects)
     const nodes = useSelector(state => state.project && state.project.nodes)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
@@ -67,8 +74,27 @@ export const App = () => {
     //console.log(objects)
 
     useEffect(() => {
+        console.log(project)
+        if (canvas) {
+            canvas.clear()
 
+            fabric.util.enlivenObjects(project.canvas.objects, function (objects) {
+                objects.forEach(function (o) {
+                    canvas.add(o)
 
+                    fabric.util.enlivenObjects([o.circle1, o.circle2], function (objects) {
+                        objects.forEach(function (o) {
+                            canvas.add(o);
+                        });
+                    })
+                });
+
+                console.log(canvas.getObjects())
+                canvas.renderAll()
+            });
+
+            setProjectState(project)
+        }
     }, [loadedProject])
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
@@ -86,8 +112,9 @@ export const App = () => {
     const [toaster, setToaster] = useState(null)
 
     const [canvas, setCanvas] = useState(null)
-    const [canvasHistory, setCanvasHistory] = useState([initialState])
-    const [canvasState, setCanvasState] = useState(initialState)
+    const [projectHistory, setProjectHistory] = useState([project])
+    const [projectState, setProjectState] = useState(project)
+
     const [mapSize, setMapSize] = useState({width: 2000, height: 2000})
 
     const [objectToDelete, setObjectToDelete] = useState(null)
@@ -176,14 +203,32 @@ export const App = () => {
 
         switch (objectType) {
             case "consumer":
-                creatingObjectData = {id, name, consumption: properties.consumption, buildingsResult: properties.buildingsResult, importFromSolvergyBuildings: properties.importFromSolvergyBuildings}
+                creatingObjectData = {
+                    id,
+                    name,
+                    consumption: properties.consumption,
+                    buildingsResult: properties.buildingsResult,
+                    importFromSolvergyBuildings: properties.importFromSolvergyBuildings
+                }
                 break
             case "supplier":
-                creatingObjectData = {id, name, producerId: properties.producerId, templateId: properties.templateId, capacity: properties.capacity}
+                creatingObjectData = {
+                    id,
+                    name,
+                    producerId: properties.producerId,
+                    templateId: properties.templateId,
+                    capacity: properties.capacity
+                }
                 break
             case "network":
                 const networkTemplate = networkTemplates.find(template => template.id === properties.templateId)
-                creatingObjectData = {id, name, templateId: properties.templateId, networkType: properties.networkType, diameter: networkTemplate.properties.diameter}
+                creatingObjectData = {
+                    id,
+                    name,
+                    templateId: properties.templateId,
+                    networkType: properties.networkType,
+                    diameter: networkTemplate.properties.diameter
+                }
                 break
             default:
                 break
@@ -192,7 +237,7 @@ export const App = () => {
         setObjectType(objectType)
     }
 
-    const finishCreateObject = (objectType, nodes) => {
+    const finishCreateObject = (objectType, nodes, canvas) => {
 
         currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
 
@@ -239,7 +284,15 @@ export const App = () => {
                 break
         }
 
+        const canvasState = canvas.toObject(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name"])
+        dispatch(setCanvasState(canvasState))
+        saveState()
         creatingObjectData = null
+    }
+
+    const saveState = () => {
+        setProjectState(currentProject)
+        setProjectHistory(history => [...history, currentProject].slice(-4))
     }
 
     const updateNodeLabel = (id, name) => {
@@ -249,12 +302,45 @@ export const App = () => {
 
     const moveHistory = useCallback(
         step => {
-            const currentStateIndex = canvasHistory.indexOf(canvasState);
-            const prevState = canvasHistory[currentStateIndex + step];
-            canvas.loadFromJSON(prevState);
-            setCanvasState(prevState);
+            const currentStateIndex = projectHistory.indexOf(projectState);
+            const prevState = projectHistory[currentStateIndex + step]
+
+            if (prevState && prevState.canvas.objects.length > 0) {
+                dispatch(setProject(prevState))
+                //console.log(prevState.canvas)
+
+                canvas.clear()
+
+                fabric.util.enlivenObjects(prevState.canvas.objects, function (objects) {
+                    objects.forEach(function (o) {
+
+                        if (o.type === "polygon" || o.type === "line") {
+                            objects.forEach(object => {
+
+                                if (object.type === "circle" && object.id === o.id) {
+                                    if (object.name === "start") {
+                                        o.circle1 = object
+                                    } else if (object.name === "end") {
+                                        o.circle2 = object
+                                    }
+                                }
+                            })
+
+                            canvas.add(o)
+                            canvas.add(o.circle1)
+                            canvas.add(o.circle2)
+                        } else if (o.type === "image") {
+                            canvas.add(o)
+                        }
+                    });
+
+                    canvas.renderAll()
+                });
+
+                setProjectState(prevState)
+            }
         },
-        [canvas, canvasState, canvasHistory, setCanvasState]
+        [canvas, projectState, projectHistory, setProjectState]
     );
 
     const onUndo = useCallback(() => moveHistory(-1), [moveHistory]);
@@ -348,10 +434,6 @@ export const App = () => {
                                               loadedProject={loadedProject}
                                               canvas={canvas}
                                               setCanvas={setCanvas}
-                                              canvasHistory={canvasHistory}
-                                              setCanvasHistory={setCanvasHistory}
-                                              canvasState={canvasState}
-                                              setCanvasState={setCanvasState}
                                               mapSize={mapSize}
                                               setMapSize={setMapSize}
                                     />
@@ -412,9 +494,5 @@ export const App = () => {
     </div>
 }
 
-const initialState = {
-    version: "3.6.3",
-    objects: []
-};
 
 

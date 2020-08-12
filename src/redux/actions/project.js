@@ -2,7 +2,7 @@ import {
     ADD_NEW_CONSUMER,
     ADD_NEW_NETWORK, ADD_NEW_NETWORK_TEMPLATE,
     ADD_NEW_PRODUCER,
-    ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE,
+    ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE, SET_CANVAS_STATE,
     SET_INITIAL_STATE, SET_MARKET_MODEL_SETTINGS,
     SET_NETWORKS_TEMPLATES, SET_NODES,
     SET_OBJECTS,
@@ -23,6 +23,11 @@ export const setObjects = (data) => ({
 
 export const setNodes = (data) => ({
     type: SET_NODES,
+    data
+})
+
+export const setCanvasState = (data) => ({
+    type: SET_CANVAS_STATE,
     data
 })
 

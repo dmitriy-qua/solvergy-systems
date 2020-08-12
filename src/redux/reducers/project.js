@@ -5,7 +5,7 @@ import {
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER,
     ADD_NEW_SUPPLIER_TEMPLATE,
-    CREATE_NEW_PROJECT,
+    CREATE_NEW_PROJECT, SET_CANVAS_STATE,
     SET_INITIAL_STATE,
     SET_MARKET_MODEL_SETTINGS,
     SET_NETWORKS_TEMPLATES, SET_NODES,
@@ -39,7 +39,10 @@ let initialState = {
     },
     settings: null,
     results: null,
-    canvas: null,
+    canvas: {
+        version: "3.6.3",
+        objects: []
+    },
     nodes: [
         {
             id: "objects",
@@ -106,6 +109,11 @@ const project = (state = initialState, action) => {
             return {
                 ...state,
                 nodes: action.data
+            }
+        case SET_CANVAS_STATE:
+            return {
+                ...state,
+                canvas: action.data
             }
         case ADD_NEW_CONSUMER:
             return {

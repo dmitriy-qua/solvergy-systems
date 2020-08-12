@@ -12,9 +12,10 @@ import {
 } from "./helpers/canvas-helper"
 import {generateId} from "../../../../../helpers/data-helper"
 import {lineCircle} from "./shapes/circle/config"
-import {useSelector} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import ResizeSensor from 'resize-sensor'
 import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMenu";
+import {setCanvasState} from "../../../../../redux/actions/project";
 
 //let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
@@ -33,6 +34,7 @@ let currentSelectedObject = null
 let mapDistance = null
 let currentObjects = []
 let currentNodes = []
+let canvasRef = null
 
 export const Canvas = ({
                            objectType,
@@ -51,13 +53,13 @@ export const Canvas = ({
                            loadedProject,
                            canvas,
                            setCanvas,
-                           canvasHistory,
-                           setCanvasHistory,
-                           canvasState,
-                           setCanvasState,
                            mapSize,
                            setMapSize,
                        }) => {
+
+    const dispatch = useDispatch()
+
+    const canvasState = useSelector(state => state.project.canvas)
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -72,7 +74,7 @@ export const Canvas = ({
     }, [selectedObject])
 
     useEffect(() => {
-        if (canvas) setMap()
+
     }, [loadedProject])
 
     const objects = useSelector(state => state.project && state.project.objects)
@@ -117,9 +119,6 @@ export const Canvas = ({
             opt.e.preventDefault()
             opt.e.stopPropagation()
             setViewportTransform(canvas, zoom, false, null, height, width)
-
-            const newCanvasState = canvas.toJSON()
-            setCanvasState(newCanvasState)
         }
     }
 
@@ -150,7 +149,7 @@ export const Canvas = ({
         }, []);
     };
 
-    const canvasRef = useFabric(async (fabricCanvas) => {
+    canvasRef = useFabric(async (fabricCanvas) => {
         //fabricCanvas.loadFromJSON(canvasState)
         fabricCanvas.setZoom(0.25)
 
@@ -168,8 +167,10 @@ export const Canvas = ({
         fabricCanvas.on('object:moving', objectMoving(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('mouse:wheel', onMouseWheel(fabricCanvas, mapHeight, mapWidth))
 
+        dispatch(setCanvasState(fabricCanvas.toJSON(["id"])))
+
         setCanvas(fabricCanvas)
-    });
+    })
 
     // let canvasDep
     // if (canvas) canvasDep = canvas.getObjects() //{...Object.keys(canvas).map(key => canvas[key])}
@@ -198,7 +199,6 @@ export const Canvas = ({
                 canDrawLine = false
             }
         }
-
     }, [objectType])
 
     const showContextMenu = (o, canvas) => {
@@ -219,16 +219,6 @@ export const Canvas = ({
         }
 
     }
-
-
-    useEffect(() => {
-
-        if (canvas) {
-            //console.log(JSON.stringify(canvasState))
-            //console.log(canvasState)
-        }
-
-    }, [canvasState])
 
     const onMouseDown = (canvas, height, width) => (o) => {
         if (o.button === 3) {
@@ -344,7 +334,7 @@ export const Canvas = ({
         if (currentFigureType === "network" && canDrawLine) {
             const distance = calculateLineDistance(_line, mapDistance, height)
             _line.set({distance})
-            finishCreateObject(currentFigureType, currentNodes)
+            finishCreateObject(currentFigureType, currentNodes, canvas)
             _line = null
             isDown = false
             canDrawLine = false

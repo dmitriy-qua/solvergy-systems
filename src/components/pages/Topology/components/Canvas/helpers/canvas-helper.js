@@ -22,8 +22,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
                     'y2': circles[i].top
                 });
                 p.line.setCoords();
-            }
-            else if (p.id === 'start') {
+            } else if (p.id === 'start') {
                 p.line && p.line.set({
                     'x1': circles[i].left,
                     'y1': circles[i].top
@@ -35,8 +34,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
             //canvas.renderAll();
             break;
 
-        }
-        else {
+        } else {
             if (p.id === 'end') {
                 p.line && p.line.set({
                     'x2': p.left,
@@ -44,8 +42,7 @@ export const connectLineToOtherLine = (canvas, e, p) => {
                 });
                 p.line.setCoords();
 
-            }
-            else if (p.id === 'start') {
+            } else if (p.id === 'start') {
                 p.line && p.line.set({
                     'x1': p.left,
                     'y1': p.top
@@ -171,16 +168,19 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle1.set({
+        id: currentCreatingObjectData.id,
+        name: "start",
         left: polygon.getCenterPoint().x + 2 * (mapHeight / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
         fill: 'red'
     })
     polygon.circle1 = circle1
-    canvas.add(circle1)
 
     let circle2 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle2.set({
+        id: currentCreatingObjectData.id,
+        name: "end",
         left: polygon.getCenterPoint().x - 2 * (mapHeight / mapDistance),
         top: polygon.getCenterPoint().y,
         selectable: false,
@@ -190,15 +190,16 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     polygon.set({id: currentCreatingObjectData.id, objectType: currentFigureType, objectCaching: false})
 
-    canvas.add(circle2)
+    canvas.add(polygon.circle1)
+    canvas.add(polygon.circle2)
 
     canvas.moveTo(polygon, 3)
-    canvas.moveTo(circle1, 4)
-    canvas.moveTo(circle2, 4)
+    //canvas.moveTo(circle1, 4)
+    //canvas.moveTo(circle2, 4)
 
     canvas.renderAll()
 
-    finishCreateObject(currentFigureType, currentNodes)
+    finishCreateObject(currentFigureType, currentNodes, canvas)
 
 }
 

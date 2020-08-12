@@ -55,10 +55,6 @@ export const Topology = ({
                         loadedProject={loadedProject}
                         canvas={canvas}
                         setCanvas={setCanvas}
-                        canvasHistory={canvasHistory}
-                        setCanvasHistory={setCanvasHistory}
-                        canvasState={canvasState}
-                        setCanvasState={setCanvasState}
                         mapSize={mapSize}
                         setMapSize={setMapSize}
                 />
