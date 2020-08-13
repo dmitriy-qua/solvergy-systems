@@ -88,7 +88,16 @@ let initialState = {
         producers: [{name: "Main producer", id: "main_producer"}]
     },
     templates: {
-        networks: [],
+        networks: [{
+            properties: {
+                name: "mumu",
+                diameter: 77,
+                insulationThickness: 77,
+                insulationType: null,
+                pipeLayingType: null
+            },
+            id: "network_template_1597316964426"
+        }],
         suppliers: [],
     }
 }

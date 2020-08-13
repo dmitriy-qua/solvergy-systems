@@ -298,7 +298,7 @@ export const Canvas = ({
             if (currentFigureType === "network") {
                 if (!isDown) return
                 let pointer = canvas.getPointer(o)
-                _line.set({x2: pointer.x, y2: pointer.y})
+                _line.set({'x2': pointer.x, 'y2': pointer.y})
                 _line.circle2.set({left: pointer.x, top: pointer.y})
                 _line.circle2.setCoords()
                 _line.setCoords()
@@ -350,46 +350,64 @@ export const Canvas = ({
                 const zoom = canvas.getZoom()
                 let p = e.target
 
-                limitCanvasBoundary(p, height, width)
+                //limitCanvasBoundary(p, height, width)
 
                 let objType = p.get('type')
                 if (objType === 'circle') {
                     connectLineToOtherLine(canvas, e, p)
-                    const distance = calculateLineDistance(p.line, mapDistance, height)
-                    p.line.set({distance})
 
-                    if (p.name === "start") {
-                        p.line.set({
-                            'x1': p.left,
-                            'y1': p.top
-                        })
-                    } else {
-                        p.line.set({
-                            'x2': p.left,
-                            'y2': p.top
-                        })
-                    }
+                    const circleLine = canvas.getObjects().find(obj => {
+                        if (obj.type === "line") return obj.id === p.id
+                    })
 
-                    p.line.setCoords()
+                    const distance = calculateLineDistance(circleLine, mapDistance, height)
+                    circleLine.set({distance})
+
                     canvas.renderAll()
                 } else if (objType === 'line') {
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
 
-                    limitCanvasBoundary(p.circle1, height, width)
-                    limitCanvasBoundary(p.circle2, height, width)
+                    //limitCanvasBoundary(p.circle1, height, width)
+                    //limitCanvasBoundary(p.circle2, height, width)
 
                     p.circle1.set({
+                        stroke: "#aaaaaa",
                         'left': (p.circle1.left - _curXm),
                         'top': (p.circle1.top - _curYm)
                     })
                     p.circle1.setCoords()
 
                     p.circle2.set({
+                        stroke: "#aaaaaa",
                         'left': (p.circle2.left - _curXm),
                         'top': (p.circle2.top - _curYm)
                     })
                     p.circle2.setCoords()
+
+                    if (p.circle1.connectedTo) {
+                        const lineCircle = canvas.getObjects().find(obj => {
+                            if (obj.type === "circle") return (obj.id === p.circle1.connectedTo.id && obj.name === p.circle1.connectedTo.name)
+                        })
+
+                        lineCircle.set({
+                            stroke: "#aaaaaa",
+                        })
+
+                        p.circle1.set({connectedTo: null})
+                    }
+
+                    if (p.circle2.connectedTo) {
+                        const lineCircle = canvas.getObjects().find(obj => {
+                            if (obj.type === "circle") return (obj.id === p.circle2.connectedTo.id && obj.name === p.circle2.connectedTo.name)
+                        })
+
+                        lineCircle.set({
+                            stroke: "#aaaaaa",
+                        })
+
+                        p.circle2.set({connectedTo: null})
+                    }
 
                     p && p.set({
                         'x1': p.circle1.left,

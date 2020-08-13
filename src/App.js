@@ -270,7 +270,7 @@ export const App = () => {
                 break
         }
 
-        const canvasState = canvas.toObject(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "line"])
+        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
         dispatch(setCanvasState(canvasState))
         saveState()
         creatingObjectData = null
@@ -294,8 +294,19 @@ export const App = () => {
                 o.hasControls = false
                 o.perPixelTargetFind = true
                 if (o.type === "polygon" || o.type === "line") {
+
+                    if (o.type === "line"){
+                        o.set({
+                            x1: o.left + o.x1,
+                            x2: o.left + o.x2,
+                            y1: o.top + o.y1,
+                            y2: o.top + o.y2,
+                        })
+                    }
+
                     objs.forEach(object => {
                         if (object.type === "circle" && object.id === o.id) {
+
 
                             if (o.type === "polygon") object.evented = false
 
@@ -460,7 +471,9 @@ export const App = () => {
                                                      setDialogIsOpened={setProducersDialogIsOpened}/>
 
                                     <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
-                                                             setDialogIsOpened={setNetworksTemplatesDialogIsOpened}/>
+                                                             setDialogIsOpened={setNetworksTemplatesDialogIsOpened}
+                                                             canvas={canvas}
+                                    />
 
                                     <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
                                                               setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>

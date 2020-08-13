@@ -10,50 +10,95 @@ export const connectLineToOtherLine = (canvas, e, p) => {
     let circles = canvas.getObjects('circle');
 
     for (let i = 0; i < circles.length; i++) {
-        if (canvas.containsPoint(canvas.getPointer(e.e), circles[i]) && p.get('name') !== circles[i].get('name')) {
+        if (canvas.containsPoint(canvas.getPointer(e.e), circles[i]) && p.get('id') !== circles[i].get('id')) {
+
+            const circleLine = canvas.getObjects().find(obj => {
+                if (obj.type === "line") return obj.id === p.id
+            })
+
             p.set({
+                stroke: circleLine.networkType === "supply" ? "red" : "blue",
                 left: circles[i].left,
                 top: circles[i].top
+            })
+
+            circles[i].set({
+                stroke: circleLine.networkType === "supply" ? "red" : "blue",
             });
+
             p.setCoords();
-            if (p.id === 'end') {
-                p.line && p.line.set({
-                    'x2': circles[i].left,
-                    'y2': circles[i].top
+
+            if (p.name === 'end') {
+                circleLine && circleLine.set({
+                    x2: circles[i].left,
+                    y2: circles[i].top
                 });
-                p.line.setCoords();
-            } else if (p.id === 'start') {
-                p.line && p.line.set({
-                    'x1': circles[i].left,
-                    'y1': circles[i].top
+                circleLine.setCoords();
+            } else if (p.name === 'start') {
+                circleLine && circleLine.set({
+                    x1: circles[i].left,
+                    y1: circles[i].top
                 });
 
-                p.line.setCoords();
+                circleLine.setCoords();
             }
 
+            p.set({
+                connectedTo: {
+                    id: circles[i].id,
+                    name: circles[i].name
+                }
+            })
+            circles[i].set({
+                connectedTo: {
+                    id: p.id,
+                    name: p.name
+                }})
             //canvas.renderAll();
-            break;
+            break
 
         } else {
-            if (p.id === 'end') {
-                p.line && p.line.set({
+
+            p.set({
+                stroke: "#aaaaaa",
+            })
+
+            if (p.connectedTo) {
+                const lineCircle = canvas.getObjects().find(obj => {
+                    if (obj.type === "circle") return (obj.id === p.connectedTo.id && obj.name === p.connectedTo.name)
+                })
+
+                lineCircle.set({
+                    stroke: "#aaaaaa",
+                });
+            }
+
+            p.set({connectedTo: null})
+
+            const circleLine = canvas.getObjects().find(obj => {
+                if (obj.type === "line") return obj.id === p.id
+            })
+
+            if (p.name === 'end') {
+                circleLine && circleLine.set({
                     'x2': p.left,
                     'y2': p.top
                 });
-                p.line.setCoords();
+                circleLine.setCoords();
 
-            } else if (p.id === 'start') {
-                p.line && p.line.set({
+            } else if (p.name === 'start') {
+                circleLine && circleLine.set({
                     'x1': p.left,
                     'y1': p.top
                 });
-                p.line.setCoords();
+                circleLine.setCoords();
             }
 
             //canvas.renderAll();
         }
     }
-    canvas.renderAll();
+
+    //canvas.renderAll()
 }
 
 export const limitCanvasBoundary = (currentObj, mapHeight, mapWidth) => {
@@ -307,7 +352,7 @@ export const handleObjectSelection = (canvas, shape, selectedObject) => {
 
 export const makeCircle = (left, top, line, type, mapHeight, mapDistance, networkType, id) => {
     const circle = new fabric.Circle(lineCircle(left, top, type, id, mapHeight, mapDistance, networkType))
-    circle.line = line
+    //circle.line = line
     if (type === 'start') {
         line.circle1 = circle
     } else if (type === 'end') {

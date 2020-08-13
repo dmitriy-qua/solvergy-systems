@@ -17,7 +17,7 @@ import {pipeLayingTypes} from "../../../data/pipe-laying-types";
 import {insulationTypes} from "../../../data/insulation-types";
 
 
-export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate, setSelectedTemplate}) => {
+export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate, setSelectedTemplate, canvas}) => {
 
     const styles = useStyles()
 
@@ -240,11 +240,15 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                             const templateNetworks = networks.map(network => network.templateId === selectedTemplate.id && network)
 
                             templateNetworks.forEach(network => {
-                                network.shape.set({
+
+                                const canvasObject = canvas.getObjects().find(object => object.id === network.id)
+
+                                canvasObject.set({
                                     strokeWidth: 0.6 * (2000 / mapDistance) * (properties.diameter / 100)
                                 })
-                                network.shape.canvas.renderAll()
                             })
+
+                            canvas.renderAll()
 
                             const updatedTemplates = updateObjectKey(templates, selectedTemplate, properties, "properties")
                             dispatch(setNetworkTemplates(updatedTemplates))

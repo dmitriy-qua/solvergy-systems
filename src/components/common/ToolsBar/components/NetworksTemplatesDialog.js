@@ -14,7 +14,7 @@ import {NameTextFieldForm} from "./NameTextFieldForm";
 import {NetworkTemplateForm} from "./NetworkTemplateForm";
 
 
-export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => {
+export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened, canvas}) => {
 
     const styles = useStyles()
 
@@ -94,7 +94,9 @@ export const NetworksTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => 
                                               type={formType}
                                               templates={templates}
                                               selectedTemplate={selectedTemplate}
-                                              setSelectedTemplate={setSelectedTemplate}/>}
+                                              setSelectedTemplate={setSelectedTemplate}
+                                              canvas={canvas}
+            />}
 
         </div>
         <div className={Classes.DIALOG_FOOTER}>

@@ -66,7 +66,7 @@ export const ToolsBar = ({
                              setAuthDialog,
                              onUndo,
                              onRedo,
-                             toaster
+                             toaster,
                          }) => {
 
     const styles = useStyles()
