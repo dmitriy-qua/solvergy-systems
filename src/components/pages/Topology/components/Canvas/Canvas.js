@@ -35,6 +35,7 @@ let mapDistance = null
 let currentObjects = []
 let currentNodes = []
 let canvasRef = null
+let currentProject = null
 
 export const Canvas = ({
                            objectType,
@@ -55,11 +56,19 @@ export const Canvas = ({
                            setCanvas,
                            mapSize,
                            setMapSize,
+                           setProjectState,
+                           setProjectHistory
                        }) => {
 
     const dispatch = useDispatch()
 
     const canvasState = useSelector(state => state.project.canvas)
+
+    const project = useSelector(state => state.project)
+
+    useEffect(() => {
+        currentProject = project
+    }, [project])
 
     useEffect(() => {
         mapDistance = map_Distance
@@ -90,6 +99,10 @@ export const Canvas = ({
             canvas.remove(objectToDelete)
             canvas.renderAll()
             setObjectToDelete(null)
+            const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
+            dispatch(setCanvasState(canvasState))
+            setProjectState(currentProject)
+            setProjectHistory(history => [...history, currentProject].slice(-4))
         }
     }, [objectToDelete])
 
@@ -209,7 +222,7 @@ export const Canvas = ({
 
             ContextMenu.show(
                 <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
-                                   nodes={currentNodes} editObject={editObject}/>,
+                                   nodes={currentNodes} editObject={editObject} canvas={canvas}/>,
                 {left: o.e.clientX, top: o.e.clientY}
             );
         } else {

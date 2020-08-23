@@ -11,7 +11,7 @@ import {
     FaPencilAlt
 } from 'react-icons/fa';
 
-export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject}) => {
+export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject, canvas}) => {
 
     const styles = useStyles()
 
@@ -24,7 +24,7 @@ export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes,
                   text="Delete object"
                   disabled={!selectedObject}
                   intent={Intent.DANGER}
-                  onClick={() => deleteObject(selectedObject, objects, nodes)}/>
+                  onClick={() => deleteObject(selectedObject, objects, nodes, canvas)}/>
     </Menu>
 }
 

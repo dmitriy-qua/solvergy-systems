@@ -85,7 +85,7 @@ let initialState = {
         consumers: [],
         suppliers: [],
         networks: [],
-        producers: [{name: "Main producer", id: "main_producer"}]
+        producers: [{name: "Main producer", id: "main_producer", color: "#f44336"}]
     },
     templates: {
         networks: [{

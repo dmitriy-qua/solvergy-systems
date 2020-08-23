@@ -19,7 +19,7 @@ import {setObjects} from "../../../../redux/actions/project";
 import {getBuildingsResults} from "../../../../redux/actions/buildings";
 
 
-export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
+export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas}) => {
 
     const styles = useStyles()
 
@@ -204,6 +204,10 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                                     name,
                                     properties: {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem}
                                 })
+
+                                const canvasObject = canvas.getObjects().find(object => object.id === selectedObject.id)
+                                canvasObject.set({name})
+
                                 dispatch(setObjects({objectType: "consumers", newObjects: updatedConsumers}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {

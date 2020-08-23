@@ -6,20 +6,6 @@ export default class Supplier {
         this.producerId = producerId
         this.templateId = templateId
         this.capacity = capacity
-
-        this.properties = {
-            totalForecastedVariableCosts: null,
-            totalForecastedFixedCosts: null,
-            totalForecastedCosts: null,
-            totalForecastedProfit: null,
-            forecastedTariff: null,
-            rateOfReturn: null,
-            productionPotentialPerMonth: null,
-            bidGcalAmount: null,
-            annualBidGcalAmount: null,
-            relativeCapacityToProducerMax: null,
-            bufCapacity: null
-        }
     }
 
     // SetTooltip()

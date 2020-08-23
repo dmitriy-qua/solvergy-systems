@@ -113,6 +113,16 @@ export const App = () => {
     const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
     const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
 
+    const saveState = () => {
+        setProjectState(currentProject)
+        setProjectHistory(history => [...history, currentProject].slice(-4))
+    }
+
+    const saveCanvasState = (canvas) => {
+        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
+        dispatch(setCanvasState(canvasState))
+    }
+
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
             const selectedObjectNode = canvas.getObjects().find(object => object.id === node.id)
@@ -123,7 +133,7 @@ export const App = () => {
             if (isRightClick) {
                 ContextMenu.show(
                     <ObjectContextMenu selectedObject={selectedObjectNode} deleteObject={deleteObject}
-                                       objects={objects} nodes={nodes} editObject={editObject}/>,
+                                       objects={objects} nodes={nodes} editObject={editObject} canvas={canvas}/>,
                     {left: e.clientX, top: e.clientY}
                 );
             }
@@ -133,7 +143,7 @@ export const App = () => {
         }
     }
 
-    const deleteObject = (selectedObject, objects, nodes) => {
+    const deleteObject = (selectedObject, objects, nodes, canvas) => {
 
         const objectType = `${selectedObject.objectType}s`
         const newObjects = objects[objectType].filter(object => object.id !== selectedObject.id)
@@ -203,7 +213,8 @@ export const App = () => {
                     name,
                     producerId: properties.producerId,
                     templateId: properties.templateId,
-                    capacity: properties.capacity
+                    capacity: properties.capacity,
+                    producers
                 }
                 break
             case "network":
@@ -224,8 +235,6 @@ export const App = () => {
     }
 
     const finishCreateObject = (objectType, nodes, canvas) => {
-
-        currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
 
         let newNodes = []
 
@@ -250,7 +259,7 @@ export const App = () => {
                     creatingObjectData.producerId,
                     creatingObjectData.templateId
                 )
-                const producer = producers.find(producer => producer.id === creatingObjectData.producerId)
+                const producer = creatingObjectData.producers.find(producer => producer.id === creatingObjectData.producerId)
                 dispatch(addNewSupplier(supplier))
                 newNodes = addObjectInTree(nodes, objectType, creatingObjectData.name, creatingObjectData.id, producer.name)
                 dispatch(setNodes(newNodes))
@@ -270,15 +279,12 @@ export const App = () => {
                 break
         }
 
-        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
-        dispatch(setCanvasState(canvasState))
+        saveCanvasState(canvas)
         saveState()
-        creatingObjectData = null
-    }
 
-    const saveState = () => {
-        setProjectState(currentProject)
-        setProjectHistory(history => [...history, currentProject].slice(-4))
+        currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
+
+        creatingObjectData = null
     }
 
     const updateNodeLabel = (id, name) => {
@@ -295,7 +301,7 @@ export const App = () => {
                 o.perPixelTargetFind = true
                 if (o.type === "polygon" || o.type === "line") {
 
-                    if (o.type === "line"){
+                    if (o.type === "line") {
                         o.set({
                             x1: o.left + o.x1,
                             x2: o.left + o.x2,
@@ -445,12 +451,15 @@ export const App = () => {
                                               setCanvas={setCanvas}
                                               mapSize={mapSize}
                                               setMapSize={setMapSize}
+                                              setProjectState={setProjectState}
+                                              setProjectHistory={setProjectHistory}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
                                                     dialogIsOpened={consumerDialogType}
                                                     setDialogIsOpened={setConsumerDialogType}
                                                     updateNodeLabel={updateNodeLabel}
+                                                    canvas={canvas}
                                     />
 
                                     <SupplierDialog startCreateObject={startCreateObject}
@@ -458,6 +467,7 @@ export const App = () => {
                                                     dialogIsOpened={supplierDialogType}
                                                     setDialogIsOpened={setSupplierDialogType}
                                                     updateNodeLabel={updateNodeLabel}
+                                                    canvas={canvas}
                                     />
 
                                     <NetworkDialog startCreateObject={startCreateObject}
@@ -465,6 +475,7 @@ export const App = () => {
                                                    dialogIsOpened={networkDialogType}
                                                    setDialogIsOpened={setNetworkDialogType}
                                                    updateNodeLabel={updateNodeLabel}
+                                                   canvas={canvas}
                                     />
 
                                     <ProducersDialog dialogIsOpened={producersDialogIsOpened}

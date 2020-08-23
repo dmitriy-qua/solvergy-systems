@@ -207,8 +207,9 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     $.each(lineArray, (index, line) => {
         canvas.remove(line);
     });
-    canvas.remove(activeShape).remove(activeLine);
-    let polygon = new fabric.Polygon(points, polygonGenerated(mapHeight, mapDistance, currentFigureType));
+    canvas.remove(activeShape).remove(activeLine)
+    const color = getPolygonFillColor(currentFigureType, currentCreatingObjectData)
+    let polygon = new fabric.Polygon(points, polygonGenerated(mapHeight, mapDistance, color))
     canvas.add(polygon)
 
     let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
@@ -233,7 +234,7 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     })
     polygon.circle2 = circle2
 
-    polygon.set({id: currentCreatingObjectData.id, objectType: currentFigureType, objectCaching: false})
+    polygon.set({id: currentCreatingObjectData.id, objectType: currentFigureType, objectCaching: false, name: currentCreatingObjectData.name})
 
     canvas.add(polygon.circle1)
     canvas.add(polygon.circle2)
@@ -246,6 +247,15 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     finishCreateObject(currentFigureType, currentNodes, canvas)
 
+}
+
+const getPolygonFillColor = (objectType, currentCreatingObjectData) => {
+    if (objectType === "supplier") {
+        const producer = currentCreatingObjectData.producers.find(producer => producer.id === currentCreatingObjectData.producerId)
+        return producer.color
+    } else if (objectType === "consumer") {
+        return "#528be0"
+    }
 }
 
 export function setViewportTransform(canvas, zoom, isPan = false, opt = null, mapHeight, mapWidth) {

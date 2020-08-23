@@ -1,5 +1,3 @@
-import {setProducers} from "../redux/actions/project";
-
 const MIN = 99, MAX = 999999
 
 export const generateId = () => {

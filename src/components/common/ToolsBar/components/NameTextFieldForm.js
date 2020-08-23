@@ -7,9 +7,9 @@ import {
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {useDispatch, useSelector} from "react-redux"
-import {generateId, updateObjectKey} from "../../../../helpers/data-helper";
+import {generateId, updateObject, updateObjectKey} from "../../../../helpers/data-helper";
 import {addNewProducer, setProducers} from "../../../../redux/actions/project";
-
+import {CirclePicker} from 'react-color'
 
 export const NameTextFieldForm = ({type, setType, producers, selectedProducer, setSelectedProducer}) => {
 
@@ -18,69 +18,91 @@ export const NameTextFieldForm = ({type, setType, producers, selectedProducer, s
     const dispatch = useDispatch()
 
     const [name, setName] = useState(selectedProducer ? selectedProducer.name : "")
+    const [color, setColor] = useState(selectedProducer ? selectedProducer.color : "")
     const [nameTouched, setNameTouched] = useState(false)
+    const [colorTouched, setColorTouched] = useState(false)
 
     const resetStates = () => {
         setName("")
         setNameTouched(false)
+        setColor("")
+        setColorTouched(false)
     }
 
     return <div style={{paddingRight: 10, paddingLeft: 10}}>
-                <p className={styles.dialogText}>
-                    New producer name:
-                </p>
-                <FormGroup
-                    disabled={false}
-                    helperText={(!name && nameTouched) && "Please enter producer name..."}
-                    intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
-                    labelFor="name"
-                    fill
-                    className={styles.labelText}
-                >
-                    <InputGroup id="name"
-                                placeholder="Enter producer name"
-                                className={styles.labelText}
-                                intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
-                                value={name}
-                                type={"text"}
-                                leftIcon={"clipboard"}
-                                onChange={e => {
-                                    setNameTouched(true)
-                                    setName(e.target.value)
-                                }}
-                    />
-                </FormGroup>
+        <p className={styles.dialogText}>
+            New producer name:
+        </p>
+        <FormGroup
+            disabled={false}
+            helperText={(!name && nameTouched) && "Please enter producer name..."}
+            intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
+            labelFor="name"
+            fill
+            className={styles.labelText}
+        >
+            <InputGroup id="name"
+                        placeholder="Enter producer name"
+                        className={styles.labelText}
+                        intent={(!name && nameTouched) ? Intent.DANGER : Intent.NONE}
+                        value={name}
+                        type={"text"}
+                        leftIcon={"clipboard"}
+                        onChange={e => {
+                            setNameTouched(true)
+                            setName(e.target.value)
+                        }}
+            />
+        </FormGroup>
 
-                <div style={{display: "flex", justifyContent: "center"}}>
-                    <Button intent={Intent.SUCCESS}
-                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                            onClick={() => {
-                                if (type === "new") {
-                                    dispatch(addNewProducer({name, id: "producer_" + generateId()}))
-                                } else if (type === "edit") {
-                                    const updatedProducers = updateObjectKey(producers, selectedProducer, name, "name")
-                                    dispatch(setProducers(updatedProducers))
-                                }
+        <p className={styles.dialogText}>
+            Producer color:
+        </p>
 
-                                resetStates()
-                                setSelectedProducer(null)
-                                setType(null)
-                            }}>
-                        {type === "new" ? "Create" : "Save"}
-                    </Button>
-
-                    <Button intent={Intent.NONE}
-                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
-                            onClick={() => {
-                                setSelectedProducer(null)
-                                resetStates()
-                                setType(null)
-                            }}>
-                        Cancel
-                    </Button>
-
-                </div>
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <div style={{marginTop: 10}}>
+                <CirclePicker
+                    width={346}
+                    circleSize={24}
+                    color={color}
+                    onChangeComplete={(color) => setColor(color.hex)}
+                />
             </div>
+        </div>
+
+        <br/>
+
+        <div style={{display: "flex", justifyContent: "center"}}>
+            <Button intent={Intent.SUCCESS}
+                    disabled={!color || !name}
+                    style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                    onClick={() => {
+                        if (type === "new") {
+                            dispatch(addNewProducer({name, color, id: "producer_" + generateId()}))
+                        } else if (type === "edit") {
+                            const updatedProducers = updateObject(producers, selectedProducer.id, {name, color})
+                            dispatch(setProducers(updatedProducers))
+                        }
+
+                        resetStates()
+                        setSelectedProducer(null)
+                        setType(null)
+                    }}>
+                {type === "new" ? "Create" : "Save"}
+            </Button>
+
+            <Button intent={Intent.NONE}
+                    style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                    onClick={() => {
+                        setSelectedProducer(null)
+                        resetStates()
+                        setType(null)
+                    }}>
+                Cancel
+            </Button>
+
+        </div>
+    </div>
 
 }
 

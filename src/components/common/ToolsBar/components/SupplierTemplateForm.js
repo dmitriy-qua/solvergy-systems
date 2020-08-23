@@ -326,7 +326,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
                 <p className={styles.dialogText}>
                     Electricity costs ($/MWh or $/MWh):
                 </p>
-                <NumericInput placeholder="Enter value in mm..."
+                <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
                                   setElectricityCostsTouched(true)
                                   setProperties(prevState => ({
@@ -382,7 +382,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
                 <p className={styles.dialogText}>
                     Annual salary costs for administration per 1 MW station capacity, $/MW:
                 </p>
-                <NumericInput placeholder="Enter value in mm..."
+                <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
                                   setAnnualSalaryCostsForAdministrationPerOneMWTouched(true)
                                   setProperties(prevState => ({
@@ -438,7 +438,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
                 <p className={styles.dialogText}>
                     Service life of the station, years:
                 </p>
-                <NumericInput placeholder="Enter value in mm..."
+                <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
                                   setDepreciationYearsTouched(true)
                                   setProperties(prevState => ({

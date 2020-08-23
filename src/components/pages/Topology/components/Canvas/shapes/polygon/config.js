@@ -12,10 +12,10 @@ export const polygonDrawing = (mapHeight, mapDistance) => ({
     objectCaching: false
 })
 
-export const polygonGenerated = (mapHeight, mapDistance, objectType) => ({
+export const polygonGenerated = (mapHeight, mapDistance, color) => ({
     stroke: 'black',
     strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),
-    fill: getPolygonFillColor(objectType),
+    fill: color,
     opacity: 0.4,
     hasBorders: false,
     hasControls: false,
@@ -39,10 +39,3 @@ export const polygonLine = (mapHeight, mapDistance) => ({
     objectCaching: false
 })
 
-const getPolygonFillColor = (objectType) => {
-    if (objectType === "supplier") {
-        return "#ee7265"
-    } else if (objectType === "consumer") {
-        return "#528be0"
-    }
-}

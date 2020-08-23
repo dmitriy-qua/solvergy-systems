@@ -181,30 +181,6 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
                     Type of network laying:
                 </p>
                 <Select
-                    items={insulationTypes}
-                    itemRenderer={renderInsulationTypeItem}
-                    activeItem={properties.insulationType && properties.insulationType.name}
-                    className="fullwidth"
-                    popoverProps={{
-                        minimal: true,
-                        portalClassName: "fullwidth",
-                        popoverClassName: "selectPopover"
-                    }}
-                    filterable={false}
-                    onItemSelect={handleInsulationTypeSelect}
-                >
-                    <Button text={<span
-                        className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select insulation type..."}</span>}
-                            rightIcon="caret-down" alignText="left" fill="{true}"/>
-                </Select>
-
-                {(!properties.insulationType && selectedInsulationTypeTouched) && <span className={styles.errorText}>Set insulation type!</span>}
-            </div>
-            <div style={{flex: "50%", paddingLeft: 10}}>
-                <p className={styles.dialogText}>
-                    Network insulation type:
-                </p>
-                <Select
                     items={pipeLayingTypes}
                     itemRenderer={renderPipeLayingTypeItem}
                     activeItem={properties.pipeLayingType && properties.pipeLayingType.name}
@@ -224,6 +200,32 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
                 {(!properties.pipeLayingType && selectedPipeLayingTypeTouched) && <span className={styles.errorText}>Set pipe laying type!</span>}
             </div>
+
+            <div style={{flex: "50%", paddingLeft: 10}}>
+                <p className={styles.dialogText}>
+                    Network insulation type:
+                </p>
+                <Select
+                    items={insulationTypes}
+                    itemRenderer={renderInsulationTypeItem}
+                    activeItem={properties.insulationType && properties.insulationType.name}
+                    className="fullwidth"
+                    popoverProps={{
+                        minimal: true,
+                        portalClassName: "fullwidth",
+                        popoverClassName: "selectPopover"
+                    }}
+                    filterable={false}
+                    onItemSelect={handleInsulationTypeSelect}
+                >
+                    <Button text={<span
+                        className={styles.selectText}>{properties.insulationType && properties.insulationType.name || "Select insulation type..."}</span>}
+                            rightIcon="caret-down" alignText="left" fill="{true}"/>
+                </Select>
+
+                {(!properties.insulationType && selectedInsulationTypeTouched) && <span className={styles.errorText}>Set insulation type!</span>}
+            </div>
+
         </div>
         <div style={{display: "flex", justifyContent: "center", marginTop: 10}}>
             <Button intent={Intent.SUCCESS}

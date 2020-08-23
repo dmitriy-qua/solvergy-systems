@@ -3,7 +3,7 @@ const RADIUS = 0.8
 
 export const circleDrawing = (mapHeight, mapDistance) => {
     return {
-        radius: RADIUS * (mapHeight / mapDistance),
+        radius: 2* RADIUS * (mapHeight / mapDistance),
         fill: '#ffffff',
         stroke: '#333333',
         strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),

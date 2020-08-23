@@ -16,7 +16,7 @@ import {Select} from "@blueprintjs/select";
 import {generateId, updateObject} from "../../../../helpers/data-helper";
 import {setObjects} from "../../../../redux/actions/project";
 
-export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel}) => {
+export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas}) => {
 
     const styles = useStyles()
 
@@ -160,14 +160,29 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                         onClick={() => {
                             if (dialogIsOpened === "edit") {
                                 const template = templates.find(template => template.id === selectedTemplate.id)
-                                selectedObject.set({
-                                    strokeWidth: 0.6 * (2000 / mapDistance) * (template.properties.diameter / 100)
+                                const canvasObject = canvas.getObjects().find(object => object.id === selectedObject.id)
+                                canvasObject.set({
+                                    strokeWidth: 0.6 * (2000 / mapDistance) * (template.properties.diameter / 100),
+                                    //stroke: networkType === "supply" ? 'red' : "blue"
                                 })
-                                selectedObject.canvas.renderAll()
 
-                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType, shape: selectedObject})
+                                if (canvasObject.circle1.connectedTo) {
+                                    canvasObject.circle1.set({
+                                        stroke: networkType === "supply" ? 'red' : "blue"
+                                    })
+                                }
+
+                                if (canvasObject.circle2.connectedTo) {
+                                    canvasObject.circle2.set({
+                                        stroke: networkType === "supply" ? 'red' : "blue"
+                                    })
+                                }
+
+                                canvas.renderAll()
+
+                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType})
                                 dispatch(setObjects({objectType: "networks", newObjects: updatedNetworks}))
-                                updateNodeLabel(selectedObject.id, name)
+                                updateNodeLabel(selectedObject.id, name + " ("+ networkType + ")")
                             } else if (dialogIsOpened === "new") {
                                 startCreateObject("network", name, {templateId: selectedTemplate.id, networkType})
                             }

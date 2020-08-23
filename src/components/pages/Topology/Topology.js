@@ -32,6 +32,8 @@ export const Topology = ({
                              setCanvasState,
                              mapSize,
                              setMapSize,
+                             setProjectState,
+                             setProjectHistory
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
@@ -57,6 +59,8 @@ export const Topology = ({
                         setCanvas={setCanvas}
                         mapSize={mapSize}
                         setMapSize={setMapSize}
+                        setProjectState={setProjectState}
+                        setProjectHistory={setProjectHistory}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}

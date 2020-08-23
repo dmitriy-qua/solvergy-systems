@@ -10,8 +10,7 @@ import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setProducers} from "../../../../redux/actions/project";
-import {NameTextFieldForm} from "./NameTextFieldForm";
-
+import {NameTextFieldForm} from "./NameTextFieldForm"
 
 export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
 
@@ -22,9 +21,15 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
     const producers = useSelector(state => state.project.objects.producers)
 
     let listItem = ({item}) => {
-        return <span className={styles.selectText}>
+        return <>
+            <span className={styles.selectText}>
             {item.name}
-        </span>
+             </span>
+            <svg width="14" height="14" style={{position: "relative", top: 2, left: 6}}>
+                <circle cx="7" cy="8" r={6}
+                      style={{fill: item.color}}/>
+            </svg>
+        </>
     }
 
     const [selectedProducer, setSelectedProducer] = useState(null)
@@ -67,7 +72,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
                     </Button>
 
                     <Button intent={Intent.DANGER}
-                            disabled={!selectedProducer}
+                            disabled={!selectedProducer || selectedProducer.id === "main_producer"}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
                                 const newProducersList = producers.filter(producer => producer.id !== selectedProducer.id)
