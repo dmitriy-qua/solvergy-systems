@@ -47,6 +47,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         marketCapitalInvestment: "",
     }
 
+
     useEffect(() => {
         if (modelSettings && dialogIsOpened) setSettings(modelSettings)
     }, [dialogIsOpened])
@@ -54,8 +55,9 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
     const [settings, setSettings] = useState(modelSettings ? modelSettings : initialSettings)
 
     const producersRangeData = useMemo(() => {
+        const convertedRanges = modelSettings ? modelSettings.marketShareCoefficientRanges : defaultSharesArray
 
-        setSettings(prevState => ({...prevState, marketShareCoefficientRanges: defaultSharesArray}))
+        setSettings(prevState => ({...prevState, marketShareCoefficientRanges: convertedRanges}))
 
         return producers.map((producer, i) => {
             if (i === producers.length - 1) {
@@ -136,6 +138,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                             className={styles.selectText}>{settings.marketShareCoefficientType && settings.marketShareCoefficientType.name || "Select market share coefficient type..."}</span>}
                                 rightIcon="caret-down" alignText="left" fill="{true}"/>
                     </Select>
+
 
                     {(!settings.marketShareCoefficientType && marketShareCoefficientTypeTouched) &&
                     <p className={styles.errorText}>Set market share coefficient type!</p>}

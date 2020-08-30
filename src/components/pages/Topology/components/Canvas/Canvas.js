@@ -57,7 +57,8 @@ export const Canvas = ({
                            mapSize,
                            setMapSize,
                            setProjectState,
-                           setProjectHistory
+                           setProjectHistory,
+                           saveCanvasState
                        }) => {
 
     const dispatch = useDispatch()
@@ -249,11 +250,12 @@ export const Canvas = ({
                 isDown = true
                 let pointer = canvas.getPointer(o)
                 let points = [pointer.x, pointer.y, pointer.x, pointer.y]
-                _line = new fabric.Line(points, lineGenerated(height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter))
+                _line = new fabric.Line(points, lineGenerated(height, mapDistance, currentCreatingObjectData.networkType, currentCreatingObjectData.diameter, currentCreatingObjectData.networkIsNew))
                 _line.set({
                     id: currentCreatingObjectData.id,
                     objectType: currentFigureType,
                     networkType: currentCreatingObjectData.networkType || null,
+                    networkIsNew: currentCreatingObjectData.networkIsNew,
                     objectCaching: false
                 })
                 canvas.add(_line)
@@ -355,6 +357,8 @@ export const Canvas = ({
             canDrawPolygon = false
             setObjectType("none")
         }
+
+        saveCanvasState(canvas)
     }
 
     const objectMoving = (canvas, height, width) => (e) => {

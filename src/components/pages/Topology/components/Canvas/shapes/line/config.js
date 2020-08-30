@@ -1,8 +1,9 @@
 const STROKE_WIDTH = 0.6
 
-export const lineGenerated = (mapHeight, mapDistance, networkType, diameter) => ({
+export const lineGenerated = (mapHeight, mapDistance, networkType, diameter, networkIsNew) => ({
     strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance) * (diameter / 100),
     //fill: 'red',
+    opacity: networkIsNew ? 0.5 : 1,
     stroke: networkType === "supply" ? 'red' : "blue",
     originX: 'center',
     originY: 'center',

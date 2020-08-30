@@ -11,11 +11,13 @@ import {generateId, updateObject, updateObjectKey} from "../../../../helpers/dat
 import {addNewProducer, setProducers} from "../../../../redux/actions/project";
 import {CirclePicker} from 'react-color'
 
-export const NameTextFieldForm = ({type, setType, producers, selectedProducer, setSelectedProducer}) => {
+export const ProducerPropertiesForm = ({type, setType, producers, selectedProducer, setSelectedProducer, canvas, saveCanvasState}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
+
+    const suppliers = useSelector(state => state.project.objects.suppliers)
 
     const [name, setName] = useState(selectedProducer ? selectedProducer.name : "")
     const [color, setColor] = useState(selectedProducer ? selectedProducer.color : "")
@@ -81,6 +83,20 @@ export const NameTextFieldForm = ({type, setType, producers, selectedProducer, s
                             dispatch(addNewProducer({name, color, id: "producer_" + generateId()}))
                         } else if (type === "edit") {
                             const updatedProducers = updateObject(producers, selectedProducer.id, {name, color})
+
+                            const suppliersShapes = canvas.getObjects().filter(obj => obj.objectType === "supplier")
+
+                            const producerSuppliers = suppliers.filter(supplier => supplier.producerId === selectedProducer.id)
+
+                            producerSuppliers.forEach(supplier => {
+                                const supplierShape = suppliersShapes.find(shape => shape.id === supplier.id)
+                                supplierShape.set({fill: color})
+                            })
+
+                            canvas.renderAll()
+
+                            saveCanvasState(canvas)
+
                             dispatch(setProducers(updatedProducers))
                         }
 

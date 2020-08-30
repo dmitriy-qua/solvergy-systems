@@ -6,7 +6,7 @@ import {
     FormGroup,
     InputGroup,
     Intent,
-    MenuItem, Radio, RadioGroup
+    MenuItem, Radio, RadioGroup, Switch
 } from "@blueprintjs/core";
 
 import {createUseStyles} from "react-jss";
@@ -15,6 +15,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Select} from "@blueprintjs/select";
 import {generateId, updateObject} from "../../../../helpers/data-helper";
 import {setObjects} from "../../../../redux/actions/project";
+import {getBuildingsResults} from "../../../../redux/actions/buildings";
 
 export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas}) => {
 
@@ -34,12 +35,15 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
 
     const [networkType, setNetworkType] = useState(null)
 
+    const [networkIsNew, setNetworkIsNew] = useState(false)
+
     useEffect(() => {
         if (dialogIsOpened === "edit" && selectedObject) {
             const object = networks.find(object => object.id === selectedObject.id)
 
             setName(object.name)
             setNetworkType(object.networkType)
+            setNetworkIsNew(object.networkIsNew || false)
 
             const template = templates.find(template => template.id === object.templateId)
 
@@ -53,6 +57,7 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
         setSelectedTemplate(null)
         setSelectedTemplateTouched(false)
         setNetworkType(null)
+        setNetworkIsNew(false)
     }
 
     const handleTemplateSelect = (item) => {
@@ -142,6 +147,10 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                 <Radio label="Supply" value="supply" />
                 <Radio label="Return" value="return" />
             </RadioGroup>
+            <br/>
+            <Switch checked={networkIsNew}
+                    label={"Network is new (used for market)"}
+                    onChange={() => setNetworkIsNew(prevState => !prevState)}/>
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -163,6 +172,9 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
                                 const canvasObject = canvas.getObjects().find(object => object.id === selectedObject.id)
                                 canvasObject.set({
                                     strokeWidth: 0.6 * (2000 / mapDistance) * (template.properties.diameter / 100),
+                                    opacity: networkIsNew ? 0.5 : 1,
+                                    networkIsNew,
+                                    networkType,
                                     //stroke: networkType === "supply" ? 'red' : "blue"
                                 })
 
@@ -180,11 +192,11 @@ export const NetworkDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObj
 
                                 canvas.renderAll()
 
-                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType})
+                                const updatedNetworks = updateObject(networks, selectedObject.id, {name, templateId: selectedTemplate.id, networkType, networkIsNew})
                                 dispatch(setObjects({objectType: "networks", newObjects: updatedNetworks}))
                                 updateNodeLabel(selectedObject.id, name + " ("+ networkType + ")")
                             } else if (dialogIsOpened === "new") {
-                                startCreateObject("network", name, {templateId: selectedTemplate.id, networkType})
+                                startCreateObject("network", name, {templateId: selectedTemplate.id, networkType, networkIsNew})
                             }
 
                             resetStates()

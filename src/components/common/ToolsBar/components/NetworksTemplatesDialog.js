@@ -10,7 +10,7 @@ import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setNetworkTemplates} from "../../../../redux/actions/project";
-import {NameTextFieldForm} from "./NameTextFieldForm";
+import {ProducerPropertiesForm} from "./ProducerPropertiesForm";
 import {NetworkTemplateForm} from "./NetworkTemplateForm";
 
 

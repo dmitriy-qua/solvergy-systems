@@ -119,7 +119,7 @@ export const App = () => {
     }
 
     const saveCanvasState = (canvas) => {
-        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
+        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew"])
         dispatch(setCanvasState(canvasState))
     }
 
@@ -224,6 +224,7 @@ export const App = () => {
                     name,
                     templateId: properties.templateId,
                     networkType: properties.networkType,
+                    networkIsNew: properties.networkIsNew,
                     diameter: networkTemplate.properties.diameter
                 }
                 break
@@ -269,7 +270,8 @@ export const App = () => {
                     creatingObjectData.id,
                     creatingObjectData.name,
                     creatingObjectData.templateId,
-                    creatingObjectData.networkType
+                    creatingObjectData.networkType,
+                    creatingObjectData.networkIsNew
                 )
                 dispatch(addNewNetwork(network))
                 newNodes = addObjectInTree(nodes, objectType, creatingObjectData.name, creatingObjectData.id, creatingObjectData.networkType)
@@ -453,6 +455,7 @@ export const App = () => {
                                               setMapSize={setMapSize}
                                               setProjectState={setProjectState}
                                               setProjectHistory={setProjectHistory}
+                                              saveCanvasState={saveCanvasState}
                                     />
                                     <ConsumerDialog startCreateObject={startCreateObject}
                                                     selectedObject={selectedObject}
@@ -479,7 +482,10 @@ export const App = () => {
                                     />
 
                                     <ProducersDialog dialogIsOpened={producersDialogIsOpened}
-                                                     setDialogIsOpened={setProducersDialogIsOpened}/>
+                                                     setDialogIsOpened={setProducersDialogIsOpened}
+                                                     canvas={canvas}
+                                                     saveCanvasState={saveCanvasState}
+                                    />
 
                                     <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
                                                              setDialogIsOpened={setNetworksTemplatesDialogIsOpened}

@@ -10,9 +10,9 @@ import {GiHouse} from 'react-icons/gi';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setProducers} from "../../../../redux/actions/project";
-import {NameTextFieldForm} from "./NameTextFieldForm"
+import {ProducerPropertiesForm} from "./ProducerPropertiesForm"
 
-export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
+export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, saveCanvasState}) => {
 
     const styles = useStyles()
 
@@ -89,18 +89,21 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened}) => {
                             onClick={() => {
                                 setNameTextFieldType("edit")
                             }}>
-                        Rename
+                        Edit
                     </Button>
                 </div>
             </>}
 
             <br/>
 
-            {nameTextFieldType && <NameTextFieldForm setType={setNameTextFieldType}
-                                                     type={nameTextFieldType}
-                                                     producers={producers}
-                                                     selectedProducer={selectedProducer}
-                                                     setSelectedProducer={setSelectedProducer}/>}
+            {nameTextFieldType && <ProducerPropertiesForm setType={setNameTextFieldType}
+                                                          type={nameTextFieldType}
+                                                          producers={producers}
+                                                          selectedProducer={selectedProducer}
+                                                          setSelectedProducer={setSelectedProducer}
+                                                          canvas={canvas}
+                                                          saveCanvasState={saveCanvasState}
+            />}
 
 
         </div>
