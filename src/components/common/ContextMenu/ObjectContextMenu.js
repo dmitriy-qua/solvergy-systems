@@ -11,18 +11,18 @@ import {
     FaPencilAlt
 } from 'react-icons/fa';
 
-export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject, canvas}) => {
+export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject, canvas, isInspectionMode}) => {
 
     const styles = useStyles()
 
     return <Menu>
         <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>}
                   text="Edit object..."
-                  disabled={!selectedObject}
+                  disabled={isInspectionMode || !selectedObject}
                   onClick={() => editObject(selectedObject, objects)}/>
         <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>}
                   text="Delete object"
-                  disabled={!selectedObject}
+                  disabled={isInspectionMode || !selectedObject}
                   intent={Intent.DANGER}
                   onClick={() => deleteObject(selectedObject, objects, nodes, canvas)}/>
     </Menu>

@@ -8,12 +8,13 @@ import usePlacesAutocomplete, {
 import useOnclickOutside from "react-cool-onclickoutside"
 import {generateId} from "../../../../../helpers/data-helper";
 
-export const ProjectInfo = ({name, setName, location, setLocation}) => {
+export const ProjectInfo = ({name, setName, location, setLocation, currency, setCurrency}) => {
 
     const styles = useStyles()
 
     const [nameTouched, setNameTouched] = useState(false)
     const [locationTouched, setLocationTouched] = useState(false)
+    const [currencyTouched, setCurrencyTouched] = useState(false)
 
     const {
         ready,
@@ -121,6 +122,29 @@ export const ProjectInfo = ({name, setName, location, setLocation}) => {
                 {/* We can use the "status" to decide whether we should display the dropdown or not */}
                 {status === "OK" && <ul className="geosuggestions">{renderSuggestions()}</ul>}
             </div>
+        </FormGroup>
+
+        <FormGroup
+            disabled={false}
+            helperText={(!currency && currencyTouched) && "Please set currency..."}
+            intent={(!currency && currencyTouched) ? Intent.DANGER : Intent.NONE}
+            label={"Currency: "}
+            labelFor="currency"
+            fill
+            className={styles.labelText}
+        >
+            <InputGroup id="currency"
+                        placeholder="Enter currency"
+                        className={styles.labelText}
+                        intent={(!currency && currencyTouched) ? Intent.DANGER : Intent.NONE}
+                        value={currency}
+                        type={"text"}
+                        leftIcon={"dollar"}
+                        onChange={e => {
+                            setCurrencyTouched(true)
+                            setCurrency(e.target.value)
+                        }}
+            />
         </FormGroup>
     </div>
 }

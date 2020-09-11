@@ -381,3 +381,52 @@ export const calculateLineDistance = (line, mapDistance, mapHeight) => {
     return c * mapDistance / mapHeight
 }
 
+export const setEnlivenObjects = (canvas, objects, setObjectType) => {
+
+    fabric.util.enlivenObjects(objects, function (objs) {
+        objs.forEach(function (o) {
+            o.hasBorders = false
+            o.hasControls = false
+            o.perPixelTargetFind = true
+            if (o.type === "polygon" || o.type === "line") {
+
+                if (o.type === "line") {
+                    o.set({
+                        x1: o.left + o.x1,
+                        x2: o.left + o.x2,
+                        y1: o.top + o.y1,
+                        y2: o.top + o.y2,
+                        stroke: o.networkType === "supply" ? 'red' : "blue"
+                    })
+                }
+
+                objs.forEach(object => {
+                    if (object.type === "circle" && object.id === o.id) {
+
+
+                        if (o.type === "polygon") object.evented = false
+
+                        if (object.name === "start") {
+                            o.circle1 = object
+                        } else if (object.name === "end") {
+                            o.circle2 = object
+                        }
+                    }
+                })
+
+                canvas.add(o)
+                canvas.add(o.circle1)
+                canvas.add(o.circle2)
+            } else if (o.type === "image") {
+                o.evented = false
+                canvas.add(o)
+            }
+            o.setCoords()
+        });
+
+        canvas.renderAll()
+
+        setObjectType("none")
+    });
+}
+

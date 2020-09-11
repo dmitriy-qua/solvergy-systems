@@ -1,0 +1,231 @@
+import React, {useState} from "react";
+import {createUseStyles} from "react-jss";
+import {
+    Button,
+    Classes,
+    Dialog,
+    Intent,
+} from "@blueprintjs/core";
+import {FaChartBar} from "react-icons/fa";
+import {useDispatch, useSelector} from "react-redux";
+import Stepper from "react-stepper-horizontal";
+import {Frame, Track, View, ViewPager} from "react-view-pager";
+import {EnergyAmounts} from "./Results/EnergyAmounts";
+import {Tariffs} from "./Results/Tariffs";
+import {NetworksLosses} from "./Results/NetworksLosses";
+import {NetworksLossesDetailed} from "./Results/NetworksLossesDetailed";
+
+export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}) => {
+
+    const styles = useStyles()
+
+    const dispatch = useDispatch()
+
+    const results = useSelector(state => state.project && state.project.results)
+
+    const [activeStep, setActiveStep] = useState(0)
+    const [viewPager, setViewPager] = useState(null)
+
+    return <Dialog
+        icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}
+        onClose={() => setDialogIsOpened(false)}
+        title={<span className={styles.dialogTitle}>Results</span>}
+        autoFocus={false}
+        enforceFocus={false}
+        canEscapeKeyClose={false}
+        canOutsideClickClose={false}
+        usePortal={true}
+        style={{width, height}}
+        isOpen={dialogIsOpened}
+    >
+        <div className={[Classes.DIALOG_BODY]}>
+            {results && results.systemMarketEfficiency && <div>
+                systemMarketEfficiency
+            </div>}
+
+            {results && results.systemResultWithoutMarket && <div>
+                <div className='stepper-container'>
+                    <Stepper steps={steps} activeStep={activeStep} {...stepperStyle} />
+                </div>
+                <br/>
+
+                <ViewPager tag="main">
+                    <Frame className="frame" accessibility={false}>
+                        <Track
+                            ref={c => setViewPager(c)}
+                            viewsToShow={1}
+                            swipe={false}
+                            currentView={activeStep}
+                            className="track"
+                            style={{overflow: "auto", width: width}}
+                        >
+
+                            <View className="view">
+                                <div className="start-block">
+                                        <EnergyAmounts results={results.systemResultWithoutMarket}
+                                                       height={height}
+                                                       width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <NetworksLosses results={results.systemResultWithoutMarket.resultWithoutMarket}
+                                             height={height}
+                                             width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <NetworksLossesDetailed results={results.systemResultWithoutMarket.resultWithoutMarket}
+                                                    height={height}
+                                                    width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <Tariffs results={results.systemResultWithoutMarket}
+                                                   height={height}
+                                                   width={width}/>
+                                </div>
+                            </View>
+
+                        </Track>
+                    </Frame>
+                </ViewPager>
+
+            </div>}
+
+        </div>
+
+        <div className={Classes.DIALOG_FOOTER}>
+            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                <Button intent={Intent.NONE}
+                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => {
+                            setDialogIsOpened(false)
+                        }}>
+                    Close
+                </Button>
+                <Button disabled={activeStep === 0}
+                        intent={Intent.PRIMARY}
+                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => {
+                            setActiveStep(prevState => {
+                                if (prevState > 0) return prevState - 1
+                                else return prevState
+                            })
+                        }}>
+                    Back
+                </Button>
+                <Button disabled={activeStep === steps.length - 1}
+                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        text={activeStep === steps.length - 1 ? "Start" : "Next"}
+                        intent={Intent.SUCCESS}
+                        onClick={() => {
+                            if (activeStep < steps.length - 1) {
+                                setActiveStep(prevState => {
+                                    if (prevState < steps.length - 1) return prevState + 1
+                                    else return prevState
+                                })
+                            }
+                        }}>
+                </Button>
+            </div>
+        </div>
+    </Dialog>
+}
+
+const stepperStyle = {
+    activeColor: "#78909c",
+    completeColor: "#78909c",
+    defaultColor: "#a7b6c2",
+    activeTitleColor: "#78909c",
+    completeTitleColor: "#78909c",
+    defaultTitleColor: "#c2d1dd",
+    circleFontColor: "white",
+    size: 25,
+    circleFontSize: 14,
+    titleFontSize: 14,
+    circleTop: 6,
+    defaultBarColor: "#e0e0e0",
+    completeBarColor: "#e0e0e0",
+    lineMarginOffset: 10,
+    activeBorderColor: "#78909c",
+    completeBorderColor: "#45525d",
+    defaultBorderColor: "#78909c",
+    defaultBorderWidth: 0,
+    defaultBorderStyle: "solid",
+    completeBorderStyle: "solid",
+    activeBorderStyle: "solid",
+}
+
+const steps = [
+    {title: 'Energy amount'},
+    {title: "Networks losses"},
+    {title: "Networks losses (Detailed)"},
+    {title: 'Tariffs'},
+]
+
+const useStyles = createUseStyles({
+    text: {
+        marginTop: 12,
+        fontWeight: 600,
+        fontSize: 13,
+        fontFamily: "Montserrat"
+    },
+    bold: {
+        fontWeight: 700,
+    },
+    switchTextContainer: {
+        lineHeight: 1.5,
+        display: "inline-block",
+        // justifyContent: "center",
+        // alignItems: "center",
+        // verticalAlign: "middle"
+    },
+    selectText: {
+        fontWeight: 500,
+        fontSize: 13,
+        fontFamily: "Montserrat"
+    },
+    errorText: {
+        marginLeft: 0,
+        marginTop: 8,
+        fontWeight: 500,
+        color: "#c23030",
+        fontSize: 10,
+        fontFamily: "Montserrat",
+        display: "block"
+    },
+    dialogTitle: {
+        fontWeight: 600,
+        fontSize: 14,
+        marginTop: 6,
+        fontFamily: 'Montserrat'
+    },
+    dialogText: {
+        fontWeight: 500,
+        fontSize: 12,
+        fontFamily: 'Montserrat',
+    },
+    listText: {
+        fontWeight: 600,
+        fontSize: 13,
+        fontFamily: 'Montserrat',
+        color: "#444444",
+    },
+    indicatorText: {
+        fontWeight: 600,
+        fontSize: 16,
+        fontFamily: 'Montserrat',
+    },
+    divider: {
+        border: 0,
+        height: 0,
+        borderTop: "1px solid rgba(0, 0, 0, 0.1)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.3)"
+    }
+})

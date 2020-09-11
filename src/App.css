@@ -1,8 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 @import "~normalize.css";
 @import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/table/lib/css/table.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 @import '~react-widgets/dist/css/react-widgets.css';
+
+*::-webkit-scrollbar {
+    width: 10px;
+}
+*::-webkit-scrollbar-track {
+    background: #ebf1f5;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: #c9cfd3;
+    border-radius: 10px;
+    border: 3px solid #ebf1f5;
+}
+
 
 .App {
     height: 100vh;

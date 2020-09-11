@@ -21,7 +21,6 @@ import Slider, {Range} from 'rc-slider';
 
 import 'rc-slider/assets/index.css';
 
-
 export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
 
     const styles = useStyles()
@@ -45,6 +44,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         marketShareCoefficientRanges: defaultSharesArray,
         mainProducerFixedCostLossesCompensation: "",
         marketCapitalInvestment: "",
+        electricityPrice: 2
     }
 
 
@@ -78,6 +78,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
     const [optimizeMarketShareCoefficientTouched, setOptimizeMarketShareCoefficientTouched] = useState(false)
     const [mainProducerFixedCostLossesCompensationTouched, setMainProducerFixedCostLossesCompensationTouched] = useState(false)
     const [marketCapitalInvestmentTouched, setMarketCapitalInvestmentTouched] = useState(false)
+    const [electricityPriceTouched, setElectricityPriceTouched] = useState(false)
 
     const handleMarketShareCoefficientTypeSelect = (item) => {
         setMarketShareCoefficientTypeTouched(true)
@@ -101,6 +102,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         setOptimizeMarketShareCoefficientTouched(false)
         setMainProducerFixedCostLossesCompensationTouched(false)
         setMarketCapitalInvestmentTouched(false)
+        setElectricityPriceTouched(false)
     }
 
     return <Dialog
@@ -288,6 +290,32 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                                   intent={(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) ? Intent.DANGER : Intent.NONE}
                     />
                     {(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) &&
+                    <span className={styles.errorText}>Enter value...</span>}
+
+                    <p className={styles.dialogText} style={{marginTop: 18}}>
+                        Electricity price, $:
+                    </p>
+                    <NumericInput placeholder="Enter value..."
+                                  onValueChange={(value) => {
+                                      setElectricityPriceTouched(true)
+                                      setSettings(prevState => ({
+                                          ...prevState,
+                                          electricityPrice: value
+                                      }))
+                                  }}
+                                  className={styles.inputText}
+                                  allowNumericCharactersOnly
+                                  selectAllOnIncrement
+                                  majorStepSize={10}
+                                  min={0}
+                                  minorStepSize={0.1}
+                                  stepSize={1}
+                                  value={settings.electricityPrice}
+                                  leftIcon="dollar"
+                                  fill
+                                  intent={(!settings.electricityPrice && electricityPriceTouched) ? Intent.DANGER : Intent.NONE}
+                    />
+                    {(!settings.electricityPrice && electricityPriceTouched) &&
                     <span className={styles.errorText}>Enter value...</span>}
                 </div>
             </div>

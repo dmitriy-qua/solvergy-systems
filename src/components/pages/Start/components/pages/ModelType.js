@@ -95,27 +95,27 @@ export const ModelType = ({selectedModelType, setSelectedModelType, selectedEner
             Select energy system types:
         </p>
 
-        <MultiSelect
-            items={energySystemTypes}
-            itemRenderer={renderEnergySystemTypeItem}
-            tagRenderer={renderEnergySystemTypeTag}
-            placeholder={"Click and select types..."}
-            tagInputProps={{
-                onRemove: handleTagRemove,
-                rightElement: clearButton,
-                tagProps: {
-                    minimal: false,
-                    intent: Intent.NONE
-                }
-            }}
-            selectedItems={selectedEnergySystemType}
-            className="fullwidth"
-            popoverProps={{ minimal: true, portalClassName:"fullwidth" }}
-            filterable={false}
-            onItemSelect={handleEnergySystemTypeElementSelect}
-        >
-        </MultiSelect>
-        {(selectedEnergySystemType.length === 0 && selectedEnergySystemTypeTouched) && <p className={styles.errorText}>Set model type!</p>}
+        {/*<MultiSelect*/}
+        {/*    items={energySystemTypes}*/}
+        {/*    itemRenderer={renderEnergySystemTypeItem}*/}
+        {/*    tagRenderer={renderEnergySystemTypeTag}*/}
+        {/*    placeholder={"Click and select types..."}*/}
+        {/*    tagInputProps={{*/}
+        {/*        onRemove: handleTagRemove,*/}
+        {/*        rightElement: clearButton,*/}
+        {/*        tagProps: {*/}
+        {/*            minimal: false,*/}
+        {/*            intent: Intent.NONE*/}
+        {/*        }*/}
+        {/*    }}*/}
+        {/*    selectedItems={selectedEnergySystemType}*/}
+        {/*    className="fullwidth"*/}
+        {/*    popoverProps={{ minimal: true, portalClassName:"fullwidth" }}*/}
+        {/*    filterable={false}*/}
+        {/*    onItemSelect={handleEnergySystemTypeElementSelect}*/}
+        {/*>*/}
+        {/*</MultiSelect>*/}
+        {/*{(selectedEnergySystemType.length === 0 && selectedEnergySystemTypeTouched) && <p className={styles.errorText}>Set model type!</p>}*/}
     </div>
 }
 

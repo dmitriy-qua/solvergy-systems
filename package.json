@@ -6,8 +6,10 @@
   "dependencies": {
     "@blueprintjs/core": "^3.29.0",
     "@blueprintjs/select": "^3.13.5",
+    "@blueprintjs/table": "^3.8.13",
     "@mdi/js": "^5.3.45",
     "@mdi/react": "^1.4.0",
+    "@nivo/bar": "^0.62.0",
     "axios": "^0.19.2",
     "fabric": "^3.6.3",
     "jquery": "^3.5.1",

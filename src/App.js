@@ -1,13 +1,9 @@
 import './App.css'
 import React, {useCallback, useEffect, useState} from 'react'
-import {fabric} from "fabric"
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
-import {NavigationBar} from "./components/common/Navigation/NavigationBar";
 import {Topology} from "./components/pages/Topology/Topology";
-import {ContextMenu, Icon, Intent} from "@blueprintjs/core";
-import {FaObjectUngroup} from 'react-icons/fa';
-import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
+import {ContextMenu, Icon, Intent, ResizeSensor} from "@blueprintjs/core";
 import {
     addObjectInTree,
     forEachNode, forEachNodeFilter,
@@ -26,8 +22,6 @@ import {
 } from "./redux/actions/project";
 import Supplier from "./objects/supplier";
 import HeatNetwork from "./objects/heat-network";
-import {BrowserRouter, Route} from "react-router-dom";
-import {Redirect} from "react-router";
 import {ObjectContextMenu} from "./components/common/ContextMenu/ObjectContextMenu";
 import {ConsumerDialog} from "./components/common/ToolsBar/components/ConsumerDialog";
 import {SupplierDialog} from "./components/common/ToolsBar/components/SupplierDialog";
@@ -37,7 +31,11 @@ import {NetworksTemplatesDialog} from "./components/common/ToolsBar/components/N
 import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/SuppliersTemplatesDialog";
 import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
-import {handleObjectSelection} from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
+import {
+    handleObjectSelection,
+    setEnlivenObjects
+} from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
+import {ResultsDialog} from "./components/common/ToolsBar/components/ResultsDialog";
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -71,13 +69,13 @@ export const App = () => {
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
     const isAuth = useSelector(state => state.auth.isAuth)
     const loadedProject = useSelector(state => state.auth.loadedProject)
-    //console.log(objects)
 
     useEffect(() => {
         if (canvas && loadedProject) {
             canvas.clear()
-            setEnlivenObjects(canvas, project.canvas.objects)
-            setNodes(project.nodes)
+            setEnlivenObjects(canvas, project.canvas.objects, setObjectType)
+            const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
+            setNodes(newNodes)
             setProjectState(project)
             dispatch(setLoadedProjectId(null))
         }
@@ -93,6 +91,31 @@ export const App = () => {
     const [selectedObject, setSelectedObject] = useState(null)
     const [currentPage, setCurrentPage] = useState("topology")
     const [gridIsVisible, setGridIsVisible] = useState(false)
+    const [isInspectionMode, setIsInspectionMode] = useState(false)
+
+    useEffect(() => {
+
+        if (canvas) {
+            if (isInspectionMode) {
+                canvas.forEachObject((o) => {
+                    if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
+                        o.selectable = false
+                        o.hoverCursor = "default"
+                        //o.evented = false
+                    }
+                })
+            } else {
+                canvas.forEachObject((o) => {
+                    if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
+                        o.selectable = true
+                        o.hoverCursor = "move"
+                        //o.evented = true
+                    }
+                })
+            }
+        }
+
+    }, [isInspectionMode])
 
     const [toasts, setToasts] = useState([])
     const [toaster, setToaster] = useState(null)
@@ -112,6 +135,9 @@ export const App = () => {
     const [networksTemplatesDialogIsOpened, setNetworksTemplatesDialogIsOpened] = useState(false)
     const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
     const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
+    const [resultsIsOpened, setResultsIsOpened] = useState(false)
+
+    const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
     const saveState = () => {
         setProjectState(currentProject)
@@ -133,7 +159,7 @@ export const App = () => {
             if (isRightClick) {
                 ContextMenu.show(
                     <ObjectContextMenu selectedObject={selectedObjectNode} deleteObject={deleteObject}
-                                       objects={objects} nodes={nodes} editObject={editObject} canvas={canvas}/>,
+                                       objects={objects} nodes={nodes} editObject={editObject} canvas={canvas} isInspectionMode={isInspectionMode}/>,
                     {left: e.clientX, top: e.clientY}
                 );
             }
@@ -294,54 +320,6 @@ export const App = () => {
         dispatch(setNodes(newNodes))
     }
 
-    const setEnlivenObjects = (canvas, objects) => {
-
-        fabric.util.enlivenObjects(objects, function (objs) {
-            objs.forEach(function (o) {
-                o.hasBorders = false
-                o.hasControls = false
-                o.perPixelTargetFind = true
-                if (o.type === "polygon" || o.type === "line") {
-
-                    if (o.type === "line") {
-                        o.set({
-                            x1: o.left + o.x1,
-                            x2: o.left + o.x2,
-                            y1: o.top + o.y1,
-                            y2: o.top + o.y2,
-                        })
-                    }
-
-                    objs.forEach(object => {
-                        if (object.type === "circle" && object.id === o.id) {
-
-
-                            if (o.type === "polygon") object.evented = false
-
-                            if (object.name === "start") {
-                                o.circle1 = object
-                            } else if (object.name === "end") {
-                                o.circle2 = object
-                            }
-                        }
-                    })
-
-                    canvas.add(o)
-                    canvas.add(o.circle1)
-                    canvas.add(o.circle2)
-                } else if (o.type === "image") {
-                    o.evented = false
-                    canvas.add(o)
-                }
-                o.setCoords()
-            });
-
-            canvas.renderAll()
-
-            setObjectType("none")
-        });
-    }
-
     const moveHistory = useCallback(
         step => {
             const currentStateIndex = projectHistory.indexOf(projectState);
@@ -349,10 +327,9 @@ export const App = () => {
 
             if (prevState && prevState.canvas.objects.length > 0) {
                 dispatch(setProject(prevState))
-                //console.log(prevState.canvas)
                 setProjectState(prevState)
                 canvas.clear()
-                setEnlivenObjects(canvas, prevState.canvas.objects)
+                setEnlivenObjects(canvas, prevState.canvas.objects, setObjectType)
                 setNodes(prevState.nodes)
             }
         },
@@ -363,48 +340,57 @@ export const App = () => {
 
     const onRedo = useCallback(() => moveHistory(1), [moveHistory]);
 
+    const handleResize = (entries) => {
+        setResultsDialogSize({width: entries[0].contentRect.width - 50, height: entries[0].contentRect.height - 70})
+    }
+
     return <div className="App">
-        <ReflexContainer orientation="horizontal" windowResizeAware={true}>
+        <ResizeSensor onResize={handleResize}>
+            <ReflexContainer orientation="horizontal" windowResizeAware={true}>
 
-            <ReflexElement className="header"
-                           size={HEADER_HEIGHT}
-                           minSize={HEADER_HEIGHT}
-                           maxSize={HEADER_HEIGHT}
-                           style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", zIndex: 1}}
-            >
-                <ToolsBar objectType={objectType}
-                          setObjectType={setObjectType}
-                          headerHeight={HEADER_HEIGHT}
-                          gridIsVisible={gridIsVisible}
-                          setGridIsVisible={setGridIsVisible}
-                          project={project}
-                          selectedObject={selectedObject}
-                          startCreateObject={startCreateObject}
-                          deleteObject={deleteObject}
-                          editObject={editObject}
-                          objects={objects}
-                          nodes={nodes}
-                          setConsumerDialogType={setConsumerDialogType}
-                          setSupplierDialogType={setSupplierDialogType}
-                          setNetworkDialogType={setNetworkDialogType}
-                          setProducersDialogIsOpened={setProducersDialogIsOpened}
-                          setNetworksTemplatesDialogIsOpened={setNetworksTemplatesDialogIsOpened}
-                          setSuppliersTemplatesDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
-                          setModelSettingsIsOpened={setModelSettingsIsOpened}
-                          currentPage={currentPage}
-                          startDialog={startDialog}
-                          setStartDialog={setStartDialog}
-                          authDialog={authDialog}
-                          setAuthDialog={setAuthDialog}
-                          onUndo={onUndo}
-                          onRedo={onRedo}
-                          toaster={toaster}
-                />
-            </ReflexElement>
+                <ReflexElement className="header"
+                               size={HEADER_HEIGHT}
+                               minSize={HEADER_HEIGHT}
+                               maxSize={HEADER_HEIGHT}
+                               style={{boxShadow: "0px 0px 3px rgb(198, 198, 198)", zIndex: 1}}
+                >
+                    <ToolsBar objectType={objectType}
+                              setObjectType={setObjectType}
+                              headerHeight={HEADER_HEIGHT}
+                              gridIsVisible={gridIsVisible}
+                              setGridIsVisible={setGridIsVisible}
+                              project={project}
+                              selectedObject={selectedObject}
+                              startCreateObject={startCreateObject}
+                              deleteObject={deleteObject}
+                              editObject={editObject}
+                              objects={objects}
+                              nodes={nodes}
+                              setConsumerDialogType={setConsumerDialogType}
+                              setSupplierDialogType={setSupplierDialogType}
+                              setNetworkDialogType={setNetworkDialogType}
+                              setProducersDialogIsOpened={setProducersDialogIsOpened}
+                              setNetworksTemplatesDialogIsOpened={setNetworksTemplatesDialogIsOpened}
+                              setSuppliersTemplatesDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
+                              setModelSettingsIsOpened={setModelSettingsIsOpened}
+                              currentPage={currentPage}
+                              startDialog={startDialog}
+                              setStartDialog={setStartDialog}
+                              authDialog={authDialog}
+                              setAuthDialog={setAuthDialog}
+                              onUndo={onUndo}
+                              onRedo={onRedo}
+                              toaster={toaster}
+                              resultsIsOpened={resultsIsOpened}
+                              setResultsIsOpened={setResultsIsOpened}
+                              isInspectionMode={isInspectionMode}
+                              setIsInspectionMode={setIsInspectionMode}
+                    />
+                </ReflexElement>
 
 
-            {project && isAuth ? <ReflexElement>
-                    <BrowserRouter>
+                {project && isAuth ? <ReflexElement>
+
                         <ReflexContainer orientation="vertical"
                                          windowResizeAware={true}
                         >
@@ -421,104 +407,101 @@ export const App = () => {
 
                             <ReflexElement>
 
-                                <Route
-                                    exact
-                                    path="/"
-                                    render={() => {
-                                        return <Redirect to="/topology"/>
-                                    }}
+                                <Topology objectType={objectType}
+                                          gridIsVisible={gridIsVisible}
+                                          mapDistance={mapDistance}
+                                          nodes={nodes}
+                                          setObjectType={setObjectType}
+                                          finishCreateObject={finishCreateObject}
+                                          toasts={toasts}
+                                          setToaster={setToaster}
+                                          setSelectedObject={setSelectedObject}
+                                          getSelectedNode={getSelectedNode}
+                                          setObjectToDelete={setObjectToDelete}
+                                          objectToDelete={objectToDelete}
+                                          selectedObject={selectedObject}
+                                          deleteObject={deleteObject}
+                                          objects={objects}
+                                          editObject={editObject}
+                                          creatingObjectData={creatingObjectData}
+                                          authDialog={authDialog}
+                                          setAuthDialog={setAuthDialog}
+                                          loadedProject={loadedProject}
+                                          canvas={canvas}
+                                          setCanvas={setCanvas}
+                                          mapSize={mapSize}
+                                          setMapSize={setMapSize}
+                                          setProjectState={setProjectState}
+                                          setProjectHistory={setProjectHistory}
+                                          saveCanvasState={saveCanvasState}
+                                          isInspectionMode={isInspectionMode}
                                 />
-                                <Route path="/topology">
-                                    <Topology objectType={objectType}
-                                              gridIsVisible={gridIsVisible}
-                                              mapDistance={mapDistance}
-                                              nodes={nodes}
-                                              setObjectType={setObjectType}
-                                              finishCreateObject={finishCreateObject}
-                                              toasts={toasts}
-                                              setToaster={setToaster}
-                                              setSelectedObject={setSelectedObject}
-                                              getSelectedNode={getSelectedNode}
-                                              setObjectToDelete={setObjectToDelete}
-                                              objectToDelete={objectToDelete}
-                                              selectedObject={selectedObject}
-                                              deleteObject={deleteObject}
-                                              objects={objects}
-                                              editObject={editObject}
-                                              creatingObjectData={creatingObjectData}
-                                              authDialog={authDialog}
-                                              setAuthDialog={setAuthDialog}
-                                              loadedProject={loadedProject}
-                                              canvas={canvas}
-                                              setCanvas={setCanvas}
-                                              mapSize={mapSize}
-                                              setMapSize={setMapSize}
-                                              setProjectState={setProjectState}
-                                              setProjectHistory={setProjectHistory}
-                                              saveCanvasState={saveCanvasState}
-                                    />
-                                    <ConsumerDialog startCreateObject={startCreateObject}
-                                                    selectedObject={selectedObject}
-                                                    dialogIsOpened={consumerDialogType}
-                                                    setDialogIsOpened={setConsumerDialogType}
-                                                    updateNodeLabel={updateNodeLabel}
-                                                    canvas={canvas}
-                                    />
+                                <ConsumerDialog startCreateObject={startCreateObject}
+                                                selectedObject={selectedObject}
+                                                dialogIsOpened={consumerDialogType}
+                                                setDialogIsOpened={setConsumerDialogType}
+                                                updateNodeLabel={updateNodeLabel}
+                                                canvas={canvas}
+                                />
 
-                                    <SupplierDialog startCreateObject={startCreateObject}
-                                                    selectedObject={selectedObject}
-                                                    dialogIsOpened={supplierDialogType}
-                                                    setDialogIsOpened={setSupplierDialogType}
-                                                    updateNodeLabel={updateNodeLabel}
-                                                    canvas={canvas}
-                                    />
+                                <SupplierDialog startCreateObject={startCreateObject}
+                                                selectedObject={selectedObject}
+                                                dialogIsOpened={supplierDialogType}
+                                                setDialogIsOpened={setSupplierDialogType}
+                                                updateNodeLabel={updateNodeLabel}
+                                                canvas={canvas}
+                                />
 
-                                    <NetworkDialog startCreateObject={startCreateObject}
-                                                   selectedObject={selectedObject}
-                                                   dialogIsOpened={networkDialogType}
-                                                   setDialogIsOpened={setNetworkDialogType}
-                                                   updateNodeLabel={updateNodeLabel}
-                                                   canvas={canvas}
-                                    />
+                                <NetworkDialog startCreateObject={startCreateObject}
+                                               selectedObject={selectedObject}
+                                               dialogIsOpened={networkDialogType}
+                                               setDialogIsOpened={setNetworkDialogType}
+                                               updateNodeLabel={updateNodeLabel}
+                                               canvas={canvas}
+                                />
 
-                                    <ProducersDialog dialogIsOpened={producersDialogIsOpened}
-                                                     setDialogIsOpened={setProducersDialogIsOpened}
-                                                     canvas={canvas}
-                                                     saveCanvasState={saveCanvasState}
-                                    />
+                                <ProducersDialog dialogIsOpened={producersDialogIsOpened}
+                                                 setDialogIsOpened={setProducersDialogIsOpened}
+                                                 canvas={canvas}
+                                                 saveCanvasState={saveCanvasState}
+                                />
 
-                                    <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
-                                                             setDialogIsOpened={setNetworksTemplatesDialogIsOpened}
-                                                             canvas={canvas}
-                                    />
+                                <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
+                                                         setDialogIsOpened={setNetworksTemplatesDialogIsOpened}
+                                                         canvas={canvas}
+                                />
 
-                                    <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
-                                                              setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>
+                                <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
+                                                          setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>
 
-                                    <ModelSettings dialogIsOpened={modelSettingsIsOpened}
-                                                   setDialogIsOpened={setModelSettingsIsOpened}
-                                    />
+                                <ModelSettings dialogIsOpened={modelSettingsIsOpened}
+                                               setDialogIsOpened={setModelSettingsIsOpened}
+                                />
 
-                                    <AuthDialog startDialog={authDialog}
-                                                setStartDialog={setAuthDialog}
-                                    />
-                                </Route>
-                                <Route path="/results">
+                                <ResultsDialog dialogIsOpened={resultsIsOpened}
+                                               setDialogIsOpened={setResultsIsOpened}
+                                               height={resultsDialogSize.height - 70}
+                                               width={resultsDialogSize.width - 100}
+                                />
 
-                                </Route>
+                                <AuthDialog startDialog={authDialog}
+                                            setStartDialog={setAuthDialog}
+                                />
+
                             </ReflexElement>
                         </ReflexContainer>
-                    </BrowserRouter>
-                </ReflexElement>
-                :
-                <ReflexElement>
-                    <Start startDialog={startDialog}
-                           setStartDialog={setStartDialog}
-                           authDialog={authDialog}
-                           setAuthDialog={setAuthDialog}/>
-                </ReflexElement>
-            }
-        </ReflexContainer>
+
+                    </ReflexElement>
+                    :
+                    <ReflexElement>
+                        <Start startDialog={startDialog}
+                               setStartDialog={setStartDialog}
+                               authDialog={authDialog}
+                               setAuthDialog={setAuthDialog}/>
+                    </ReflexElement>
+                }
+            </ReflexContainer>
+        </ResizeSensor>
     </div>
 }
 

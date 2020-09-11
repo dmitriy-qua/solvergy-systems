@@ -93,8 +93,14 @@ export const setProjectResult = (data) => ({
 
 export const calculateProject = (project) => (dispatch) => {
     return new Promise(async (res) => {
-        const calculationResult = await ProjectsAPI.calculateProject(project)
-        dispatch(setProjectResult(calculationResult.data))
+
+        const projectData = {
+            ...project,
+            results: null
+        }
+
+        const calculationResult = await ProjectsAPI.calculateProject(projectData)
+        dispatch(setProjectResult(calculationResult.data.results))
     });
 }
 

@@ -24,9 +24,10 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
 
     const [name, setName] = useState("")
     const [location, setLocation] = useState("")
+    const [currency, setCurrency] = useState("")
 
     const [modelType, setModelType] = useState(null)
-    const [energySystemType, setEnergySystemType] = useState([])
+    const [energySystemType, setEnergySystemType] = useState(["Heating"])
 
     const [mapDistance, setMapDistance] = useState(null)
     const [mapImageUri, setMapImageUri] = useState(null)
@@ -53,7 +54,8 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
         const newProject = {
             info: {
                 name,
-                location
+                location,
+                currency
             },
             type: {
                 modelType,
@@ -125,6 +127,8 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                                          setName={setName}
                                          location={location}
                                          setLocation={setLocation}
+                                         currency={currency}
+                                         setCurrency={setCurrency}
                             />
                         </View>
 

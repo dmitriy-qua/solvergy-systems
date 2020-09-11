@@ -36,6 +36,7 @@ let currentObjects = []
 let currentNodes = []
 let canvasRef = null
 let currentProject = null
+let inspectionMode = null
 
 export const Canvas = ({
                            objectType,
@@ -58,7 +59,8 @@ export const Canvas = ({
                            setMapSize,
                            setProjectState,
                            setProjectHistory,
-                           saveCanvasState
+                           saveCanvasState,
+                           isInspectionMode
                        }) => {
 
     const dispatch = useDispatch()
@@ -82,6 +84,10 @@ export const Canvas = ({
     useEffect(() => {
         currentSelectedObject = selectedObject
     }, [selectedObject])
+
+    useEffect(() => {
+        inspectionMode = isInspectionMode
+    }, [isInspectionMode])
 
     useEffect(() => {
         currentFigureType = "none"
@@ -136,6 +142,47 @@ export const Canvas = ({
         }
     }
 
+    const onMouseOver = (canvas) => (opt) => {
+        if (inspectionMode && opt.target && opt.target.type === "line") {
+            const currentObject = currentObjects.networks.find(network => network.id === opt.target.id)
+            const existingTooltip = canvas.getObjects().filter(obj => obj.id === "tooltip")
+
+            if (existingTooltip.length === 0) {
+                let pointer = canvas.getPointer(opt)
+
+                const networkInfo = `Name: ${currentObject.name}\nNetwork type: ${currentObject.networkType}\nNetwork is new: ${currentObject.networkIsNew ? "Yes" : "No"}`
+
+                const tooltip = new fabric.Text(networkInfo, {
+                    left: pointer.x + 5,
+                    top: pointer.y,
+                    fill: 'grey',
+                    fontSize: 4,
+                    padding: 4,
+                    fontFamily: "Montserrat",
+                    borderColor: "grey",
+                    hasBorder: false,
+                    hasControls: false,
+                    selectionBackgroundColor: "white",
+                    evented: false,
+                    id: "tooltip",
+                })
+
+                canvas.add(tooltip)
+                canvas.setActiveObject(tooltip);
+                canvas.renderAll()
+
+            }
+        }
+    }
+
+    const onMouseOut = (canvas) => (opt) => {
+        if (inspectionMode) {
+            const tooltip = canvas.getObjects().find(obj => obj.id === "tooltip")
+            canvas.remove(tooltip)
+            canvas.renderAll()
+        }
+    }
+
     const useFabric = (onChange) => {
         const fabricRef = useRef();
         const disposeRef = useRef();
@@ -156,7 +203,7 @@ export const Canvas = ({
             } else if (fabricRef.current) {
                 fabricRef.current.dispose();
                 if (disposeRef.current) {
-                    disposeRef.current();
+                    //disposeRef.current();
                     disposeRef.current = undefined;
                 }
             }
@@ -179,6 +226,8 @@ export const Canvas = ({
         fabricCanvas.on('mouse:up', onMouseUp(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('object:moving', objectMoving(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('mouse:wheel', onMouseWheel(fabricCanvas, mapHeight, mapWidth))
+        fabricCanvas.on('mouse:over', onMouseOver(fabricCanvas))
+        fabricCanvas.on('mouse:out', onMouseOut(fabricCanvas))
 
         dispatch(setCanvasState(fabricCanvas.toJSON(["id"])))
 
@@ -223,7 +272,7 @@ export const Canvas = ({
 
             ContextMenu.show(
                 <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
-                                   nodes={currentNodes} editObject={editObject} canvas={canvas}/>,
+                                   nodes={currentNodes} editObject={editObject} canvas={canvas} isInspectionMode={inspectionMode}/>,
                 {left: o.e.clientX, top: o.e.clientY}
             );
         } else {

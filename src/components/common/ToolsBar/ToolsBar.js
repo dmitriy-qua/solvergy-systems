@@ -21,9 +21,7 @@ import {
     FaTrashAlt,
     FaPencilAlt,
     FaWrench,
-    FaSignInAlt,
     FaSignOutAlt,
-    FaUserPlus,
     FaQuestionCircle,
     FaUsersCog,
     FaBorderAll,
@@ -31,10 +29,11 @@ import {
     FaCoins,
     FaCalculator,
     FaChartBar,
-    FaSlidersH
+    FaSlidersH,
+    FaEye
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
-import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools, GoSettings} from 'react-icons/go';
+import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go';
 import {useDispatch, useSelector} from "react-redux";
 import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
 
@@ -67,6 +66,10 @@ export const ToolsBar = ({
                              onUndo,
                              onRedo,
                              toaster,
+                             resultsIsOpened,
+                             setResultsIsOpened,
+                             isInspectionMode,
+                             setIsInspectionMode
                          }) => {
 
     const styles = useStyles()
@@ -107,22 +110,24 @@ export const ToolsBar = ({
     const EditMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
 
-            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project} onClick={() => onUndo()}/>
-            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project} onClick={() => onRedo()}/>
+            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}
+                      onClick={() => onUndo()}/>
+            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}
+                      onClick={() => onRedo()}/>
             <MenuDivider/>
 
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!project}
+                          disabled={isInspectionMode || !project}
                           text="Consumer"
                           onClick={() => setConsumerDialogType("new")}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!project}
+                          disabled={isInspectionMode || !project}
                           text="Supplier"
                           onClick={() => setSupplierDialogType("new")}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
-                          disabled={!project}
+                          disabled={isInspectionMode || !project}
                           text="Network"
                           onClick={() => setNetworkDialogType("new")}/>
             </MenuItem>
@@ -140,10 +145,10 @@ export const ToolsBar = ({
 
             <MenuItem icon={<FaPencilAlt size={"1rem"} className={"bp3-icon"}/>}
                       text="Edit object..."
-                      disabled={!selectedObject || !project}/>
+                      disabled={isInspectionMode || !selectedObject || !project}/>
             <MenuItem icon={<FaTrashAlt size={"1rem"} className={"bp3-icon"}/>}
                       text="Delete object"
-                      disabled={!selectedObject || !project}
+                      disabled={isInspectionMode || !selectedObject || !project}
                       intent={Intent.DANGER}
                       onClick={() => deleteObject(selectedObject, objects, nodes)}/>
         </Menu>
@@ -164,10 +169,19 @@ export const ToolsBar = ({
                       onClick={() => setModelSettingsIsOpened(true)}
             />
             <MenuItem disabled={!results || !project}
+                      active={resultsIsOpened}
+                      intent={Intent.PRIMARY}
                       icon={<FaChartBar size={"1rem"} className={"bp3-icon"}/>}
                       text="Results..."
+                      onClick={() => setResultsIsOpened(prevState => !prevState)}
             />
             <MenuDivider/>
+            <MenuItem icon={<FaEye size={"1rem"} className={"bp3-icon"}/>}
+                      text="Inspection mode"
+                      active={isInspectionMode}
+                      disabled={!results || !project}
+                      onClick={() => setIsInspectionMode(prevState => !prevState)}
+            />
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
                       text="Set grid"
                       active={gridIsVisible}
@@ -300,7 +314,7 @@ export const ToolsBar = ({
                     <Button
                         disabled={!project}
                         icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL]}
+                        className={[Classes.MINIMAL, styles.iconButton]}
                         onClick={() => onRedo()}
                     />
                 </Tooltip>
@@ -321,7 +335,7 @@ export const ToolsBar = ({
                     <Button intent={Intent.SUCCESS}
                             disabled={!project}
                             icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
-                            className={[Classes.MINIMAL, styles.iconButton]}
+                            className={[Classes.MINIMAL]}
                             onClick={() => dispatch(calculateProject(project))}
                     />
                 </Tooltip>
@@ -347,7 +361,6 @@ export const ToolsBar = ({
                 </Tooltip>
 
                 <Tooltip content="Results"
-                         disabled={!results}
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
                          usePortal={true}
@@ -359,14 +372,33 @@ export const ToolsBar = ({
                          }}
                 >
                     <Button
-                        disabled={true}
+                        active={resultsIsOpened}
+                        disabled={!results || !project}
+                        intent={Intent.PRIMARY}
                         icon={<Icon icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
-                        onClick={() => {
-                        }}/>
+                        onClick={() => setResultsIsOpened(prevState => !prevState)}/>
                 </Tooltip>
 
                 <NavbarDivider/>
+
+                <Tooltip content="Inspection mode"
+                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                         position={Position.BOTTOM}
+                         usePortal={true}
+                         modifiers={{
+                             arrow: {enabled: true},
+                             flip: {enabled: false},
+                             keepTogether: {enabled: true},
+                             preventOverflow: {enabled: false},
+                         }}
+                >
+                    <Button active={isInspectionMode}
+                            disabled={!results || !project}
+                            icon={<Icon icon={<FaEye size={16} className={"bp3-icon material-icon"}/>}/>}
+                            className={[Classes.MINIMAL]}
+                            onClick={() => setIsInspectionMode(prevState => !prevState)}/>
+                </Tooltip>
 
                 <Tooltip content="Set grid"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
@@ -382,7 +414,7 @@ export const ToolsBar = ({
                     <Button active={gridIsVisible}
                             disabled={!project}
                             icon={<Icon icon={<FaBorderAll size={16} className={"bp3-icon material-icon"}/>}/>}
-                            className={[Classes.MINIMAL]}
+                            className={[Classes.MINIMAL, styles.iconButton]}
                             onClick={() => setGridIsVisible(prevState => !prevState)}/>
                 </Tooltip>
 
@@ -402,7 +434,7 @@ export const ToolsBar = ({
                     <Button icon={<Icon icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}/>}
                             active={objectType === "consumer"}
                             className={[Classes.MINIMAL]}
-                            disabled={!project}
+                            disabled={isInspectionMode || !project}
                             onClick={() => {
                                 if (objectType !== "consumer") {
                                     setConsumerDialogType("new")
@@ -426,7 +458,7 @@ export const ToolsBar = ({
                     <Button icon={<Icon icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}/>}
                             active={objectType === "supplier"}
                             className={[Classes.MINIMAL, styles.iconButton]}
-                            disabled={!project}
+                            disabled={isInspectionMode || !project}
                             onClick={() => {
                                 if (objectType !== "supplier") {
                                     setSupplierDialogType("new")
@@ -450,7 +482,7 @@ export const ToolsBar = ({
                     <Button icon={<Icon icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}/>}
                             active={objectType === "network"}
                             className={[Classes.MINIMAL, styles.iconButton]}
-                            disabled={!project}
+                            disabled={isInspectionMode || !project}
                             onClick={() => {
                                 if (objectType !== "network") {
                                     setNetworkDialogType("new")
