@@ -1,7 +1,7 @@
 import {
     FAILURE_LOGIN,
     FAILURE_SIGNUP, LOADED_PROJECT,
-    LOGOUT,
+    LOGOUT, PROJECT_IS_LOADED,
     REQUEST_LOGIN,
     REQUEST_SIGNUP,
     SUCCESS_LOGIN,
@@ -65,22 +65,6 @@ export function signInGoogle({login}) {
     };
 }
 
-// export function signInApple({login}) {
-//     return dispatch => {
-//         dispatch(requestSignUp(login));
-//
-//         AuthAPI.signInApple(login)
-//             .then(
-//                 user => {
-//                     dispatch(successSignUp(user))
-//                 },
-//                 error => {
-//                     dispatch(failureSignUp(error));
-//                 }
-//             );
-//     };
-// }
-
 export function logout() {
     return dispatch => {
         AuthAPI.logout();
@@ -94,6 +78,11 @@ export const signout = () => ({
 
 export const setLoadedProjectId = (data) => ({
     type: LOADED_PROJECT,
+    data
+})
+
+export const setProjectIsLoaded = (data) => ({
+    type: PROJECT_IS_LOADED,
     data
 })
 

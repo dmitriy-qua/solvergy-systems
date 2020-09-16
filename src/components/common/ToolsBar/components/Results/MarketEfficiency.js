@@ -7,7 +7,7 @@ import {Select} from "@blueprintjs/select";
 import {energySources} from "../../../../data/energy-sources";
 import {Button, Intent, NumericInput} from "@blueprintjs/core";
 
-export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsumption, totalHeatLoss, height, width}) => {
+export const MarketEfficiency = ({monthlyMarketEfficiency, annualMarketEfficiency, height, width}) => {
 
     const styles = useStyles()
 
@@ -15,30 +15,30 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
 
     const currency = useSelector(state => state.project && state.project.info.currency)
 
-    const [networksHeatLosses, setNetworksHeatLosses] = useState([])
-    const [networksElectricityConsumption, setNetworksElectricityConsumption] = useState([])
+    const [relativeMarketEfficiency, setRelativeMarketEfficiency] = useState([])
+    const [absoluteMarketEfficiency, setAbsoluteMarketEfficiency] = useState([])
 
     useEffect(() => {
-        const networksHeatLosses = getMonthlyNetworksHeatLossesChartData(totalMonthlyNetworkLosses)
-        const networksElectricityConsumption = getMonthlyNetworksElectricityConsumptionChartData(totalMonthlyNetworkLosses)
+        const relativeMarketEfficiency = getMonthlyRelativeMarketEfficiencyChartData(monthlyMarketEfficiency)
+        const absoluteMarketEfficiency = getMonthlyAbsoluteMarketEfficiencyChartData(monthlyMarketEfficiency)
 
-        setNetworksHeatLosses(networksHeatLosses)
-        setNetworksElectricityConsumption(networksElectricityConsumption)
+        setRelativeMarketEfficiency(relativeMarketEfficiency)
+        setAbsoluteMarketEfficiency(absoluteMarketEfficiency)
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
         <p className={styles.dialogTitle}>
-            Annual networks losses:
+            Annual market efficiency:
         </p>
 
         <hr className={styles.divider}/>
 
         <p className={styles.dialogText}>
-            Annual networks heat losses: <span className={styles.bold}>{totalHeatLoss.toFixed(2)}</span> Gcal
+            Annual relative market efficiency: <span className={styles.bold}>{(annualMarketEfficiency.marketRelativeEfficiency * 100).toFixed(2)}</span> %
         </p>
 
         <p className={styles.dialogText}>
-            Annual electricity consumption for heat carrier transportation through networks: <span className={styles.bold}>{totalElectricityConsumption.toFixed(2)}</span> kWh
+            Annual absolute market efficiency: <span className={styles.bold}>{(annualMarketEfficiency.marketAbsoluteEfficiency / 1000000).toFixed(3)}</span> {currency} M
         </p>
 
         <br/>
@@ -46,44 +46,44 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogTitle}>
-                    Monthly networks heat losses:
+                    Monthly relative market efficiency:
                 </p>
 
                 <hr className={styles.divider}/>
 
                 <div style={{height: 400, textAlign: "center"}}>
-                    <ResponsiveBarChart data={networksHeatLosses}
-                                        keys={["Heat loss"]}
+                    <ResponsiveBarChart data={relativeMarketEfficiency}
+                                        keys={["Relative market efficiency"]}
                                         indexBy={"Month"}
-                                        axisLeftName={"Heat losses, Gcal"}
+                                        axisLeftName={"Relative market efficiency, %"}
                                         axisBottomName={"Month"}
                                         height={400}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"reds"}
-                                        colors={["#ff9800"]}
+                                        colors={["#9ccc65"]}
                     />
                 </div>
             </div>
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogTitle}>
-                    Monthly electricity consumption (heat carrier transportation):
+                    Monthly absolute market efficiency:
                 </p>
 
                 <hr className={styles.divider}/>
 
                 <div style={{height: 400, textAlign: "center"}}>
-                    <ResponsiveBarChart data={networksElectricityConsumption}
-                                        keys={["Electricity consumption"]}
+                    <ResponsiveBarChart data={absoluteMarketEfficiency}
+                                        keys={["Absolute market efficiency"]}
                                         indexBy={"Month"}
-                                        axisLeftName={"Electricity consumption, kWh"}
+                                        axisLeftName={`Absolute market efficiency, ${currency} M`}
                                         axisBottomName={"Month"}
                                         height={400}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"purples"}
-                                        colors={["#9575cd"]}
+                                        colors={["#ffca28"]}
                     />
                 </div>
             </div>
@@ -95,32 +95,26 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
     </div>
 }
 
-const getMonthlyNetworksHeatLossesChartData = (monthlyData) => {
+const getMonthlyRelativeMarketEfficiencyChartData = (monthlyData) => {
 
-    const networksData = []
-    for (const [monthNum, monthData] of Object.entries(monthlyData)) {
-        networksData.push({
-            "Heat loss": parseFloat(monthData.totalHeatLoss.toFixed(2)),
-            "Heat lossColor": "hsl(105,64%,58%)",
-            Month: getMonthInfo(parseInt(monthNum).toString()).fullName
-        })
-    }
-
-    return networksData
+    return monthlyData.map(monthData => {
+        return {
+            "Relative market efficiency": (monthData.marketRelativeEfficiency * 100).toFixed(2),
+            "Relative market efficiencyColor": "hsl(336, 70%, 50%)",
+            Month: getMonthInfo(monthData.month).fullName
+        }
+    })
 }
 
-const getMonthlyNetworksElectricityConsumptionChartData = (monthlyData) => {
+const getMonthlyAbsoluteMarketEfficiencyChartData = (monthlyData) => {
 
-    const networksData = []
-    for (const [monthNum, monthData] of Object.entries(monthlyData)) {
-        networksData.push({
-            "Electricity consumption": parseFloat(monthData.totalElectricityConsumption.toFixed(2)),
-            "Electricity consumptionColor": "hsl(240,63%,60%)",
-            Month: getMonthInfo(parseInt(monthNum).toString()).fullName
-        })
-    }
-
-    return networksData
+    return monthlyData.map(monthData => {
+        return {
+            "Absolute market efficiency": (monthData.marketAbsoluteEfficiency / 1000000).toFixed(3),
+            "Absolute market efficiencyColor": "hsl(336, 70%, 50%)",
+            Month: getMonthInfo(monthData.month).fullName
+        }
+    })
 }
 
 const useStyles = createUseStyles({

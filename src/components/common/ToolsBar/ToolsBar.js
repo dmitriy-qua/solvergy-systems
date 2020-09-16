@@ -30,7 +30,8 @@ import {
     FaCalculator,
     FaChartBar,
     FaSlidersH,
-    FaEye
+    FaEye,
+    FaDrawPolygon
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go';
@@ -69,7 +70,10 @@ export const ToolsBar = ({
                              resultsIsOpened,
                              setResultsIsOpened,
                              isInspectionMode,
-                             setIsInspectionMode
+                             setIsInspectionMode,
+                             mapImageAnalysisIsOpened,
+                             setMapImageAnalysisIsOpened,
+                             mapImageShouldBeAnalyzed
                          }) => {
 
     const styles = useStyles()
@@ -182,6 +186,13 @@ export const ToolsBar = ({
                       disabled={!results || !project}
                       onClick={() => setIsInspectionMode(prevState => !prevState)}
             />
+            {mapImageShouldBeAnalyzed && <MenuItem icon={<FaDrawPolygon size={"1rem"} className={"bp3-icon"}/>}
+                      text="Polygons analysis"
+                      active={mapImageAnalysisIsOpened}
+                      disabled={!project}
+                      onClick={() => setMapImageAnalysisIsOpened(prevState => !prevState)}
+            />}
+
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
                       text="Set grid"
                       active={gridIsVisible}
@@ -399,6 +410,26 @@ export const ToolsBar = ({
                             className={[Classes.MINIMAL]}
                             onClick={() => setIsInspectionMode(prevState => !prevState)}/>
                 </Tooltip>
+
+                {mapImageShouldBeAnalyzed && <Tooltip content="Analysis"
+                                                      hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
+                                                      position={Position.BOTTOM}
+                                                      usePortal={true}
+                                                      modifiers={{
+                                                          arrow: {enabled: true},
+                                                          flip: {enabled: false},
+                                                          keepTogether: {enabled: true},
+                                                          preventOverflow: {enabled: false},
+                                                      }}
+                >
+                    <Button
+                        active={mapImageAnalysisIsOpened}
+                        disabled={!project}
+                        intent={Intent.NONE}
+                        icon={<Icon icon={<FaDrawPolygon size={16} className={"bp3-icon material-icon"}/>}/>}
+                        className={[Classes.MINIMAL, styles.iconButton]}
+                        onClick={() => setMapImageAnalysisIsOpened(prevState => !prevState)}/>
+                </Tooltip>}
 
                 <Tooltip content="Set grid"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}

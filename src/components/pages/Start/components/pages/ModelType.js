@@ -89,11 +89,11 @@ export const ModelType = ({selectedModelType, setSelectedModelType, selectedEner
 
         {(!selectedModelType && selectedModelTypeTouched) && <p className={styles.errorText}>Set model type!</p>}
 
-        <br/>
+        {/*<br/>*/}
 
-        <p className={styles.dialogText}>
-            Select energy system types:
-        </p>
+        {/*<p className={styles.dialogText}>*/}
+        {/*    Select energy system types:*/}
+        {/*</p>*/}
 
         {/*<MultiSelect*/}
         {/*    items={energySystemTypes}*/}

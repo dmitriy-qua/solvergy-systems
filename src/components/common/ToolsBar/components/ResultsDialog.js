@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {
     Button,
@@ -14,6 +14,11 @@ import {EnergyAmounts} from "./Results/EnergyAmounts";
 import {Tariffs} from "./Results/Tariffs";
 import {NetworksLosses} from "./Results/NetworksLosses";
 import {NetworksLossesDetailed} from "./Results/NetworksLossesDetailed";
+import {MainProducerFinancialResult} from "./Results/MainProducerFinancialResult";
+import {TariffsWithMarket} from "./Results/TariffsWithMarket";
+import {ProducersFinancialResult} from "./Results/ProducersFinancialResult";
+import {MarketEfficiency} from "./Results/MarketEfficiency";
+import {MarketEfficiencyOptimization} from "./Results/MarketEfficiencyOptimization";
 
 export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}) => {
 
@@ -25,6 +30,21 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
 
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
+    const [steps, setSteps] = useState([])
+
+    useEffect(() => {
+        if (results && results.systemMarketEfficiency) {
+            setSteps(stepsWithMarket)
+        }
+
+        if (results && results.systemMarketEfficiencyOptimizationSet) {
+            setSteps(stepsWithMarketOptimization)
+        }
+
+        if (results && results.systemResultWithoutMarket) {
+            setSteps(stepsWithoutMarket)
+        }
+    }, [results])
 
     return <Dialog
         icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}
@@ -40,7 +60,98 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
     >
         <div className={[Classes.DIALOG_BODY]}>
             {results && results.systemMarketEfficiency && <div>
-                systemMarketEfficiency
+                <div className='stepper-container'>
+                    <Stepper steps={steps} activeStep={activeStep} {...stepperStyle} />
+                </div>
+                <br/>
+
+                <ViewPager tag="main">
+                    <Frame className="frame" accessibility={false}>
+                        <Track
+                            ref={c => setViewPager(c)}
+                            viewsToShow={1}
+                            swipe={false}
+                            currentView={activeStep}
+                            className="track"
+                            style={{overflow: "auto", width: width}}
+                        >
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <EnergyAmounts
+                                        consumersMonthlyWeightedTariff={results.systemMarketEfficiency.consumersMonthlyWeightedTariffWithMarket}
+                                        height={height}
+                                        width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <NetworksLosses
+                                        totalMonthlyNetworkLosses={results.systemMarketEfficiency.resultWithMarket.totalMonthlyNetworkLosses}
+                                        totalElectricityConsumption={results.systemMarketEfficiency.resultWithMarket.totalElectricityConsumption}
+                                        totalHeatLoss={results.systemMarketEfficiency.resultWithMarket.totalHeatLoss}
+                                        height={height}
+                                        width={width}
+                                    />
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <NetworksLossesDetailed
+                                        networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
+                                        height={height}
+                                        width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <ProducersFinancialResult
+                                        financialResult={results.systemMarketEfficiency.resultWithMarket.financialResult}
+                                        height={height}
+                                        width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <TariffsWithMarket
+                                        consumersMonthlyWeightedTariffWithMarket={results.systemMarketEfficiency.consumersMonthlyWeightedTariffWithMarket}
+                                        consumersAnnualWeightedTariffWithMarket={results.systemMarketEfficiency.consumersAnnualWeightedTariffWithMarket}
+                                        consumersMonthlyWeightedTariffWithoutMarket={results.systemMarketEfficiency.consumersMonthlyWeightedTariffWithoutMarket}
+                                        consumersAnnualWeightedTariffWithoutMarket={results.systemMarketEfficiency.consumersAnnualWeightedTariffWithoutMarket}
+                                        height={height}
+                                        width={width}/>
+                                </div>
+                            </View>
+
+                            {results.systemMarketEfficiencyOptimizationSet && <View className="view">
+                                <div className="start-block">
+                                    <MarketEfficiencyOptimization
+                                        systemMarketEfficiencyOptimizationSet={results.systemMarketEfficiencyOptimizationSet}
+                                        annualMarketEfficiency={results.systemMarketEfficiency.annualMarketEfficiency}
+                                        height={height}
+                                        width={width}
+                                    />
+                                </div>
+                            </View>}
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <MarketEfficiency
+                                        monthlyMarketEfficiency={results.systemMarketEfficiency.monthlyMarketEfficiency}
+                                        annualMarketEfficiency={results.systemMarketEfficiency.annualMarketEfficiency}
+                                        height={height}
+                                        width={width}
+                                    />
+                                </div>
+                            </View>
+
+                        </Track>
+                    </Frame>
+                </ViewPager>
             </div>}
 
             {results && results.systemResultWithoutMarket && <div>
@@ -62,33 +173,50 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
 
                             <View className="view">
                                 <div className="start-block">
-                                        <EnergyAmounts results={results.systemResultWithoutMarket}
-                                                       height={height}
-                                                       width={width}/>
+                                    <EnergyAmounts
+                                        consumersMonthlyWeightedTariff={results.systemResultWithoutMarket.consumersMonthlyWeightedTariffWithoutMarket}
+                                        height={height}
+                                        width={width}/>
                                 </div>
                             </View>
 
                             <View className="view">
                                 <div className="start-block">
-                                    <NetworksLosses results={results.systemResultWithoutMarket.resultWithoutMarket}
-                                             height={height}
-                                             width={width}/>
+                                    <NetworksLosses
+                                        totalMonthlyNetworkLosses={results.systemResultWithoutMarket.resultWithoutMarket.totalMonthlyNetworkLosses}
+                                        totalElectricityConsumption={results.systemResultWithoutMarket.resultWithoutMarket.totalElectricityConsumption}
+                                        totalHeatLoss={results.systemResultWithoutMarket.resultWithoutMarket.totalHeatLoss}
+                                        height={height}
+                                        width={width}
+                                    />
                                 </div>
                             </View>
 
                             <View className="view">
                                 <div className="start-block">
-                                    <NetworksLossesDetailed results={results.systemResultWithoutMarket.resultWithoutMarket}
-                                                    height={height}
-                                                    width={width}/>
+                                    <NetworksLossesDetailed
+                                        networksResult={results.systemResultWithoutMarket.resultWithoutMarket.networksResult}
+                                        height={height}
+                                        width={width}/>
                                 </div>
                             </View>
 
                             <View className="view">
                                 <div className="start-block">
-                                    <Tariffs results={results.systemResultWithoutMarket}
-                                                   height={height}
-                                                   width={width}/>
+                                    <MainProducerFinancialResult
+                                        financialResult={results.systemResultWithoutMarket.resultWithoutMarket.financialResult}
+                                        height={height}
+                                        width={width}/>
+                                </div>
+                            </View>
+
+                            <View className="view">
+                                <div className="start-block">
+                                    <Tariffs
+                                        consumersMonthlyWeightedTariff={results.systemResultWithoutMarket.consumersMonthlyWeightedTariffWithoutMarket}
+                                        consumersAnnualWeightedTariff={results.systemResultWithoutMarket.consumersAnnualWeightedTariffWithoutMarket}
+                                        height={height}
+                                        width={width}/>
                                 </div>
                             </View>
 
@@ -162,11 +290,31 @@ const stepperStyle = {
     activeBorderStyle: "solid",
 }
 
-const steps = [
+const stepsWithoutMarket = [
     {title: 'Energy amount'},
     {title: "Networks losses"},
     {title: "Networks losses (Detailed)"},
+    {title: "Financial result"},
     {title: 'Tariffs'},
+]
+
+const stepsWithMarket = [
+    {title: 'Energy amount'},
+    {title: "Networks losses"},
+    {title: "Networks losses (Detailed)"},
+    {title: "Financial result"},
+    {title: 'Tariffs'},
+    {title: 'Market efficiency'},
+]
+
+const stepsWithMarketOptimization = [
+    {title: 'Energy amount'},
+    {title: "Networks losses"},
+    {title: "Networks losses (Detailed)"},
+    {title: "Financial result"},
+    {title: 'Tariffs'},
+    {title: 'Market efficiency optimization'},
+    {title: 'Market efficiency'},
 ]
 
 const useStyles = createUseStyles({

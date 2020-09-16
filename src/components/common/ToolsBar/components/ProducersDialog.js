@@ -19,6 +19,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, save
     const dispatch = useDispatch()
 
     const producers = useSelector(state => state.project.objects.producers)
+    const modelType = useSelector(state => state.project.type.modelType)
 
     let listItem = ({item}) => {
         return <>
@@ -63,6 +64,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, save
 
                 <div style={{display: "flex", justifyContent: "center"}}>
                     <Button intent={Intent.SUCCESS}
+                            disabled={modelType === "System"}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
                                 setSelectedProducer(null)

@@ -4,24 +4,20 @@ import {useDispatch, useSelector} from "react-redux";
 import {getMonthInfo} from "../../../../../helpers/data-helper";
 import {ResponsiveBarChart} from "./Charts/ResponsiveBarChart";
 
-export const EnergyAmounts = ({results, height, width}) => {
+export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
-    const currency = useSelector(state => state.project && state.project.info.currency)
-
-    const {consumersMonthlyWeightedTariffWithoutMarket} = results
-
     const [energyAmounts, setEnergyAmounts] = useState([])
 
     useEffect(() => {
-        const energyAmounts = getMonthlyEnergyAmountsChartData(consumersMonthlyWeightedTariffWithoutMarket)
+        const energyAmounts = getMonthlyEnergyAmountsChartData(consumersMonthlyWeightedTariff)
         setEnergyAmounts(energyAmounts)
     }, [])
 
-    const {annualEnergyConsumption, annualEnergyProduction} = getAnnualEnergyAmounts(consumersMonthlyWeightedTariffWithoutMarket)
+    const {annualEnergyConsumption, annualEnergyProduction} = getAnnualEnergyAmounts(consumersMonthlyWeightedTariff)
 
     return <div style={{height: height - 280, overflow: "auto"}}>
             <p className={styles.dialogTitle}>

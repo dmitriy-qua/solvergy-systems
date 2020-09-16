@@ -4,6 +4,8 @@ import {gridLineGenerated} from "../shapes/line/config";
 import {circleDrawing, circleGenerated, lineCircle} from "../shapes/circle/config";
 import {polygonDrawing, polygonGenerated, polygonLine} from "../shapes/polygon/config";
 import {generateId} from "../../../../../../helpers/data-helper";
+import {getStorageBaseUrl} from "../../../../../../api/axios-connection";
+import polylabel from 'polylabel'
 
 export const connectLineToOtherLine = (canvas, e, p) => {
 
@@ -212,12 +214,15 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     let polygon = new fabric.Polygon(points, polygonGenerated(mapHeight, mapDistance, color))
     canvas.add(polygon)
 
+    const polygonPoints = points.map(point => [point.x, point.y])
+    const center = polylabel([polygonPoints], 1.0)
+
     let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle1.set({
         id: currentCreatingObjectData.id,
         name: "start",
-        left: polygon.getCenterPoint().x + 2 * (mapHeight / mapDistance),
-        top: polygon.getCenterPoint().y,
+        left: center[0] + 2 * (mapHeight / mapDistance),
+        top: center[1],
         selectable: false,
         fill: 'red'
     })
@@ -227,14 +232,23 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     circle2.set({
         id: currentCreatingObjectData.id,
         name: "end",
-        left: polygon.getCenterPoint().x - 2 * (mapHeight / mapDistance),
-        top: polygon.getCenterPoint().y,
+        left: center[0] - 2 * (mapHeight / mapDistance),
+        top: center[1],
         selectable: false,
         fill: 'blue'
     })
     polygon.circle2 = circle2
 
-    polygon.set({id: currentCreatingObjectData.id, objectType: currentFigureType, objectCaching: false, name: currentCreatingObjectData.name})
+    polygon.set({
+        id: currentCreatingObjectData.id,
+        objectType: currentFigureType,
+        objectCaching: false,
+        name: currentCreatingObjectData.name,
+        lockMovementY: true,
+        lockMovementX: true,
+        isCompleted: true,
+        hoverCursor: "pointer",
+    })
 
     canvas.add(polygon.circle1)
     canvas.add(polygon.circle2)
@@ -247,6 +261,56 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
 
     finishCreateObject(currentFigureType, currentNodes, canvas)
 
+}
+
+export const regeneratePolygon = (canvas, selectedObject, mapHeight, mapDistance, objectType, name, color) => {
+
+    const polygonPoints = selectedObject.points.map(point => [point.x, point.y])
+    const center = polylabel([polygonPoints], 1.0)
+
+    let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
+    circle1.set({
+        id: selectedObject.id,
+        name: "start",
+        left: center[0] + 2 * (mapHeight / mapDistance),
+        top: center[1],
+        selectable: false,
+        fill: 'red'
+    })
+    selectedObject.circle1 = circle1
+
+    let circle2 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
+    circle2.set({
+        id: selectedObject.id,
+        name: "end",
+        left: center[0] - 2 * (mapHeight / mapDistance),
+        top: center[1],
+        selectable: false,
+        fill: 'blue'
+    })
+    selectedObject.circle2 = circle2
+
+    selectedObject.set({
+        id: selectedObject.id,
+        objectType,
+        objectCaching: false,
+        name,
+        lockMovementY: true,
+        lockMovementX: true,
+        isCompleted: true,
+        hoverCursor: "pointer",
+        strokeDashArray: [1, 0],
+        fill: color
+    })
+
+    canvas.add(selectedObject.circle1)
+    canvas.add(selectedObject.circle2)
+
+    //canvas.moveTo(selectedObject, 3)
+    //canvas.moveTo(circle1, 4)
+    //canvas.moveTo(circle2, 4)
+
+    canvas.renderAll()
 }
 
 const getPolygonFillColor = (objectType, currentCreatingObjectData) => {
@@ -297,10 +361,68 @@ export function fitResponsiveCanvas(canvas, mapHeight, mapWidth) {
     setViewportTransform(canvas, zoom, false, null, mapHeight, mapWidth)
 }
 
-export const setMap = (canvas) => {
+export function fitResponsiveCanvasForAnalysis(canvas, mapHeight, mapWidth, dialogWidth, dialogHeight) {
+    let containerSize = {
+        width: dialogWidth - 60,
+        height: dialogHeight - 140
+    }
+
+    canvas.setWidth(containerSize.width)
+    canvas.setHeight(containerSize.height)
+
+    const zoom = canvas.getZoom()
+    setViewportTransform(canvas, zoom, false, null, mapHeight, mapWidth)
+}
+
+export const setMapForAnalysis = (canvas, projectId, dialogWidth, dialogHeight) => {
+    try {
+        canvas.clear()
+    } catch(e) {
+        console.log(e)
+    }
+
+    const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
+
+    const mapHeight = 2000
+    let mapWidth
+
+    const result = new Promise((resolve) => fabric.Image.fromURL(imagePath, (img) => {
+        const scaleY = mapHeight / img.height
+        const imageResolution = img.width / img.height
+        mapWidth = mapHeight * imageResolution
+
+        img.set({
+            id: "background",
+            scaleX: scaleY,
+            scaleY: scaleY,
+            stroke: '#cbcbcb',
+            strokeWidth: 2,
+            selectable: false,
+            hoverCursor: "default",
+            evented: false,
+        })
+
+        canvas.add(img)
+        canvas.sendToBack(img)
+        canvas.renderAll()
+
+        fitResponsiveCanvasForAnalysis(canvas, mapHeight, mapWidth, dialogWidth, dialogHeight)
+
+        resolve({mapHeight, mapWidth})
+
+        //loadObjects(canvas, objects)
+    })).then((result) => {
+        return result
+    })
+
+    return result
+}
+
+export const setMap = (canvas, projectId) => {
     canvas.clear()
 
-    const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+    //const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+    const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
 
     const mapHeight = 2000
     let mapWidth

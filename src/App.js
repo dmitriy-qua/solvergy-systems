@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {Topology} from "./components/pages/Topology/Topology";
-import {ContextMenu, Icon, Intent, ResizeSensor} from "@blueprintjs/core";
+import {ContextMenu, Icon, Intent, Overlay, ResizeSensor, Classes, ProgressBar} from "@blueprintjs/core";
 import {
     addObjectInTree,
     forEachNode, forEachNodeFilter,
@@ -32,10 +32,11 @@ import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/
 import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
 import {
-    handleObjectSelection,
+    handleObjectSelection, regeneratePolygon,
     setEnlivenObjects
 } from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
 import {ResultsDialog} from "./components/common/ToolsBar/components/ResultsDialog";
+import {MapImageAnalysisDialog} from "./components/common/ToolsBar/components/MapImageAnalysisDialog";
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -69,6 +70,7 @@ export const App = () => {
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
     const isAuth = useSelector(state => state.auth.isAuth)
     const loadedProject = useSelector(state => state.auth.loadedProject)
+    const projectIsLoaded = useSelector(state => state.auth.projectIsLoaded)
 
     useEffect(() => {
         if (canvas && loadedProject) {
@@ -83,6 +85,7 @@ export const App = () => {
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
     const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
+    const mapImageShouldBeAnalyzed = useSelector(state => state.project && state.project.map.mapImageShouldBeAnalyzed)
 
     const [startDialog, setStartDialog] = useState(false)
     const [authDialog, setAuthDialog] = useState(false)
@@ -136,6 +139,7 @@ export const App = () => {
     const [suppliersTemplatesDialogIsOpened, setSuppliersTemplatesDialogIsOpened] = useState(false)
     const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
     const [resultsIsOpened, setResultsIsOpened] = useState(false)
+    const [mapImageAnalysisIsOpened, setMapImageAnalysisIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
@@ -159,7 +163,8 @@ export const App = () => {
             if (isRightClick) {
                 ContextMenu.show(
                     <ObjectContextMenu selectedObject={selectedObjectNode} deleteObject={deleteObject}
-                                       objects={objects} nodes={nodes} editObject={editObject} canvas={canvas} isInspectionMode={isInspectionMode}/>,
+                                       objects={objects} nodes={nodes} editObject={editObject} canvas={canvas}
+                                       isInspectionMode={isInspectionMode}/>,
                     {left: e.clientX, top: e.clientY}
                 );
             }
@@ -208,12 +213,14 @@ export const App = () => {
     }
 
     useEffect(() => {
-        if (selectedObject) {
-            const newNodes = getSelectedTreeNode(selectedObject)
-            dispatch(setNodes(newNodes))
-        } else {
-            const newNodes = unselectAllNodes()
-            dispatch(setNodes(newNodes))
+        if (project) {
+            if (selectedObject) {
+                const newNodes = getSelectedTreeNode(selectedObject)
+                dispatch(setNodes(newNodes))
+            } else {
+                const newNodes = unselectAllNodes()
+                dispatch(setNodes(newNodes))
+            }
         }
     }, [selectedObject])
 
@@ -344,6 +351,72 @@ export const App = () => {
         setResultsDialogSize({width: entries[0].contentRect.width - 50, height: entries[0].contentRect.height - 70})
     }
 
+    const saveAnalyzedObjects = (canvasObjects) => {
+        canvasObjects.forEach(object => {
+            object.set({isCompleted: false, fill: object.objectType === "consumer" ? "#bad2d8" : "#dbaca7", stroke: "black", hoverCursor: "pointer", strokeDashArray: [3,2]})
+            canvas.add(object)
+            canvas.renderAll()
+        })
+    }
+
+    const deleteNotCompletedObject = (selectedObject, canvas) => {
+        canvas.remove(selectedObject)
+        canvas.renderAll()
+    }
+
+    const completeObject = (selectedObject, canvas) => {
+        if (selectedObject.objectType === "consumer") {
+            setConsumerDialogType("complete")
+        } else if (selectedObject.objectType === "supplier") {
+            setSupplierDialogType("complete")
+        }
+    }
+
+    const createObjectFromAnalysis = (objectType, name, objectData) => {
+        let newNodes = []
+
+        switch (objectType) {
+            case "consumer":
+                const consumer = new Consumer(
+                    selectedObject.id,
+                    name,
+                    objectData.consumption,
+                    objectData.importFromSolvergyBuildings,
+                    objectData.buildingsResult
+                )
+
+                regeneratePolygon(canvas, selectedObject, mapSize.height, mapDistance, objectType, name, "#528be0")
+
+                dispatch(addNewConsumer(consumer))
+                newNodes = addObjectInTree(nodes, objectType, name, selectedObject.id)
+                dispatch(setNodes(newNodes))
+                break
+            case "supplier":
+                const supplier = new Supplier(
+                    selectedObject.id,
+                    name,
+                    objectData.capacity,
+                    objectData.producerId,
+                    objectData.templateId
+                )
+                const producer = creatingObjectData.producers.find(producer => producer.id === creatingObjectData.producerId)
+
+                regeneratePolygon(canvas, selectedObject, mapSize.height, mapDistance, objectType, name, producer.color)
+
+                dispatch(addNewSupplier(supplier))
+                newNodes = addObjectInTree(nodes, objectType, name, selectedObject.id, producer.name)
+                dispatch(setNodes(newNodes))
+                break
+            default:
+                break
+        }
+
+        saveCanvasState(canvas)
+        saveState()
+
+        toaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
+    }
+
     return <div className="App">
         <ResizeSensor onResize={handleResize}>
             <ReflexContainer orientation="horizontal" windowResizeAware={true}>
@@ -385,9 +458,11 @@ export const App = () => {
                               setResultsIsOpened={setResultsIsOpened}
                               isInspectionMode={isInspectionMode}
                               setIsInspectionMode={setIsInspectionMode}
+                              mapImageAnalysisIsOpened={mapImageAnalysisIsOpened}
+                              setMapImageAnalysisIsOpened={setMapImageAnalysisIsOpened}
+                              mapImageShouldBeAnalyzed={mapImageShouldBeAnalyzed}
                     />
                 </ReflexElement>
-
 
                 {project && isAuth ? <ReflexElement>
 
@@ -435,6 +510,8 @@ export const App = () => {
                                           setProjectHistory={setProjectHistory}
                                           saveCanvasState={saveCanvasState}
                                           isInspectionMode={isInspectionMode}
+                                          deleteNotCompletedObject={deleteNotCompletedObject}
+                                          completeObject={completeObject}
                                 />
                                 <ConsumerDialog startCreateObject={startCreateObject}
                                                 selectedObject={selectedObject}
@@ -442,6 +519,7 @@ export const App = () => {
                                                 setDialogIsOpened={setConsumerDialogType}
                                                 updateNodeLabel={updateNodeLabel}
                                                 canvas={canvas}
+                                                createObjectFromAnalysis={createObjectFromAnalysis}
                                 />
 
                                 <SupplierDialog startCreateObject={startCreateObject}
@@ -450,6 +528,7 @@ export const App = () => {
                                                 setDialogIsOpened={setSupplierDialogType}
                                                 updateNodeLabel={updateNodeLabel}
                                                 canvas={canvas}
+                                                createObjectFromAnalysis={createObjectFromAnalysis}
                                 />
 
                                 <NetworkDialog startCreateObject={startCreateObject}
@@ -484,6 +563,14 @@ export const App = () => {
                                                width={resultsDialogSize.width - 100}
                                 />
 
+                                <MapImageAnalysisDialog dialogIsOpened={mapImageAnalysisIsOpened}
+                                                        setDialogIsOpened={setMapImageAnalysisIsOpened}
+                                                        height={resultsDialogSize.height - 70}
+                                                        width={resultsDialogSize.width - 100}
+                                                        saveAnalyzedObjects={saveAnalyzedObjects}
+                                                        currentCanvasObjects={canvas ? canvas.getObjects() : []}
+                                />
+
                                 <AuthDialog startDialog={authDialog}
                                             setStartDialog={setAuthDialog}
                                 />
@@ -498,12 +585,22 @@ export const App = () => {
                                setStartDialog={setStartDialog}
                                authDialog={authDialog}
                                setAuthDialog={setAuthDialog}/>
+
+                        <Overlay isOpen={!project && !projectIsLoaded} >
+                            <div className={[Classes.CARD, Classes.ELEVATION_4]}
+                                 style={{position:"fixed", top:"50%", left:"50%", transform:"translate(-50%, -50%)", width: 400, height: 100, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                                <p style={{fontFamily: "Montserrat", fontWeight: 600, paddingBottom: 10}}>Please wait...</p>
+                                <ProgressBar intent={Intent.PRIMARY}/>
+                            </div>
+                        </Overlay>
+
                     </ReflexElement>
                 }
             </ReflexContainer>
         </ResizeSensor>
     </div>
 }
+
 
 
 

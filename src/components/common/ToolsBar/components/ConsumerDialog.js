@@ -19,7 +19,7 @@ import {setObjects} from "../../../../redux/actions/project";
 import {getBuildingsResults} from "../../../../redux/actions/buildings";
 
 
-export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas}) => {
+export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas, createObjectFromAnalysis}) => {
 
     const styles = useStyles()
 
@@ -212,6 +212,8 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
                                 startCreateObject("consumer", name, {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem})
+                            } else if (dialogIsOpened === "complete") {
+                                createObjectFromAnalysis("consumer", name, {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem})
                             }
                             resetStates()
                             setDialogIsOpened(null)

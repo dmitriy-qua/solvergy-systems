@@ -1,13 +1,23 @@
 import React, {useState} from "react";
-import {FileInput, Intent, NumericInput} from "@blueprintjs/core";
+import {FileInput, Intent, NumericInput, Switch} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 
-export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapImageUri}) => {
+export const MapSettings = ({
+                                mapDistance,
+                                setMapDistance,
+                                mapImageUri,
+                                setMapImageUri,
+                                mapImageShouldBeAnalyzed,
+                                setMapImageShouldBeAnalyzed,
+                                mapImageForAnalysisUri,
+                                setMapImageForAnalysisUri
+                            }) => {
 
     const styles = useStyles()
 
     const [mapDistanceInputTouched, setMapDistanceInputTouched] = useState(false)
     const [mapImageUriTouched, setMapImageUriTouched] = useState(false)
+    const [mapImageForAnalysisUriTouched, setMapImageForAnalysisUriTouched] = useState(false)
 
     return <div className="start-block">
         <p className={styles.dialogText}>
@@ -15,22 +25,22 @@ export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapIma
         </p>
 
         <FileInput text={mapImageUri ?
-            <span className={styles.inputText}>{mapImageUri}</span>
+            <span className={styles.inputText}>{mapImageUri.path}</span>
             :
             <span className={styles.inputText}>Set map image...</span>}
                    buttonText={"Browse"}
                    fill
-                   inputProps={{accept: "image/*"}}
+                   inputProps={{accept: "image/png"}} //"image/png, image/jpeg"
                    onInputChange={(e) => {
                        setMapImageUriTouched(true)
-                       setMapImageUri(e.target.files[0].path)
+                       setMapImageUri(e.target.files[0])
                    }}
         />
 
         <br/>
         {(!mapImageUri && mapImageUriTouched) && <p className={styles.errorText}>Set map image!</p>}
 
-        <br/><br/>
+        <br/>
 
         <p className={styles.dialogText}>
             Set vertical real distance of the current map fragment in meters:
@@ -47,12 +57,43 @@ export const MapSettings = ({mapDistance, setMapDistance, mapImageUri, setMapIma
                       min={0}
                       minorStepSize={0.1}
                       stepSize={1}
-                      value={mapDistance ? mapDistance: ""}
+                      value={mapDistance ? mapDistance : ""}
                       leftIcon="arrows-vertical"
                       fill
                       intent={(!mapDistance && mapDistanceInputTouched) ? Intent.DANGER : Intent.NONE}
         />
         {(!mapDistance && mapDistanceInputTouched) && <p className={styles.errorText}>Set map distance!</p>}
+
+        <br/>
+
+        <Switch checked={mapImageShouldBeAnalyzed}
+                label={"Map image should be analyzed for objects detecting (opportunity to increase the speed of project development)"}
+                onChange={() => setMapImageShouldBeAnalyzed(prevState => !prevState)}/>
+
+        <br/>
+
+        {mapImageShouldBeAnalyzed && <>
+            <p className={styles.dialogText}>
+                Set map image for analysis (processed image with the same size):
+            </p>
+
+            <FileInput text={mapImageForAnalysisUri ?
+                <span className={styles.inputText}>{mapImageForAnalysisUri.path}</span>
+                :
+                <span className={styles.inputText}>Set map image...</span>}
+                       buttonText={"Browse"}
+                       fill
+                       inputProps={{accept: "image/png"}} //"image/png, image/jpeg"
+                       onInputChange={(e) => {
+                           setMapImageForAnalysisUriTouched(true)
+                           setMapImageForAnalysisUri(e.target.files[0])
+                       }}
+            />
+
+            <br/>
+            {(!mapImageForAnalysisUri && mapImageForAnalysisUriTouched) &&
+            <p className={styles.errorText}>Set map image!</p>}
+        </>}
     </div>
 }
 

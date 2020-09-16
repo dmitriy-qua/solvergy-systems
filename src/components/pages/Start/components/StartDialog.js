@@ -9,7 +9,8 @@ import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
 import { ViewPager, Frame, Track, View } from 'react-view-pager'
 import {useDispatch, useSelector} from "react-redux";
-import {setProject} from "../../../../redux/actions/project";
+import {createNewProject} from "../../../../redux/actions/project";
+import {generateId} from "../../../../helpers/data-helper";
 
 export const StartDialog = ({startDialog, setStartDialog}) => {
 
@@ -31,6 +32,8 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
 
     const [mapDistance, setMapDistance] = useState(null)
     const [mapImageUri, setMapImageUri] = useState(null)
+    const [mapImageShouldBeAnalyzed, setMapImageShouldBeAnalyzed] = useState(false)
+    const [mapImageForAnalysisUri, setMapImageForAnalysisUri] = useState(null)
 
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
@@ -51,38 +54,20 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
     }
 
     const createProject = () => {
-        const newProject = {
-            info: {
-                name,
-                location,
-                currency
-            },
-            type: {
-                modelType,
-                energySystemType
-            },
-            map: {
-                mapImageUri,
-                mapDistance
-            },
-            results: null,
-            settings: null,
-            objects: {
-                consumers: [],
-                suppliers: [],
-                networks: [],
-                producers: []
-            },
-            templates: {
-                networks: [],
-                suppliers: []
-            }
-
-        }
-
-        dispatch(setProject(newProject))
+        const id = generateId()
+        dispatch(createNewProject({
+            id,
+            mapImageUri,
+            mapDistance,
+            mapImageShouldBeAnalyzed,
+            mapImageForAnalysisUri,
+            name,
+            location,
+            currency,
+            modelType,
+            energySystemType
+        }))
     }
-
 
     return <Dialog
         icon={<FaProjectDiagram size={16} className={"bp3-icon material-icon"}/>}
@@ -95,7 +80,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 650, height: 550, borderRadius: 2}}
+        style={{width: 650, height: 600, borderRadius: 2}}
         isOpen={startDialog}
     >
         <div className={[Classes.DIALOG_BODY]}>
@@ -145,6 +130,10 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                                          setMapDistance={setMapDistance}
                                          mapImageUri={mapImageUri}
                                          setMapImageUri={setMapImageUri}
+                                         mapImageShouldBeAnalyzed={mapImageShouldBeAnalyzed}
+                                         setMapImageShouldBeAnalyzed={setMapImageShouldBeAnalyzed}
+                                         mapImageForAnalysisUri={mapImageForAnalysisUri}
+                                         setMapImageForAnalysisUri={setMapImageForAnalysisUri}
                             />
                         </View>
 

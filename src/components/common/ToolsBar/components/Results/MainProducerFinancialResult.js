@@ -2,67 +2,56 @@ import React, {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {useDispatch, useSelector} from "react-redux";
 import {getMonthInfo} from "../../../../../helpers/data-helper";
-import {ResponsiveBarChart} from "./Charts/ResponsiveBarChart";
+import {Cell, Column, Table} from "@blueprintjs/table";
 
-export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeightedTariff, height, width}) => {
+
+export const MainProducerFinancialResult = ({financialResult, height, width}) => {
 
     const styles = useStyles()
 
-    const dispatch = useDispatch()
-
     const currency = useSelector(state => state.project && state.project.info.currency)
 
-    const [tariffs, setTariffs] = useState([])
+    const [rows, setRows] = useState([])
 
     useEffect(() => {
-        const tariffs = getMonthlyTariffChartData(consumersMonthlyWeightedTariff)
-        setTariffs(tariffs)
+        const rows = getFinancialResultRows(currency)
+        setRows(rows)
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
         <p className={styles.dialogTitle}>
-            Annual tariff:
+            Main producer financial results:
         </p>
 
-        <hr className={styles.divider}/>
+        {rows.length > 0 && <Table numRows={rows.length} columnWidths={getColumnWidth(financialResult)} enableRowHeader={false} enableColumnResizing={false}>
+            <Column name="Parameter" className={[styles.text, styles.bold]} cellRenderer={(rowIndex) => <Cell>{`${rows[rowIndex].name}`}</Cell>}/>
+            {financialResult.map((monthData, i) => {
+                const monthName = getMonthInfo(monthData.month).fullName
 
-        <p className={styles.dialogText}>
-            Annual average weighted tariff for consumers: <span className={styles.bold}>{consumersAnnualWeightedTariff.tariff.toFixed(2)}</span> {currency}/Gcal
-        </p>
+                const mainProducerData = monthData.producerFinancialResults.find(producer => producer.id === "main_producer")
 
-        <br/>
-
-        <p className={styles.dialogTitle}>
-            Monthly financial results:
-        </p>
-
-        <hr className={styles.divider}/>
-
-        <div style={{height: 400, textAlign: "center"}}>
-            <ResponsiveBarChart data={tariffs}
-                                keys={["Tariff"]}
-                                indexBy={"Month"}
-                                axisLeftName={"Tariff"}
-                                axisBottomName={"Month"}
-                                height={400}
-                                width={width - 200}
-                                groupMode={"stacked"}
-                                colorsScheme={"pastel1"}
-            />
-        </div>
+                return <Column className={styles.text} key={monthName} name={monthName} cellRenderer={(rowIndex) => {
+                    return <Cell>{`${mainProducerData[rows[rowIndex].key].toFixed(2)} ${rows[rowIndex].measureUnit}`}</Cell>
+                }}/>
+            })}
+        </Table>}
     </div>
 }
 
-const getMonthlyTariffChartData = (monthlyData) => {
-    const tariffs = monthlyData.map(monthData => {
-        return {
-            Tariff: parseFloat(monthData.tariff.toFixed(2)),
-            TariffColor: "hsl(336, 70%, 50%)",
-            Month: getMonthInfo(monthData.month).fullName
-        }
-    })
+const getColumnWidth = (result) => {
+    const COLUMN_WIDTH = 140
+    const columnWidth = [COLUMN_WIDTH + 100]
+    result.forEach(() => columnWidth.push(COLUMN_WIDTH))
+    return columnWidth
+}
 
-    return tariffs
+const getFinancialResultRows = (currency) => {
+    return [
+        {name: "Heat energy production", key: "GcalAmountProductionInFact", measureUnit: "Gcal"},
+        {name: "Tariff", key: "totalMonthlyForecastedTariff", measureUnit: currency + "/Gcal"},
+        {name: "Total costs in fact", key: "totalCostsInFact", measureUnit: currency},
+        {name: "Total profit in fact", key: "totalProfit", measureUnit: currency}
+    ]
 }
 
 const useStyles = createUseStyles({

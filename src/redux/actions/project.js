@@ -3,14 +3,14 @@ import {
     ADD_NEW_NETWORK, ADD_NEW_NETWORK_TEMPLATE,
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER, ADD_NEW_SUPPLIER_TEMPLATE, SET_CANVAS_STATE,
-    SET_INITIAL_STATE, SET_MARKET_MODEL_SETTINGS,
+    SET_INITIAL_STATE, SET_MAP_IMAGE_ANALYZED_POLYGONS, SET_MARKET_MODEL_SETTINGS,
     SET_NETWORKS_TEMPLATES, SET_NODES,
     SET_OBJECTS,
     SET_PRODUCERS, SET_PROJECT, SET_PROJECT_RESULTS, SET_SUPPLIERS_TEMPLATES,
 } from "../constants/project";
 
 import {ProjectsAPI} from "../../api/projects";
-import {setLoadedProjectId} from "./auth";
+import {setLoadedProjectId, setProjectIsLoaded} from "./auth";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
@@ -113,8 +113,89 @@ export const saveProject = (project) => (dispatch) => {
 
 export const openProject = (id) => (dispatch) => {
     return new Promise(async (res) => {
+        dispatch(setProjectIsLoaded(false))
         const project = await ProjectsAPI.openProject(id)
         dispatch(setProject(project.data))
         dispatch(setLoadedProjectId(project.data.id))
+        dispatch(setProjectIsLoaded(true))
     });
+}
+
+export const createNewProject = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType}) => (dispatch) => {
+    return new Promise(async (res) => {
+        dispatch(setProjectIsLoaded(false))
+        const response = await ProjectsAPI.getMapImageUrl({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri})
+
+        const newProject = getNewProjectData({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType})
+
+        dispatch(setProject(newProject))
+        dispatch(setMapImageAnalyzedPolygons(response.data))
+        dispatch(setProjectIsLoaded(true))
+    });
+}
+
+export const setMapImageAnalyzedPolygons = (data) => ({
+    type: SET_MAP_IMAGE_ANALYZED_POLYGONS,
+    data
+})
+
+const getNewProjectData = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType}) => {
+    return {
+        id,
+        info: {name, location, currency},
+        type: {modelType, energySystemType},
+        map: {mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri},
+        results: null,
+        settings: null,
+        polygons: null,
+        objects: {
+            consumers: [],
+            suppliers: [],
+            networks: [],
+            producers: [{name: "Main producer", id: "main_producer", color: "#f44336"}]
+        },
+        templates: {
+            networks: [],
+            suppliers: []
+        },
+        canvas: {
+            version: "3.6.3",
+            objects: []
+        },
+        nodes: [
+            {
+                id: "objects",
+                hasCaret: true,
+                isExpanded: false,
+                label: "System objects",
+                childNodes: [
+                    {
+                        id: "consumer",
+                        hasCaret: true,
+                        isExpanded: false,
+                        disabled: true,
+                        label: "Consumers",
+                        childNodes: [],
+                    },
+                    {
+                        id: "supplier",
+                        hasCaret: true,
+                        isExpanded: false,
+                        disabled: true,
+                        label: "Suppliers",
+                        childNodes: [],
+                    },
+                    {
+                        id: "network",
+                        hasCaret: true,
+                        isExpanded: false,
+                        disabled: true,
+                        label: "Networks",
+                        childNodes: [],
+                    },
+                ],
+            },
+        ],
+
+    }
 }

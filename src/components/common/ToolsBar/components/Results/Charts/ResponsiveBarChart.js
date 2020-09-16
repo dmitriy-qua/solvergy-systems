@@ -6,8 +6,11 @@ export const ResponsiveBarChart = ({data, height, width, keys, indexBy, axisBott
             data={data}
             keys={keys}
             indexBy={indexBy}
-            margin={{top: 50, right: 60, bottom: 50, left: 60}}
+            margin={{top: 50, right: 60, bottom: 70, left: 70}}
             padding={0.2}
+            theme={{
+                fontFamily: "Montserrat"
+            }}
             colors={colors ? colors : {scheme: colorsScheme}}
             defs={[
                 {
@@ -38,7 +41,7 @@ export const ResponsiveBarChart = ({data, height, width, keys, indexBy, axisBott
                 tickRotation: 0,
                 legend: axisBottomName,
                 legendPosition: 'middle',
-                legendOffset: 32
+                legendOffset: 50
             }}
             axisLeft={{
                 tickSize: 5,
@@ -46,7 +49,7 @@ export const ResponsiveBarChart = ({data, height, width, keys, indexBy, axisBott
                 tickRotation: 0,
                 legend: axisLeftName,
                 legendPosition: 'middle',
-                legendOffset: -40
+                legendOffset: -60
             }}
             animate={true}
             motionStiffness={90}

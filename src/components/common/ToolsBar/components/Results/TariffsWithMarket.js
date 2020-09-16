@@ -4,7 +4,14 @@ import {useDispatch, useSelector} from "react-redux";
 import {getMonthInfo} from "../../../../../helpers/data-helper";
 import {ResponsiveBarChart} from "./Charts/ResponsiveBarChart";
 
-export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeightedTariff, height, width}) => {
+export const TariffsWithMarket = ({
+                            consumersMonthlyWeightedTariffWithMarket,
+                            consumersAnnualWeightedTariffWithMarket,
+                            consumersMonthlyWeightedTariffWithoutMarket,
+                            consumersAnnualWeightedTariffWithoutMarket,
+                            height,
+                            width
+}) => {
 
     const styles = useStyles()
 
@@ -15,7 +22,7 @@ export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeighted
     const [tariffs, setTariffs] = useState([])
 
     useEffect(() => {
-        const tariffs = getMonthlyTariffChartData(consumersMonthlyWeightedTariff)
+        const tariffs = getMonthlyTariffChartData(consumersMonthlyWeightedTariffWithMarket, consumersMonthlyWeightedTariffWithoutMarket)
         setTariffs(tariffs)
     }, [])
 
@@ -27,7 +34,13 @@ export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeighted
         <hr className={styles.divider}/>
 
         <p className={styles.dialogText}>
-            Annual average weighted tariff for consumers: <span className={styles.bold}>{consumersAnnualWeightedTariff.tariff.toFixed(2)}</span> {currency}/Gcal
+            Annual average weighted tariff for consumers (with market): <span
+            className={styles.bold}>{consumersAnnualWeightedTariffWithMarket.tariff.toFixed(2)}</span> {currency}/Gcal
+        </p>
+
+        <p className={styles.dialogText}>
+            Annual average weighted tariff for consumers (without market): <span
+            className={styles.bold}>{consumersAnnualWeightedTariffWithoutMarket.tariff.toFixed(2)}</span> {currency}/Gcal
         </p>
 
         <br/>
@@ -40,24 +53,26 @@ export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeighted
 
         <div style={{height: 400, textAlign: "center"}}>
             <ResponsiveBarChart data={tariffs}
-                                keys={["Tariff"]}
+                                keys={["Tariff with market", "Tariff without market"]}
                                 indexBy={"Month"}
-                                axisLeftName={"Tariff"}
+                                axisLeftName={`Tariff ${currency}/Gcal`}
                                 axisBottomName={"Month"}
                                 height={400}
                                 width={width - 200}
-                                groupMode={"stacked"}
+                                groupMode={"grouped"}
                                 colorsScheme={"pastel1"}
             />
         </div>
     </div>
 }
 
-const getMonthlyTariffChartData = (monthlyData) => {
-    const tariffs = monthlyData.map(monthData => {
+const getMonthlyTariffChartData = (consumersMonthlyWeightedTariffWithMarket, consumersMonthlyWeightedTariffWithoutMarket) => {
+    const tariffs = consumersMonthlyWeightedTariffWithMarket.map((monthData, i) => {
         return {
-            Tariff: parseFloat(monthData.tariff.toFixed(2)),
-            TariffColor: "hsl(336, 70%, 50%)",
+            "Tariff with market": parseFloat(monthData.tariff.toFixed(2)),
+            "Tariff with marketColor": "hsl(336, 70%, 50%)",
+            "Tariff without market": parseFloat(consumersMonthlyWeightedTariffWithoutMarket[i].tariff.toFixed(2)),
+            "Tariff without marketColor": "hsl(336, 70%, 50%)",
             Month: getMonthInfo(monthData.month).fullName
         }
     })

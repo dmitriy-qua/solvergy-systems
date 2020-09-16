@@ -15,7 +15,7 @@ import {Select} from "@blueprintjs/select";
 import {generateId, updateObject} from "../../../../helpers/data-helper";
 import {setObjects} from "../../../../redux/actions/project";
 
-export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas}) => {
+export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas, createObjectFromAnalysis}) => {
 
     const styles = useStyles()
 
@@ -218,6 +218,8 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
                                 startCreateObject("supplier", name, {producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})
+                            } else if (dialogIsOpened === "complete") {
+                                createObjectFromAnalysis("supplier", name, {producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})
                             }
 
                             resetStates()

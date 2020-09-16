@@ -16,6 +16,7 @@ import {useDispatch, useSelector} from "react-redux"
 import ResizeSensor from 'resize-sensor'
 import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMenu";
 import {setCanvasState} from "../../../../../redux/actions/project";
+import {NotCompletedObjectContextMenu} from "../../../../common/ContextMenu/NotCompletedObjectContextMenu";
 
 //let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
@@ -60,7 +61,9 @@ export const Canvas = ({
                            setProjectState,
                            setProjectHistory,
                            saveCanvasState,
-                           isInspectionMode
+                           isInspectionMode,
+                           deleteNotCompletedObject,
+                           completeObject
                        }) => {
 
     const dispatch = useDispatch()
@@ -213,7 +216,7 @@ export const Canvas = ({
     canvasRef = useFabric(async (fabricCanvas) => {
         //fabricCanvas.loadFromJSON(canvasState)
         fabricCanvas.setZoom(0.25)
-        const {mapHeight, mapWidth} = await setMap(fabricCanvas)
+        const {mapHeight, mapWidth} = await setMap(fabricCanvas, project.id)
 
         setMapSize({width: mapWidth, height: mapHeight})
 
@@ -265,21 +268,23 @@ export const Canvas = ({
 
     const showContextMenu = (o, canvas) => {
         o.e.preventDefault();
+        setSelectedObject(o.target)
+        canvas.renderAll()
 
         if (o.target && (o.target.type === "polygon" || o.target.type === "line")) {
-            setSelectedObject(o.target)
-            canvas.renderAll()
-
-            ContextMenu.show(
-                <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
-                                   nodes={currentNodes} editObject={editObject} canvas={canvas} isInspectionMode={inspectionMode}/>,
-                {left: o.e.clientX, top: o.e.clientY}
-            );
-        } else {
-            setSelectedObject(o.target)
-            canvas.renderAll()
+            if (o.target.isCompleted) {
+                ContextMenu.show(
+                    <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
+                                       nodes={currentNodes} editObject={editObject} canvas={canvas} isInspectionMode={inspectionMode}/>,
+                    {left: o.e.clientX, top: o.e.clientY}
+                )
+            } else {
+                ContextMenu.show(
+                    <NotCompletedObjectContextMenu selectedObject={o.target} deleteObject={deleteNotCompletedObject} completeObject={completeObject} canvas={canvas}/>,
+                    {left: o.e.clientX, top: o.e.clientY}
+                )
+            }
         }
-
     }
 
     const onMouseDown = (canvas, height, width) => (o) => {
@@ -305,7 +310,8 @@ export const Canvas = ({
                     objectType: currentFigureType,
                     networkType: currentCreatingObjectData.networkType || null,
                     networkIsNew: currentCreatingObjectData.networkIsNew,
-                    objectCaching: false
+                    objectCaching: false,
+                    isCompleted: true
                 })
                 canvas.add(_line)
                 canvas.add(

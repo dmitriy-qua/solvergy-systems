@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {useDispatch, useSelector} from "react-redux";
 import { Cell, Column, Table } from "@blueprintjs/table";
@@ -7,15 +7,13 @@ import {Button, MenuItem} from "@blueprintjs/core";
 import {generateId, getMonthInfo} from "../../../../../helpers/data-helper";
 
 
-export const NetworksLossesDetailed = ({results, height, width}) => {
+export const NetworksLossesDetailed = ({networksResult, height, width}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
     const networks = useSelector(state => state.project && state.project.objects.networks)
-
-    const {networksResult} = results
 
     const [networksDetailed, setNetworksDetailed] = useState(null)
     const [networksData, setNetworksData] = useState([])
@@ -116,25 +114,13 @@ export const NetworksLossesDetailed = ({results, height, width}) => {
                         {month}
                     </p>
 
-                    <Table numRows={dailyResult.length} columnWidths={[200, 200, 200, 200, 200, 200]}>
-                        <Column name="Heat loss capacity" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].heatLossData.heatFlow.toFixed(2)} kW`}</Cell>
-                        }}/>
-                        <Column name="Heat energy loss" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].heatLossData.heatEnergyLoss.toFixed(3)} Gcal`}</Cell>
-                        }}/>
-                        <Column name="Electricity consumption" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].hydraulicLossData.electricityConsumption.toFixed(4)} kWh`}</Cell>
-                        }}/>
-                        <Column name="Heat carrier temperature" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].parameters.t.toFixed(2)} °C`}</Cell>
-                        }}/>
-                        <Column name="Heat carrier volume flow" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].parameters.waterVolumeFlow.toFixed(2)} m³/h`}</Cell>
-                        }}/>
-                        <Column name="Heat carrier speed" cellRenderer={(rowIndex) => {
-                            return <Cell>{`${dailyResult[rowIndex].parameters.w.toFixed(4)} m/s`}</Cell>
-                        }}/>
+                    <Table className={styles.text} numRows={dailyResult.length} columnWidths={[200, 200, 200, 200, 200, 200]} enableColumnResizing={false}>
+                        <Column name="Heat loss capacity" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].heatLossData.heatFlow.toFixed(2)} kW`}</Cell>}/>
+                        <Column name="Heat energy loss" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].heatLossData.heatEnergyLoss.toFixed(3)} Gcal`}</Cell>}/>
+                        <Column name="Electricity consumption" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].hydraulicLossData.electricityConsumption.toFixed(4)} kWh`}</Cell>}/>
+                        <Column name="Heat carrier temperature" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].parameters.t.toFixed(2)} °C`}</Cell>}/>
+                        <Column name="Heat carrier volume flow" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].parameters.waterVolumeFlow.toFixed(2)} m³/h`}</Cell>}/>
+                        <Column name="Heat carrier speed" cellRenderer={(rowIndex) => <Cell>{`${dailyResult[rowIndex].parameters.w.toFixed(4)} m/s`}</Cell>}/>
                     </Table>
                 </div>
             })}
@@ -163,9 +149,8 @@ const getDetailedNetworksResults = (selectedNetwork) => {
 
 const useStyles = createUseStyles({
     text: {
-        marginTop: 12,
-        fontWeight: 600,
-        fontSize: 13,
+        fontWeight: 400,
+        fontSize: 11,
         fontFamily: "Montserrat"
     },
     bold: {

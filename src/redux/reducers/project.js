@@ -5,7 +5,7 @@ import {
     ADD_NEW_PRODUCER,
     ADD_NEW_SUPPLIER,
     ADD_NEW_SUPPLIER_TEMPLATE,
-    CREATE_NEW_PROJECT, SET_CANVAS_STATE,
+    SET_CANVAS_STATE,
     SET_INITIAL_STATE,
     SET_MARKET_MODEL_SETTINGS,
     SET_NETWORKS_TEMPLATES, SET_NODES,
@@ -13,94 +13,94 @@ import {
     SET_PRODUCERS, SET_PROJECT,
     SET_PROJECT_RESULTS,
     SET_SUPPLIERS_TEMPLATES,
+    SET_MAP_IMAGE_ANALYZED_POLYGONS
 } from "../constants/project";
-import {Icon} from "@blueprintjs/core";
-import {getObjectIcon} from "../../components/pages/Topology/components/Canvas/helpers/tree-helper";
 
-//let initialState = null
+let initialState = null
 
-let initialState = {
-    id: "test",
-    info: {
-        location: "Kyiv, Ukraine",
-        coordinates: {
-            latitude: 50.383139,
-            longitude: 30.696004,
-        },
-        name: "New Project"
-    },
-    type: {
-        modelType: "System",
-        energySystemType: ["Heating"]
-    },
-    map: {
-        mapImageUri: "C:/Users/User/Desktop",
-        mapDistance: 1024
-    },
-    settings: null,
-    results: null,
-    canvas: {
-        version: "3.6.3",
-        objects: []
-    },
-    nodes: [
-        {
-            id: "objects",
-            hasCaret: true,
-            isExpanded: false,
-            //secondaryLabel: getObjectIcon("objects"),
-            label: "System objects",
-            childNodes: [
-                {
-                    id: "consumer",
-                    hasCaret: true,
-                    isExpanded: false,
-                    disabled: true,
-                    //secondaryLabel: getObjectIcon("consumer"),
-                    label: "Consumers",
-                    childNodes: [],
-                },
-                {
-                    id: "supplier",
-                    hasCaret: true,
-                    isExpanded: false,
-                    disabled: true,
-                    ///secondaryLabel: getObjectIcon("supplier"),
-                    label: "Suppliers",
-                    childNodes: [],
-                },
-                {
-                    id: "network",
-                    hasCaret: true,
-                    isExpanded: false,
-                    disabled: true,
-                    //secondaryLabel: getObjectIcon("network"),
-                    label: "Networks",
-                    childNodes: [],
-                },
-            ],
-        },
-    ],
-    objects: {
-        consumers: [],
-        suppliers: [],
-        networks: [],
-        producers: [{name: "Main producer", id: "main_producer", color: "#f44336"}]
-    },
-    templates: {
-        networks: [{
-            properties: {
-                name: "mumu",
-                diameter: 77,
-                insulationThickness: 77,
-                insulationType: null,
-                pipeLayingType: null
-            },
-            id: "network_template_1597316964426"
-        }],
-        suppliers: [],
-    }
-}
+// let initialState = {
+//     id: "test",
+//     info: {
+//         location: "Kyiv, Ukraine",
+//         coordinates: {
+//             latitude: 50.383139,
+//             longitude: 30.696004,
+//         },
+//         name: "New Project"
+//     },
+//     type: {
+//         modelType: "System",
+//         energySystemType: ["Heating"]
+//     },
+//     map: {
+//         //mapImageUri: "C:/Users/User/Desktop",
+//         mapDistance: 1024
+//     },
+//     settings: null,
+//     results: null,
+//     polygons: null,
+//     canvas: {
+//         version: "3.6.3",
+//         objects: []
+//     },
+//     nodes: [
+//         {
+//             id: "objects",
+//             hasCaret: true,
+//             isExpanded: false,
+//             //secondaryLabel: getObjectIcon("objects"),
+//             label: "System objects",
+//             childNodes: [
+//                 {
+//                     id: "consumer",
+//                     hasCaret: true,
+//                     isExpanded: false,
+//                     disabled: true,
+//                     //secondaryLabel: getObjectIcon("consumer"),
+//                     label: "Consumers",
+//                     childNodes: [],
+//                 },
+//                 {
+//                     id: "supplier",
+//                     hasCaret: true,
+//                     isExpanded: false,
+//                     disabled: true,
+//                     ///secondaryLabel: getObjectIcon("supplier"),
+//                     label: "Suppliers",
+//                     childNodes: [],
+//                 },
+//                 {
+//                     id: "network",
+//                     hasCaret: true,
+//                     isExpanded: false,
+//                     disabled: true,
+//                     //secondaryLabel: getObjectIcon("network"),
+//                     label: "Networks",
+//                     childNodes: [],
+//                 },
+//             ],
+//         },
+//     ],
+//     objects: {
+//         consumers: [],
+//         suppliers: [],
+//         networks: [],
+//         producers: [{name: "Main producer", id: "main_producer", color: "#f44336"}]
+//     },
+//     templates: {
+//         networks: [{
+//             properties: {
+//                 name: "mumu",
+//                 diameter: 77,
+//                 insulationThickness: 77,
+//                 insulationType: null,
+//                 pipeLayingType: null
+//             },
+//             id: "network_template_1597316964426"
+//         }],
+//         suppliers: [],
+//     }
+// }
 
 const project = (state = initialState, action) => {
     switch (action.type) {
@@ -223,6 +223,11 @@ const project = (state = initialState, action) => {
             return {
                 ...state,
                 results: action.data
+            }
+        case SET_MAP_IMAGE_ANALYZED_POLYGONS:
+            return {
+                ...state,
+                polygons: action.data
             }
         case SET_INITIAL_STATE:
             return initialState

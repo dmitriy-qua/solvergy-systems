@@ -31,7 +31,9 @@ export const Topology = ({
                              setProjectState,
                              setProjectHistory,
                              saveCanvasState,
-                             isInspectionMode
+                             isInspectionMode,
+                             deleteNotCompletedObject,
+    completeObject
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
@@ -61,6 +63,8 @@ export const Topology = ({
                         setProjectHistory={setProjectHistory}
                         saveCanvasState={saveCanvasState}
                         isInspectionMode={isInspectionMode}
+                        deleteNotCompletedObject={deleteNotCompletedObject}
+                        completeObject={completeObject}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}
