@@ -95,7 +95,7 @@ export const ProducerPropertiesForm = ({type, setType, producers, selectedProduc
 
                             canvas.renderAll()
 
-                            saveCanvasState(canvas)
+                            //saveCanvasState(canvas)
 
                             dispatch(setProducers(updatedProducers))
                         }

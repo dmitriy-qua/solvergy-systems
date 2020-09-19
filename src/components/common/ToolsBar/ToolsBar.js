@@ -73,7 +73,9 @@ export const ToolsBar = ({
                              setIsInspectionMode,
                              mapImageAnalysisIsOpened,
                              setMapImageAnalysisIsOpened,
-                             mapImageShouldBeAnalyzed
+                             mapImageShouldBeAnalyzed,
+                             canvas,
+                             projectHistoryLength
                          }) => {
 
     const styles = useStyles()
@@ -93,7 +95,7 @@ export const ToolsBar = ({
                       text="Open project..."
                       onClick={() => {
                           dispatch(openProject("test"))
-                          toaster.show({message: `Project opened.`, intent: Intent.SUCCESS, timeout: 3000})
+                          if (toaster) toaster.show({message: `Project opened.`, intent: Intent.SUCCESS, timeout: 3000})
                       }}
             />
             <MenuDivider/>
@@ -114,9 +116,9 @@ export const ToolsBar = ({
     const EditMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
 
-            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project}
+            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project || projectHistoryLength === 0}
                       onClick={() => onUndo()}/>
-            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project}
+            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project || projectHistoryLength === 0}
                       onClick={() => onRedo()}/>
             <MenuDivider/>
 
@@ -154,7 +156,7 @@ export const ToolsBar = ({
                       text="Delete object"
                       disabled={isInspectionMode || !selectedObject || !project}
                       intent={Intent.DANGER}
-                      onClick={() => deleteObject(selectedObject, objects, nodes)}/>
+                      onClick={() => deleteObject(selectedObject, objects, nodes, canvas)}/>
         </Menu>
     }
 
@@ -304,7 +306,7 @@ export const ToolsBar = ({
                          }}
                 >
                     <Button
-                        disabled={!project}
+                        disabled={!project || projectHistoryLength === 0}
                         icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL]}
                         onClick={() => onUndo()}
@@ -323,7 +325,7 @@ export const ToolsBar = ({
                          }}
                 >
                     <Button
-                        disabled={!project}
+                        disabled={!project || projectHistoryLength === 0}
                         icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
                         className={[Classes.MINIMAL, styles.iconButton]}
                         onClick={() => onRedo()}

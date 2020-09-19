@@ -1,7 +1,7 @@
 import {
     FAILURE_LOGIN,
     FAILURE_SIGNUP, LOADED_PROJECT,
-    LOGOUT, PROJECT_IS_LOADED,
+    LOGOUT, PROJECT_IS_CALCULATING, PROJECT_IS_LOADING,
     REQUEST_LOGIN,
     REQUEST_SIGNUP,
     SUCCESS_LOGIN,
@@ -81,8 +81,13 @@ export const setLoadedProjectId = (data) => ({
     data
 })
 
-export const setProjectIsLoaded = (data) => ({
-    type: PROJECT_IS_LOADED,
+export const setProjectIsLoading = (data) => ({
+    type: PROJECT_IS_LOADING,
+    data
+})
+
+export const setProjectIsCalculating = (data) => ({
+    type: PROJECT_IS_CALCULATING,
     data
 })
 

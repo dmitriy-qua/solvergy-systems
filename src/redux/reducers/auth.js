@@ -5,13 +5,14 @@ import {
     REQUEST_LOGIN,
     REQUEST_SIGNUP, SET_VERSION,
     SUCCESS_LOGIN, SUCCESS_SIGNUP,
-    PROJECT_IS_LOADED
+    PROJECT_IS_LOADING, PROJECT_IS_CALCULATING
 } from "../constants/auth";
 
 const initialState = {
     isAuth: false,
     appIsLoaded: false,
-    projectIsLoaded: true,
+    projectIsLoading: false,
+    projectIsCalculating: false,
     error: false,
     user: null,
     version: null,
@@ -74,10 +75,15 @@ const auth = (state = initialState, action) => {
                 ...state,
                 appIsLoaded: true
             }
-        case PROJECT_IS_LOADED:
+        case PROJECT_IS_LOADING:
             return {
                 ...state,
-                projectIsLoaded: action.data
+                projectIsLoading: action.data
+            }
+        case PROJECT_IS_CALCULATING:
+            return {
+                ...state,
+                projectIsCalculating: action.data
             }
         case LOADED_PROJECT:
             return {

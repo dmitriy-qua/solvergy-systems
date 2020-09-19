@@ -93,6 +93,15 @@ export const forEachNodeFilter = (nodes, id) => {
         nodes.disabled = true
     }
 
-    return nodes;
+    return {...nodes}
+}
+
+export const unselectAllNodes = (nodes) => {
+    return forEachNode(nodes, n => (n.isSelected = false))
+}
+
+export const getSelectedTreeNode = (object, nodes) => {
+    const unselectedNodes = unselectAllNodes(nodes)
+    return updateNodeProperty(unselectedNodes, object.id, "isSelected", true)
 }
 

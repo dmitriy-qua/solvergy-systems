@@ -11,13 +11,14 @@ export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) =
     const dispatch = useDispatch()
 
     const [energyAmounts, setEnergyAmounts] = useState([])
+    const [annualEnergyAmounts, setAnnualEnergyAmounts] = useState({annualEnergyConsumption: 0, annualEnergyProduction: 0})
 
     useEffect(() => {
         const energyAmounts = getMonthlyEnergyAmountsChartData(consumersMonthlyWeightedTariff)
         setEnergyAmounts(energyAmounts)
+        const {annualEnergyConsumption, annualEnergyProduction} = getAnnualEnergyAmounts(consumersMonthlyWeightedTariff)
+        setAnnualEnergyAmounts({annualEnergyConsumption, annualEnergyProduction})
     }, [])
-
-    const {annualEnergyConsumption, annualEnergyProduction} = getAnnualEnergyAmounts(consumersMonthlyWeightedTariff)
 
     return <div style={{height: height - 280, overflow: "auto"}}>
             <p className={styles.dialogTitle}>
@@ -28,8 +29,8 @@ export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) =
 
             <p className={styles.dialogText}>
                 Annual energy consumption/energy production: <span
-                className={styles.bold}>{annualEnergyConsumption.toFixed(2)}</span> Gcal / <span
-                className={styles.bold}>{annualEnergyProduction.toFixed(2)}</span> Gcal
+                className={styles.bold}>{annualEnergyAmounts.annualEnergyConsumption.toFixed(2)}</span> Gcal / <span
+                className={styles.bold}>{annualEnergyAmounts.annualEnergyProduction.toFixed(2)}</span> Gcal
             </p>
 
             <br/>

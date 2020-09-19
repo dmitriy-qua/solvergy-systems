@@ -5,13 +5,11 @@ import {getMonthInfo} from "../../../../../helpers/data-helper";
 import {ResponsiveBarChart} from "./Charts/ResponsiveBarChart";
 
 export const TariffsWithMarket = ({
-                            consumersMonthlyWeightedTariffWithMarket,
-                            consumersAnnualWeightedTariffWithMarket,
-                            consumersMonthlyWeightedTariffWithoutMarket,
-                            consumersAnnualWeightedTariffWithoutMarket,
-                            height,
-                            width
-}) => {
+                                      consumersAnnualWeightedTariffsWithAdditionalExpenses,
+                                      monthlyMarketEfficiency,
+                                      height,
+                                      width
+                                  }) => {
 
     const styles = useStyles()
 
@@ -22,7 +20,7 @@ export const TariffsWithMarket = ({
     const [tariffs, setTariffs] = useState([])
 
     useEffect(() => {
-        const tariffs = getMonthlyTariffChartData(consumersMonthlyWeightedTariffWithMarket, consumersMonthlyWeightedTariffWithoutMarket)
+        const tariffs = getMonthlyTariffChartData(monthlyMarketEfficiency)
         setTariffs(tariffs)
     }, [])
 
@@ -34,13 +32,13 @@ export const TariffsWithMarket = ({
         <hr className={styles.divider}/>
 
         <p className={styles.dialogText}>
-            Annual average weighted tariff for consumers (with market): <span
-            className={styles.bold}>{consumersAnnualWeightedTariffWithMarket.tariff.toFixed(2)}</span> {currency}/Gcal
+            Annual average weighted tariff for consumers (with market with market return and main producer compensation): <span
+            className={styles.bold}>{consumersAnnualWeightedTariffsWithAdditionalExpenses.tariffWithMainProducerCostsCompensation.toFixed(2)}</span> {currency}/Gcal
         </p>
 
         <p className={styles.dialogText}>
             Annual average weighted tariff for consumers (without market): <span
-            className={styles.bold}>{consumersAnnualWeightedTariffWithoutMarket.tariff.toFixed(2)}</span> {currency}/Gcal
+            className={styles.bold}>{consumersAnnualWeightedTariffsWithAdditionalExpenses.tariffWithoutMarket.toFixed(2)}</span> {currency}/Gcal
         </p>
 
         <br/>
@@ -53,7 +51,7 @@ export const TariffsWithMarket = ({
 
         <div style={{height: 400, textAlign: "center"}}>
             <ResponsiveBarChart data={tariffs}
-                                keys={["Tariff with market", "Tariff without market"]}
+                                keys={["Tariff with market", "Tariff without market (with market return)", "Tariff without market (with market return & main producer costs compensation)", "Tariff without market"]}
                                 indexBy={"Month"}
                                 axisLeftName={`Tariff ${currency}/Gcal`}
                                 axisBottomName={"Month"}
@@ -66,13 +64,17 @@ export const TariffsWithMarket = ({
     </div>
 }
 
-const getMonthlyTariffChartData = (consumersMonthlyWeightedTariffWithMarket, consumersMonthlyWeightedTariffWithoutMarket) => {
-    const tariffs = consumersMonthlyWeightedTariffWithMarket.map((monthData, i) => {
+const getMonthlyTariffChartData = (monthlyMarketEfficiency) => {
+    const tariffs = monthlyMarketEfficiency.map((monthData, i) => {
         return {
             "Tariff with market": parseFloat(monthData.tariff.toFixed(2)),
             "Tariff with marketColor": "hsl(336, 70%, 50%)",
-            "Tariff without market": parseFloat(consumersMonthlyWeightedTariffWithoutMarket[i].tariff.toFixed(2)),
+            "Tariff without market": parseFloat(monthData.tariffWithoutMarket.toFixed(2)),
             "Tariff without marketColor": "hsl(336, 70%, 50%)",
+            "Tariff without market (with market return)": parseFloat(monthData.tariffWithMarketReturn.toFixed(2)),
+            "Tariff without market (with market return)Color": "hsl(336, 70%, 50%)",
+            "Tariff without market (with market return & main producer costs compensation)": parseFloat(monthData.tariffWithMainProducerCostsCompensation.toFixed(2)),
+            "Tariff without market (with market return & main producer costs compensation)Color": "hsl(336, 70%, 50%)",
             Month: getMonthInfo(monthData.month).fullName
         }
     })

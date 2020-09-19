@@ -28,6 +28,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
     const dispatch = useDispatch()
 
     const modelSettings = useSelector(state => state.project.settings)
+    const modelType = useSelector(state => state.project.type.modelType)
     const producers = useSelector(state => state.project && state.project.objects.producers)
 
     const defaultSharesArray = producers.map((producer, i) => {
@@ -44,7 +45,8 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         marketShareCoefficientRanges: defaultSharesArray,
         mainProducerFixedCostLossesCompensation: "",
         marketCapitalInvestment: "",
-        electricityPrice: 2
+        electricityPrice: "",
+        interestRate: ""
     }
 
 
@@ -79,6 +81,8 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
     const [mainProducerFixedCostLossesCompensationTouched, setMainProducerFixedCostLossesCompensationTouched] = useState(false)
     const [marketCapitalInvestmentTouched, setMarketCapitalInvestmentTouched] = useState(false)
     const [electricityPriceTouched, setElectricityPriceTouched] = useState(false)
+    const [interestRateTouched, setInterestRateTouched] = useState(false)
+    const [marketReturnTouched, setMarketReturnTouched] = useState(false)
 
     const handleMarketShareCoefficientTypeSelect = (item) => {
         setMarketShareCoefficientTypeTouched(true)
@@ -103,6 +107,8 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         setMainProducerFixedCostLossesCompensationTouched(false)
         setMarketCapitalInvestmentTouched(false)
         setElectricityPriceTouched(false)
+        setInterestRateTouched(false)
+        setMarketReturnTouched(false)
     }
 
     return <Dialog
@@ -116,7 +122,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 550, height: 580, borderRadius: 2}}
+        style={{width: 600, height: 660, borderRadius: 2}}
         isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]} style={{overflow: "auto", paddingRight: 4, paddingLeft: 4}}>
@@ -124,176 +130,237 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
             <div style={{display: "flex"}}>
                 <div style={{flex: "100%"}}>
 
-                    <p className={styles.dialogText} style={{marginTop: 14}}>
-                        Select market share coefficient type:
-                    </p>
-                    <Select
-                        items={marketShareCoefficientTypes}
-                        itemRenderer={renderMarketShareCoefficientTypeItem}
-                        activeItem={settings.marketShareCoefficientType && settings.marketShareCoefficientType.name}
-                        className="fullwidth"
-                        popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
-                        filterable={false}
-                        onItemSelect={handleMarketShareCoefficientTypeSelect}
-                    >
-                        <Button text={<span
-                            className={styles.selectText}>{settings.marketShareCoefficientType && settings.marketShareCoefficientType.name || "Select market share coefficient type..."}</span>}
-                                rightIcon="caret-down" alignText="left" fill="{true}"/>
-                    </Select>
-
-
-                    {(!settings.marketShareCoefficientType && marketShareCoefficientTypeTouched) &&
-                    <p className={styles.errorText}>Set market share coefficient type!</p>}
-
-                    {settings.marketShareCoefficientType.type === "constant" && <>
-                        <p className={styles.dialogText} style={{marginTop: 18}}>
-                            Market share coefficient, %:
+                    {modelType !== "System" && <>
+                        <p className={styles.dialogText} style={{marginTop: 14}}>
+                            Select market share coefficient type:
                         </p>
-                        <div style={{display: "flex", marginTop: 12}}>
-                            <div style={{flex: "85%", paddingRight: 10, paddingLeft: 10}}>
-                                <Slider disabled={settings.optimizeMarketShareCoefficient}
-                                        min={0.1}
-                                        max={99.9}
-                                    //railStyle={{height: 6}}
-                                        trackStyle={{backgroundColor: settings.optimizeMarketShareCoefficient ? "grey" : "#137cbd"}}
-                                        handleStyle={{
-                                            borderColor: settings.optimizeMarketShareCoefficient ? "grey" : "#137cbd",
-                                            backgroundColor: settings.optimizeMarketShareCoefficient ? "grey" : '#137cbd',
-                                        }}
-                                        step={0.1}
-                                        defaultValue={settings.marketShareCoefficient}
-                                        onChange={(value) => setSettings(prevState => ({
-                                            ...prevState,
-                                            marketShareCoefficient: value
-                                        }))}/>
-                            </div>
-                            <div style={{flex: "15%", marginTop: -2, textAlign: "center"}}>
+                        <Select
+                            items={marketShareCoefficientTypes}
+                            itemRenderer={renderMarketShareCoefficientTypeItem}
+                            activeItem={settings.marketShareCoefficientType && settings.marketShareCoefficientType.name}
+                            className="fullwidth"
+                            popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                            filterable={false}
+                            onItemSelect={handleMarketShareCoefficientTypeSelect}
+                        >
+                            <Button text={<span
+                                className={styles.selectText}>{settings.marketShareCoefficientType && settings.marketShareCoefficientType.name || "Select market share coefficient type..."}</span>}
+                                    rightIcon="caret-down" alignText="left" fill="{true}"/>
+                        </Select>
+
+                        {(!settings.marketShareCoefficientType && marketShareCoefficientTypeTouched) &&
+                        <p className={styles.errorText}>Set market share coefficient type!</p>}
+
+                        {settings.marketShareCoefficientType.type === "constant" && <>
+                            <p className={styles.dialogText} style={{marginTop: 14}}>
+                                Market share coefficient, %:
+                            </p>
+                            <div style={{display: "flex", marginTop: 12}}>
+                                <div style={{flex: "85%", paddingRight: 10, paddingLeft: 10}}>
+                                    <Slider disabled={settings.optimizeMarketShareCoefficient}
+                                            min={0.1}
+                                            max={99.9}
+                                        //railStyle={{height: 6}}
+                                            trackStyle={{backgroundColor: settings.optimizeMarketShareCoefficient ? "grey" : "#137cbd"}}
+                                            handleStyle={{
+                                                borderColor: settings.optimizeMarketShareCoefficient ? "grey" : "#137cbd",
+                                                backgroundColor: settings.optimizeMarketShareCoefficient ? "grey" : '#137cbd',
+                                            }}
+                                            step={0.1}
+                                            defaultValue={settings.marketShareCoefficient}
+                                            onChange={(value) => setSettings(prevState => ({
+                                                ...prevState,
+                                                marketShareCoefficient: value
+                                            }))}/>
+                                </div>
+                                <div style={{flex: "15%", marginTop: -2, textAlign: "center"}}>
                             <span className={styles.indicatorText}
                                   style={{color: settings.optimizeMarketShareCoefficient && "grey"}}>
                                 {settings.marketShareCoefficient} %
                             </span>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{marginTop: 12}}>
-                            <Switch checked={settings.optimizeMarketShareCoefficient}
-                                    label={<div className={styles.switchTextContainer}>
+                            <div style={{marginTop: 12}}>
+                                <Switch checked={settings.optimizeMarketShareCoefficient}
+                                        label={<div className={styles.switchTextContainer}>
                                         <span className={styles.dialogText}>
                                             Optimize market share coefficient
                                         </span>
-                                    </div>}
-                                    onChange={() => {
-                                        setOptimizeMarketShareCoefficientTouched(true)
-                                        setSettings(prevState => ({
-                                            ...prevState,
-                                            optimizeMarketShareCoefficient: !prevState.optimizeMarketShareCoefficient
-                                        }))
-                                    }}/>
-                        </div>
-                    </>}
+                                        </div>}
+                                        onChange={() => {
+                                            setOptimizeMarketShareCoefficientTouched(true)
+                                            setSettings(prevState => ({
+                                                ...prevState,
+                                                optimizeMarketShareCoefficient: !prevState.optimizeMarketShareCoefficient
+                                            }))
+                                        }}/>
+                            </div>
+                        </>}
 
-                    {settings.marketShareCoefficientType.type === "manual" && <>
-                        <p className={styles.dialogText} style={{marginTop: 18}}>
-                            Market share coefficient ranges, %:
-                        </p>
-                        <div style={{display: "flex", marginTop: 12, paddingRight: 10, paddingLeft: 10}}>
-                            <Range count={producers.length - 1}
-                                   trackStyle={producersRangeData}
-                                   handleStyle={producersRangeData}
-                                   disabled={producers.length === 1}
-                                   railStyle={{backgroundColor: producers.length === 1 ? "lightgrey" :producers[0].color}}
-                                   allowCross={false}
-                                   //pushable={1}
-                                   step={0.1}
-                                   value={settings.marketShareCoefficientRanges.map(producer => producer.share)}
-                                   onChange={(value) => {
-                                       if (value[value.length - 1] === 100) {
-                                           setSettings(prevState => ({
-                                               ...prevState,
-                                               marketShareCoefficientRanges: prevState.marketShareCoefficientRanges.map((prod, i) => {
-                                                   return {
-                                                       ...prod,
-                                                       share: value[i]
-                                                   }
-                                               })
-                                           }))
-                                       }
-                                   }}/>
-                        </div>
+                        {settings.marketShareCoefficientType.type === "manual" && <>
+                            <p className={styles.dialogText} style={{marginTop: 14}}>
+                                Market share coefficient ranges, %:
+                            </p>
+                            <div style={{display: "flex", marginTop: 12, paddingRight: 10, paddingLeft: 10}}>
+                                <Range count={producers.length - 1}
+                                       trackStyle={producersRangeData}
+                                       handleStyle={producersRangeData}
+                                       disabled={producers.length === 1}
+                                       railStyle={{backgroundColor: producers.length === 1 ? "lightgrey" :producers[0].color}}
+                                       allowCross={false}
+                                    //pushable={1}
+                                       step={0.1}
+                                       value={settings.marketShareCoefficientRanges.map(producer => producer.share)}
+                                       onChange={(value) => {
+                                           if (value[value.length - 1] === 100) {
+                                               setSettings(prevState => ({
+                                                   ...prevState,
+                                                   marketShareCoefficientRanges: prevState.marketShareCoefficientRanges.map((prod, i) => {
+                                                       return {
+                                                           ...prod,
+                                                           share: value[i]
+                                                       }
+                                                   })
+                                               }))
+                                           }
+                                       }}/>
+                            </div>
 
-                        <ul>
-                            {settings.marketShareCoefficientRanges.map((producer, i) => {
+                            <ul>
+                                {settings.marketShareCoefficientRanges.map((producer, i) => {
 
-                                const producerData = producers.find(prod => producer.id === prod.id)
+                                    const producerData = producers.find(prod => producer.id === prod.id)
 
-                                const share = i === 0 ?
-                                    Math.floor(producer.share * 10) / 10
-                                    :
-                                    Math.floor((producer.share - settings.marketShareCoefficientRanges[i - 1].share) * 10) / 10
+                                    const share = i === 0 ?
+                                        Math.floor(producer.share * 10) / 10
+                                        :
+                                        Math.floor((producer.share - settings.marketShareCoefficientRanges[i - 1].share) * 10) / 10
 
-                                return <li key={producer.id} style={{color: producerData.color, fontSize: 20}}>
+                                    return <li key={producer.id} style={{color: producerData.color, fontSize: 20}}>
                                     <span className={styles.listText} style={{position: "relative", top: -2}}>
                                         {producerData.name}: {share} %
                                     </span>
-                                </li>
-                            })}
-                        </ul>
+                                    </li>
+                                })}
+                            </ul>
 
+                        </>}
+
+                        <p className={styles.dialogText} style={{marginTop: 14}}>
+                            Main producer fixed cost losses compensation, %:
+                        </p>
+                        <NumericInput placeholder="Enter value in %..."
+                                      onValueChange={(value) => {
+                                          setMainProducerFixedCostLossesCompensationTouched(true)
+                                          setSettings(prevState => ({
+                                              ...prevState,
+                                              mainProducerFixedCostLossesCompensation: value
+                                          }))
+                                      }}
+                                      className={styles.inputText}
+                                      allowNumericCharactersOnly
+                                      selectAllOnIncrement
+                                      majorStepSize={10}
+                                      min={0}
+                                      max={100}
+                                      minorStepSize={0.1}
+                                      stepSize={1}
+                                      value={settings.mainProducerFixedCostLossesCompensation}
+                                      leftIcon="comparison"
+                                      fill
+                                      intent={(!settings.mainProducerFixedCostLossesCompensation && mainProducerFixedCostLossesCompensationTouched) ? Intent.DANGER : Intent.NONE}
+                        />
+                        {(!settings.mainProducerFixedCostLossesCompensation && mainProducerFixedCostLossesCompensationTouched) &&
+                        <span className={styles.errorText}>Enter value...</span>}
+
+                        <div style={{display: "flex"}}>
+                            <div style={{flex: "50%", paddingRight: 10}}>
+                                <p className={styles.dialogText} style={{marginTop: 14}}>
+                                    Market creation capital investment, $:
+                                </p>
+                                <NumericInput placeholder="Enter value..."
+                                              onValueChange={(value) => {
+                                                  setMarketCapitalInvestmentTouched(true)
+                                                  setSettings(prevState => ({
+                                                      ...prevState,
+                                                      marketCapitalInvestment: value
+                                                  }))
+                                              }}
+                                              className={styles.inputText}
+                                              allowNumericCharactersOnly
+                                              selectAllOnIncrement
+                                              majorStepSize={10}
+                                              min={0}
+                                              minorStepSize={0.1}
+                                              stepSize={1}
+                                              value={settings.marketCapitalInvestment}
+                                              leftIcon="dollar"
+                                              fill
+                                              intent={(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) ? Intent.DANGER : Intent.NONE}
+                                />
+                                {(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) &&
+                                <span className={styles.errorText}>Enter value...</span>}
+
+                            </div>
+
+                            <div style={{flex: "50%", paddingLeft: 10}}>
+                                <p className={styles.dialogText} style={{marginTop: 14}}>
+                                    Interest rate, %:
+                                </p>
+                                <NumericInput placeholder="Enter value..."
+                                              onValueChange={(value) => {
+                                                  setInterestRateTouched(true)
+                                                  setSettings(prevState => ({
+                                                      ...prevState,
+                                                      interestRate: value
+                                                  }))
+                                              }}
+                                              className={styles.inputText}
+                                              allowNumericCharactersOnly
+                                              selectAllOnIncrement
+                                              majorStepSize={10}
+                                              min={0}
+                                              minorStepSize={0.1}
+                                              stepSize={1}
+                                              value={settings.interestRate}
+                                              leftIcon="comparison"
+                                              fill
+                                              intent={(!settings.interestRate && interestRateTouched) ? Intent.DANGER : Intent.NONE}
+                                />
+                                {(!settings.interestRate && interestRateTouched) &&
+                                <span className={styles.errorText}>Enter value...</span>}
+                            </div>
+                        </div>
+
+                        <p className={styles.dialogText} style={{marginTop: 14}}>
+                            The percentage of return on funds spent on the market creation from the annual consumers part of absolute market efficiency, %:
+                        </p>
+                        <NumericInput placeholder="Enter value..."
+                                      onValueChange={(value) => {
+                                          setMarketReturnTouched(true)
+                                          setSettings(prevState => ({
+                                              ...prevState,
+                                              marketReturn: value
+                                          }))
+                                      }}
+                                      className={styles.inputText}
+                                      allowNumericCharactersOnly
+                                      selectAllOnIncrement
+                                      majorStepSize={10}
+                                      min={0}
+                                      minorStepSize={0.1}
+                                      stepSize={1}
+                                      value={settings.marketReturn}
+                                      leftIcon="comparison"
+                                      fill
+                                      intent={(!settings.marketReturn && marketReturnTouched) ? Intent.DANGER : Intent.NONE}
+                        />
+                        {(!settings.marketReturn && marketReturnTouched) &&
+                        <span className={styles.errorText}>Enter value...</span>}
                     </>}
 
-                    <p className={styles.dialogText} style={{marginTop: 18}}>
-                        Main producer fixed cost losses compensation, %:
-                    </p>
-                    <NumericInput placeholder="Enter value in %..."
-                                  onValueChange={(value) => {
-                                      setMainProducerFixedCostLossesCompensationTouched(true)
-                                      setSettings(prevState => ({
-                                          ...prevState,
-                                          mainProducerFixedCostLossesCompensation: value
-                                      }))
-                                  }}
-                                  className={styles.inputText}
-                                  allowNumericCharactersOnly
-                                  selectAllOnIncrement
-                                  majorStepSize={10}
-                                  min={0}
-                                  minorStepSize={0.1}
-                                  stepSize={1}
-                                  value={settings.mainProducerFixedCostLossesCompensation}
-                                  leftIcon="comparison"
-                                  fill
-                                  intent={(!settings.mainProducerFixedCostLossesCompensation && mainProducerFixedCostLossesCompensationTouched) ? Intent.DANGER : Intent.NONE}
-                    />
-                    {(!settings.mainProducerFixedCostLossesCompensation && mainProducerFixedCostLossesCompensationTouched) &&
-                    <span className={styles.errorText}>Enter value...</span>}
-
-                    <p className={styles.dialogText} style={{marginTop: 18}}>
-                        Market creation capital investment, $:
-                    </p>
-                    <NumericInput placeholder="Enter value..."
-                                  onValueChange={(value) => {
-                                      setMarketCapitalInvestmentTouched(true)
-                                      setSettings(prevState => ({
-                                          ...prevState,
-                                          marketCapitalInvestment: value
-                                      }))
-                                  }}
-                                  className={styles.inputText}
-                                  allowNumericCharactersOnly
-                                  selectAllOnIncrement
-                                  majorStepSize={10}
-                                  min={0}
-                                  minorStepSize={0.1}
-                                  stepSize={1}
-                                  value={settings.marketCapitalInvestment}
-                                  leftIcon="dollar"
-                                  fill
-                                  intent={(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) ? Intent.DANGER : Intent.NONE}
-                    />
-                    {(!settings.marketCapitalInvestment && marketCapitalInvestmentTouched) &&
-                    <span className={styles.errorText}>Enter value...</span>}
-
-                    <p className={styles.dialogText} style={{marginTop: 18}}>
-                        Electricity price, $:
+                    <p className={styles.dialogText} style={{marginTop: 14}}>
+                        Electricity price, $/kWh:
                     </p>
                     <NumericInput placeholder="Enter value..."
                                   onValueChange={(value) => {

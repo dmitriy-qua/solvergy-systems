@@ -21,7 +21,6 @@ export const MarketEfficiency = ({monthlyMarketEfficiency, annualMarketEfficienc
     useEffect(() => {
         const relativeMarketEfficiency = getMonthlyRelativeMarketEfficiencyChartData(monthlyMarketEfficiency)
         const absoluteMarketEfficiency = getMonthlyAbsoluteMarketEfficiencyChartData(monthlyMarketEfficiency)
-
         setRelativeMarketEfficiency(relativeMarketEfficiency)
         setAbsoluteMarketEfficiency(absoluteMarketEfficiency)
     }, [])
@@ -88,10 +87,6 @@ export const MarketEfficiency = ({monthlyMarketEfficiency, annualMarketEfficienc
                 </div>
             </div>
         </div>
-
-
-
-
     </div>
 }
 
@@ -99,7 +94,7 @@ const getMonthlyRelativeMarketEfficiencyChartData = (monthlyData) => {
 
     return monthlyData.map(monthData => {
         return {
-            "Relative market efficiency": (monthData.marketRelativeEfficiency * 100).toFixed(2),
+            "Relative market efficiency": parseFloat((monthData.marketRelativeEfficiency * 100).toFixed(2)),
             "Relative market efficiencyColor": "hsl(336, 70%, 50%)",
             Month: getMonthInfo(monthData.month).fullName
         }
@@ -110,7 +105,7 @@ const getMonthlyAbsoluteMarketEfficiencyChartData = (monthlyData) => {
 
     return monthlyData.map(monthData => {
         return {
-            "Absolute market efficiency": (monthData.marketAbsoluteEfficiency / 1000000).toFixed(3),
+            "Absolute market efficiency": parseFloat((monthData.marketAbsoluteEfficiency / 1000000).toFixed(3)),
             "Absolute market efficiencyColor": "hsl(336, 70%, 50%)",
             Month: getMonthInfo(monthData.month).fullName
         }

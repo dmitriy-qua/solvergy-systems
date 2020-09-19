@@ -27,7 +27,7 @@ export const ProducersFinancialResult = ({financialResult, height, width}) => {
         <hr className={styles.divider}/>
 
         {producers.map(({name, id}) => {
-            return <div style={{marginTop: 10}}>
+            return <div key={id} style={{marginTop: 10}}>
                 <p className={styles.dialogText}>
                     {name}
                 </p>

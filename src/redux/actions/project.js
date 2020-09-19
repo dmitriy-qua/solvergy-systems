@@ -10,7 +10,7 @@ import {
 } from "../constants/project";
 
 import {ProjectsAPI} from "../../api/projects";
-import {setLoadedProjectId, setProjectIsLoaded} from "./auth";
+import {setLoadedProjectId, setProjectIsCalculating, setProjectIsLoading} from "./auth";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
@@ -93,7 +93,7 @@ export const setProjectResult = (data) => ({
 
 export const calculateProject = (project) => (dispatch) => {
     return new Promise(async (res) => {
-
+        dispatch(setProjectIsCalculating(true))
         const projectData = {
             ...project,
             results: null
@@ -101,6 +101,7 @@ export const calculateProject = (project) => (dispatch) => {
 
         const calculationResult = await ProjectsAPI.calculateProject(projectData)
         dispatch(setProjectResult(calculationResult.data.results))
+        dispatch(setProjectIsCalculating(false))
     });
 }
 
@@ -113,24 +114,24 @@ export const saveProject = (project) => (dispatch) => {
 
 export const openProject = (id) => (dispatch) => {
     return new Promise(async (res) => {
-        dispatch(setProjectIsLoaded(false))
+        dispatch(setProjectIsLoading(true))
         const project = await ProjectsAPI.openProject(id)
         dispatch(setProject(project.data))
         dispatch(setLoadedProjectId(project.data.id))
-        dispatch(setProjectIsLoaded(true))
+        dispatch(setProjectIsLoading(false))
     });
 }
 
 export const createNewProject = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType}) => (dispatch) => {
     return new Promise(async (res) => {
-        dispatch(setProjectIsLoaded(false))
+        dispatch(setProjectIsLoading(true))
         const response = await ProjectsAPI.getMapImageUrl({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri})
 
         const newProject = getNewProjectData({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType})
 
         dispatch(setProject(newProject))
         dispatch(setMapImageAnalyzedPolygons(response.data))
-        dispatch(setProjectIsLoaded(true))
+        dispatch(setProjectIsLoading(false))
     });
 }
 

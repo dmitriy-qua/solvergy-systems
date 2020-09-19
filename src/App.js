@@ -3,10 +3,14 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {Topology} from "./components/pages/Topology/Topology";
-import {ContextMenu, Icon, Intent, Overlay, ResizeSensor, Classes, ProgressBar} from "@blueprintjs/core";
+import {
+    ContextMenu,
+    Intent,
+    ResizeSensor,
+} from "@blueprintjs/core";
 import {
     addObjectInTree,
-    forEachNode, forEachNodeFilter,
+    forEachNode, forEachNodeFilter, getSelectedTreeNode, unselectAllNodes,
     updateNodeProperty
 } from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
@@ -33,14 +37,17 @@ import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettin
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
 import {
     handleObjectSelection, regeneratePolygon,
-    setEnlivenObjects
+    setEnlivenObjects, toggleInspectionMode
 } from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
 import {ResultsDialog} from "./components/common/ToolsBar/components/ResultsDialog";
 import {MapImageAnalysisDialog} from "./components/common/ToolsBar/components/MapImageAnalysisDialog";
+import {Loading} from "./components/common/Loading/Loading";
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
 //const FOOTER_HEIGHT = 50
+
+const HISTORY_DEPTH = 10
 
 let creatingObjectData = null
 let currentToaster = null
@@ -50,42 +57,20 @@ export const App = () => {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        const user = localStorage.getItem('user')
-
-        if (user) {
-            dispatch(successLogin(JSON.parse(user).data.user))
-        }
-    }, [])
-
-
     const project = useSelector(state => state.project)
-
-    useEffect(() => {
-        currentProject = project
-    }, [project])
 
     const objects = useSelector(state => state.project && state.project.objects)
     const nodes = useSelector(state => state.project && state.project.nodes)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
     const isAuth = useSelector(state => state.auth.isAuth)
     const loadedProject = useSelector(state => state.auth.loadedProject)
-    const projectIsLoaded = useSelector(state => state.auth.projectIsLoaded)
-
-    useEffect(() => {
-        if (canvas && loadedProject) {
-            canvas.clear()
-            setEnlivenObjects(canvas, project.canvas.objects, setObjectType)
-            const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
-            setNodes(newNodes)
-            setProjectState(project)
-            dispatch(setLoadedProjectId(null))
-        }
-    }, [loadedProject])
+    const projectIsLoading = useSelector(state => state.auth.projectIsLoading)
+    const projectIsCalculating = useSelector(state => state.auth.projectIsCalculating)
 
     const producers = useSelector(state => state.project && state.project.objects.producers)
     const mapDistance = useSelector(state => state.project && state.project.map.mapDistance)
     const mapImageShouldBeAnalyzed = useSelector(state => state.project && state.project.map.mapImageShouldBeAnalyzed)
+
 
     const [startDialog, setStartDialog] = useState(false)
     const [authDialog, setAuthDialog] = useState(false)
@@ -96,35 +81,11 @@ export const App = () => {
     const [gridIsVisible, setGridIsVisible] = useState(false)
     const [isInspectionMode, setIsInspectionMode] = useState(false)
 
-    useEffect(() => {
-
-        if (canvas) {
-            if (isInspectionMode) {
-                canvas.forEachObject((o) => {
-                    if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
-                        o.selectable = false
-                        o.hoverCursor = "default"
-                        //o.evented = false
-                    }
-                })
-            } else {
-                canvas.forEachObject((o) => {
-                    if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
-                        o.selectable = true
-                        o.hoverCursor = "move"
-                        //o.evented = true
-                    }
-                })
-            }
-        }
-
-    }, [isInspectionMode])
-
     const [toasts, setToasts] = useState([])
     const [toaster, setToaster] = useState(null)
 
     const [canvas, setCanvas] = useState(null)
-    const [projectHistory, setProjectHistory] = useState([project])
+    const [projectHistory, setProjectHistory] = useState([])
     const [projectState, setProjectState] = useState(project)
 
     const [mapSize, setMapSize] = useState({width: 2000, height: 2000})
@@ -143,13 +104,52 @@ export const App = () => {
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
+    useEffect(() => {
+        const user = localStorage.getItem('user')
+        if (user) dispatch(successLogin(JSON.parse(user).data.user))
+    }, [])
+
+    useEffect(() => {
+        currentProject = project
+    }, [project])
+
+    useEffect(() => {
+        if (canvas && loadedProject) {
+            canvas.clear()
+            setEnlivenObjects(canvas, project.canvas.objects, setObjectType)
+            const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
+            dispatch(setNodes(newNodes))
+            //setProjectState(JSON.parse(JSON.stringify(project)))
+            //setProjectHistory([JSON.parse(JSON.stringify(project))])
+            dispatch(setLoadedProjectId(null))
+        }
+    }, [loadedProject, canvas])
+
+    useEffect(() => {
+        toggleInspectionMode(canvas, isInspectionMode)
+    }, [isInspectionMode])
+
+    useEffect(() => {
+        if (project) {
+            if (selectedObject) {
+                const newNodes = getSelectedTreeNode(selectedObject, nodes)
+                dispatch(setNodes(newNodes))
+            } else {
+                const newNodes = unselectAllNodes(nodes)
+                dispatch(setNodes(newNodes))
+            }
+        }
+    }, [selectedObject])
+
     const saveState = () => {
-        setProjectState(currentProject)
-        setProjectHistory(history => [...history, currentProject].slice(-4))
+        const newProjectState = JSON.parse(JSON.stringify(currentProject))
+        //console.log(newProjectState)
+        setProjectState(newProjectState)
+        setProjectHistory(history => [...history, newProjectState].slice(-HISTORY_DEPTH))
     }
 
     const saveCanvasState = (canvas) => {
-        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew"])
+        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
         dispatch(setCanvasState(canvasState))
     }
 
@@ -176,12 +176,14 @@ export const App = () => {
 
     const deleteObject = (selectedObject, objects, nodes, canvas) => {
 
+        saveCanvasState(canvas)
+        saveState()
+
         const objectType = `${selectedObject.objectType}s`
         const newObjects = objects[objectType].filter(object => object.id !== selectedObject.id)
         dispatch(setObjects({objectType, newObjects}))
 
         const newNodes = forEachNodeFilter(nodes[0], selectedObject.id)
-
         dispatch(setNodes([newNodes]))
         setObjectToDelete(selectedObject)
         setSelectedObject(null)
@@ -203,26 +205,6 @@ export const App = () => {
         }
     }
 
-    const unselectAllNodes = () => {
-        return forEachNode(nodes, n => (n.isSelected = false))
-    }
-
-    const getSelectedTreeNode = (object) => {
-        const unselectedNodes = unselectAllNodes()
-        return updateNodeProperty(unselectedNodes, object.id, "isSelected", true)
-    }
-
-    useEffect(() => {
-        if (project) {
-            if (selectedObject) {
-                const newNodes = getSelectedTreeNode(selectedObject)
-                dispatch(setNodes(newNodes))
-            } else {
-                const newNodes = unselectAllNodes()
-                dispatch(setNodes(newNodes))
-            }
-        }
-    }, [selectedObject])
 
     const startCreateObject = (objectType, name, properties) => {
         const id = objectType + "_" + generateId()
@@ -314,11 +296,7 @@ export const App = () => {
                 break
         }
 
-        saveCanvasState(canvas)
-        saveState()
-
         currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
-
         creatingObjectData = null
     }
 
@@ -329,22 +307,20 @@ export const App = () => {
 
     const moveHistory = useCallback(
         step => {
-            const currentStateIndex = projectHistory.indexOf(projectState);
+            const currentStateIndex = projectHistory.indexOf(projectState)
             const prevState = projectHistory[currentStateIndex + step]
-
             if (prevState && prevState.canvas.objects.length > 0) {
-                dispatch(setProject(prevState))
-                setProjectState(prevState)
                 canvas.clear()
                 setEnlivenObjects(canvas, prevState.canvas.objects, setObjectType)
-                setNodes(prevState.nodes)
+                setProjectState(prevState)
+                dispatch(setProject(prevState))
+                dispatch(setNodes(prevState.nodes))
             }
         },
         [canvas, projectState, projectHistory, setProjectState]
     );
 
     const onUndo = useCallback(() => moveHistory(-1), [moveHistory]);
-
     const onRedo = useCallback(() => moveHistory(1), [moveHistory]);
 
     const handleResize = (entries) => {
@@ -353,7 +329,13 @@ export const App = () => {
 
     const saveAnalyzedObjects = (canvasObjects) => {
         canvasObjects.forEach(object => {
-            object.set({isCompleted: false, fill: object.objectType === "consumer" ? "#bad2d8" : "#dbaca7", stroke: "black", hoverCursor: "pointer", strokeDashArray: [3,2]})
+            object.set({
+                isCompleted: false,
+                fill: object.objectType === "consumer" ? "#bad2d8" : "#dbaca7",
+                stroke: "black",
+                hoverCursor: "pointer",
+                strokeDashArray: [3, 2]
+            })
             canvas.add(object)
             canvas.renderAll()
         })
@@ -410,10 +392,6 @@ export const App = () => {
             default:
                 break
         }
-
-        saveCanvasState(canvas)
-        saveState()
-
         toaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
     }
 
@@ -461,27 +439,15 @@ export const App = () => {
                               mapImageAnalysisIsOpened={mapImageAnalysisIsOpened}
                               setMapImageAnalysisIsOpened={setMapImageAnalysisIsOpened}
                               mapImageShouldBeAnalyzed={mapImageShouldBeAnalyzed}
+                              canvas={canvas}
+                              projectHistoryLength={projectHistory.length}
                     />
                 </ReflexElement>
 
                 {project && isAuth ? <ReflexElement>
-
                         <ReflexContainer orientation="vertical"
-                                         windowResizeAware={true}
-                        >
-                            {/*<ReflexElement className="left-pane"*/}
-                            {/*               size={LEFT_MENU_WIDTH}*/}
-                            {/*               minSize={LEFT_MENU_WIDTH}*/}
-                            {/*               maxSize={LEFT_MENU_WIDTH}*/}
-                            {/*               style={{borderRight: "4px solid #eceff1"}}*/}
-                            {/*>*/}
-                            {/*    <NavigationBar currentPage={currentPage}*/}
-                            {/*                   setCurrentPage={setCurrentPage}*/}
-                            {/*    />*/}
-                            {/*</ReflexElement>*/}
-
+                                         windowResizeAware={true}>
                             <ReflexElement>
-
                                 <Topology objectType={objectType}
                                           gridIsVisible={gridIsVisible}
                                           mapDistance={mapDistance}
@@ -559,8 +525,8 @@ export const App = () => {
 
                                 <ResultsDialog dialogIsOpened={resultsIsOpened}
                                                setDialogIsOpened={setResultsIsOpened}
-                                               height={resultsDialogSize.height - 70}
-                                               width={resultsDialogSize.width - 100}
+                                               height={resultsDialogSize.height - 50}
+                                               width={resultsDialogSize.width - 50}
                                 />
 
                                 <MapImageAnalysisDialog dialogIsOpened={mapImageAnalysisIsOpened}
@@ -575,6 +541,7 @@ export const App = () => {
                                             setStartDialog={setAuthDialog}
                                 />
 
+                                <Loading isOpen={projectIsCalculating}/>
                             </ReflexElement>
                         </ReflexContainer>
 
@@ -586,16 +553,10 @@ export const App = () => {
                                authDialog={authDialog}
                                setAuthDialog={setAuthDialog}/>
 
-                        <Overlay isOpen={!project && !projectIsLoaded} >
-                            <div className={[Classes.CARD, Classes.ELEVATION_4]}
-                                 style={{position:"fixed", top:"50%", left:"50%", transform:"translate(-50%, -50%)", width: 400, height: 100, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                                <p style={{fontFamily: "Montserrat", fontWeight: 600, paddingBottom: 10}}>Please wait...</p>
-                                <ProgressBar intent={Intent.PRIMARY}/>
-                            </div>
-                        </Overlay>
-
+                        <Loading isOpen={!project && projectIsLoading}/>
                     </ReflexElement>
                 }
+
             </ReflexContainer>
         </ResizeSensor>
     </div>

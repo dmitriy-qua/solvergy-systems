@@ -19,8 +19,8 @@ import {setCanvasState} from "../../../../../redux/actions/project";
 import {NotCompletedObjectContextMenu} from "../../../../common/ContextMenu/NotCompletedObjectContextMenu";
 
 //let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
+const HISTORY_DEPTH = 10
 
-//let canvas
 let zoom = 1
 let _line, isDown, currentFigureType, currentCreatingObjectData
 let polygonMode = true
@@ -104,15 +104,16 @@ export const Canvas = ({
 
     useEffect(() => {
         if (objectToDelete) {
+            // const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
+            // dispatch(setCanvasState(canvasState))
+            // setProjectState(currentProject)
+            // setProjectHistory(history => [...history, currentProject].slice(-HISTORY_DEPTH))
+
             canvas.remove(objectToDelete.circle1)
             canvas.remove(objectToDelete.circle2)
             canvas.remove(objectToDelete)
             canvas.renderAll()
             setObjectToDelete(null)
-            const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
-            dispatch(setCanvasState(canvasState))
-            setProjectState(currentProject)
-            setProjectHistory(history => [...history, currentProject].slice(-4))
         }
     }, [objectToDelete])
 
@@ -232,17 +233,10 @@ export const Canvas = ({
         fabricCanvas.on('mouse:over', onMouseOver(fabricCanvas))
         fabricCanvas.on('mouse:out', onMouseOut(fabricCanvas))
 
-        dispatch(setCanvasState(fabricCanvas.toJSON(["id"])))
+        //dispatch(setCanvasState(fabricCanvas.toJSON(["id"])))
 
         setCanvas(fabricCanvas)
     })
-
-    // let canvasDep
-    // if (canvas) canvasDep = canvas.getObjects() //{...Object.keys(canvas).map(key => canvas[key])}
-
-    // useEffect( () => {
-    //     //console.log(canvas)
-    // }, [canvasDep])
 
     useEffect(() => {
         if (canvas) {
@@ -412,8 +406,6 @@ export const Canvas = ({
             canDrawPolygon = false
             setObjectType("none")
         }
-
-        saveCanvasState(canvas)
     }
 
     const objectMoving = (canvas, height, width) => (e) => {
@@ -499,20 +491,6 @@ export const Canvas = ({
                     const distance = calculateLineDistance(p, mapDistance, height)
                     p.set({distance})
 
-                    canvas.renderAll()
-                } else if (objType === 'polygon') {
-                    p.circle1.set({
-                        left: p.getCenterPoint().x + 2 * (height / mapDistance),
-                        top: p.getCenterPoint().y
-                    })
-
-                    p.circle2.set({
-                        left: p.getCenterPoint().x - 2 * (height / mapDistance),
-                        top: p.getCenterPoint().y
-                    })
-                    p.circle1.setCoords()
-                    p.circle2.setCoords()
-                    p.setCoords()
                     canvas.renderAll()
                 }
             }

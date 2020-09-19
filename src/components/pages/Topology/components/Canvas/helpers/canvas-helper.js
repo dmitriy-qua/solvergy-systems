@@ -70,9 +70,11 @@ export const connectLineToOtherLine = (canvas, e, p) => {
                     if (obj.type === "circle") return (obj.id === p.connectedTo.id && obj.name === p.connectedTo.name)
                 })
 
-                lineCircle.set({
-                    stroke: "#aaaaaa",
-                });
+                if (lineCircle !== undefined) {
+                    lineCircle.set({
+                        stroke: "#aaaaaa",
+                    })
+                }
             }
 
             p.set({connectedTo: null})
@@ -421,8 +423,8 @@ export const setMapForAnalysis = (canvas, projectId, dialogWidth, dialogHeight) 
 export const setMap = (canvas, projectId) => {
     canvas.clear()
 
-    //const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
-    const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
+    const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+    //const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
 
     const mapHeight = 2000
     let mapWidth
@@ -550,5 +552,29 @@ export const setEnlivenObjects = (canvas, objects, setObjectType) => {
 
         setObjectType("none")
     });
+}
+
+export const toggleInspectionMode = (canvas, isInspectionMode) => {
+    if (canvas) {
+        if (isInspectionMode) {
+            canvas.forEachObject((o) => {
+                if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
+                    o.selectable = false
+                    o.hoverCursor = "default"
+                    //o.evented = false
+                }
+            })
+        } else {
+            canvas.forEachObject((o) => {
+                if (o.type === "line" || o.type === "circle" || o.type === "polygon") {
+                    o.selectable = true
+                    o.hoverCursor = "move"
+                    //o.evented = true
+                }
+            })
+        }
+
+        canvas.renderAll()
+    }
 }
 
