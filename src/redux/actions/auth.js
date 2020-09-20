@@ -3,11 +3,12 @@ import {
     FAILURE_SIGNUP, LOADED_PROJECT,
     LOGOUT, PROJECT_IS_CALCULATING, PROJECT_IS_LOADING,
     REQUEST_LOGIN,
-    REQUEST_SIGNUP,
+    REQUEST_SIGNUP, SET_USER_PROJECTS,
     SUCCESS_LOGIN,
     SUCCESS_SIGNUP
 } from "../constants/auth";
 import {AuthAPI} from "../../api/auth"
+import {ProjectsAPI} from "../../api/projects";
 
 function requestLogin(login) { return { type: REQUEST_LOGIN, login } }
 export function successLogin(user) { return { type: SUCCESS_LOGIN, user } }
@@ -86,8 +87,19 @@ export const setProjectIsLoading = (data) => ({
     data
 })
 
+export const setUserProjects = (data) => ({
+    type: SET_USER_PROJECTS,
+    data
+})
+
+export const getUserProjects = () => dispatch => {
+    return new Promise(async (res) => {
+        const response = await AuthAPI.getUserProjects()
+        dispatch(setUserProjects(response.data))
+    });
+}
+
 export const setProjectIsCalculating = (data) => ({
     type: PROJECT_IS_CALCULATING,
     data
 })
-

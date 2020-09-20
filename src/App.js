@@ -42,6 +42,8 @@ import {
 import {ResultsDialog} from "./components/common/ToolsBar/components/ResultsDialog";
 import {MapImageAnalysisDialog} from "./components/common/ToolsBar/components/MapImageAnalysisDialog";
 import {Loading} from "./components/common/Loading/Loading";
+import {StartDialog} from "./components/pages/Start/components/StartDialog";
+import {OpenProjectDialog} from "./components/common/ToolsBar/components/OpenProjectDialog";
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -86,7 +88,8 @@ export const App = () => {
 
     const [canvas, setCanvas] = useState(null)
     const [projectHistory, setProjectHistory] = useState([])
-    const [projectState, setProjectState] = useState(project)
+    const [projectState, setProjectState] = useState(null)
+    const [projectStateInHistoryIndex, setProjectStateInHistoryIndex] = useState(0)
 
     const [mapSize, setMapSize] = useState({width: 2000, height: 2000})
 
@@ -101,6 +104,7 @@ export const App = () => {
     const [modelSettingsIsOpened, setModelSettingsIsOpened] = useState(false)
     const [resultsIsOpened, setResultsIsOpened] = useState(false)
     const [mapImageAnalysisIsOpened, setMapImageAnalysisIsOpened] = useState(false)
+    const [openProjectDialogIsOpened, setOpenProjectDialogIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
@@ -115,12 +119,11 @@ export const App = () => {
 
     useEffect(() => {
         if (canvas && loadedProject) {
-            canvas.clear()
             setEnlivenObjects(canvas, project.canvas.objects, setObjectType)
-            const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
-            dispatch(setNodes(newNodes))
-            //setProjectState(JSON.parse(JSON.stringify(project)))
-            //setProjectHistory([JSON.parse(JSON.stringify(project))])
+            //const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
+            //dispatch(setNodes(newNodes))
+            setProjectState(JSON.parse(JSON.stringify(project)))
+            setProjectHistory([JSON.parse(JSON.stringify(project))])
             dispatch(setLoadedProjectId(null))
         }
     }, [loadedProject, canvas])
@@ -128,6 +131,11 @@ export const App = () => {
     useEffect(() => {
         toggleInspectionMode(canvas, isInspectionMode)
     }, [isInspectionMode])
+
+    useEffect(() => {
+        const currentStateIndex = projectHistory.indexOf(projectState)
+        setProjectStateInHistoryIndex(currentStateIndex)
+    }, [projectHistory, projectState])
 
     useEffect(() => {
         if (project) {
@@ -142,8 +150,14 @@ export const App = () => {
     }, [selectedObject])
 
     const saveState = () => {
-        const newProjectState = JSON.parse(JSON.stringify(currentProject))
-        //console.log(newProjectState)
+        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+
+        const projectWithCanvas = {
+            ...currentProject,
+            canvas: canvasState
+        }
+
+        const newProjectState = JSON.parse(JSON.stringify(projectWithCanvas))
         setProjectState(newProjectState)
         setProjectHistory(history => [...history, newProjectState].slice(-HISTORY_DEPTH))
     }
@@ -175,9 +189,6 @@ export const App = () => {
     }
 
     const deleteObject = (selectedObject, objects, nodes, canvas) => {
-
-        saveCanvasState(canvas)
-        saveState()
 
         const objectType = `${selectedObject.objectType}s`
         const newObjects = objects[objectType].filter(object => object.id !== selectedObject.id)
@@ -310,11 +321,11 @@ export const App = () => {
             const currentStateIndex = projectHistory.indexOf(projectState)
             const prevState = projectHistory[currentStateIndex + step]
             if (prevState && prevState.canvas.objects.length > 0) {
-                canvas.clear()
                 setEnlivenObjects(canvas, prevState.canvas.objects, setObjectType)
                 setProjectState(prevState)
                 dispatch(setProject(prevState))
-                dispatch(setNodes(prevState.nodes))
+                // const newNodes = forEachNode(prevState.nodes, n => (n.isSelected = false))
+                // dispatch(setNodes(newNodes))
             }
         },
         [canvas, projectState, projectHistory, setProjectState]
@@ -440,7 +451,9 @@ export const App = () => {
                               setMapImageAnalysisIsOpened={setMapImageAnalysisIsOpened}
                               mapImageShouldBeAnalyzed={mapImageShouldBeAnalyzed}
                               canvas={canvas}
-                              projectHistoryLength={projectHistory.length}
+                              projectHistory={projectHistory}
+                              projectStateInHistoryIndex={projectStateInHistoryIndex}
+                              setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
                     />
                 </ReflexElement>
 
@@ -478,6 +491,7 @@ export const App = () => {
                                           isInspectionMode={isInspectionMode}
                                           deleteNotCompletedObject={deleteNotCompletedObject}
                                           completeObject={completeObject}
+                                          saveState={saveState}
                                 />
                                 <ConsumerDialog startCreateObject={startCreateObject}
                                                 selectedObject={selectedObject}
@@ -541,6 +555,14 @@ export const App = () => {
                                             setStartDialog={setAuthDialog}
                                 />
 
+                                <StartDialog startDialog={startDialog}
+                                             setStartDialog={setStartDialog}
+                                />
+
+                                <OpenProjectDialog dialogIsOpened={openProjectDialogIsOpened}
+                                                   setDialogIsOpened={setOpenProjectDialogIsOpened}
+                                />
+
                                 <Loading isOpen={projectIsCalculating}/>
                             </ReflexElement>
                         </ReflexContainer>
@@ -551,7 +573,10 @@ export const App = () => {
                         <Start startDialog={startDialog}
                                setStartDialog={setStartDialog}
                                authDialog={authDialog}
-                               setAuthDialog={setAuthDialog}/>
+                               setAuthDialog={setAuthDialog}
+                               openProjectDialogIsOpened={openProjectDialogIsOpened}
+                               setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
+                        />
 
                         <Loading isOpen={!project && projectIsLoading}/>
                     </ReflexElement>

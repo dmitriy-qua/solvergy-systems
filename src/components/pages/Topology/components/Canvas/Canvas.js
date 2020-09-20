@@ -6,7 +6,7 @@ import {
     addPolygonPoint, calculateLineDistance,
     connectLineToOtherLine, fitResponsiveCanvas,
     generatePolygon, handleObjectSelection,
-    limitCanvasBoundary, makeCircle,
+    limitCanvasBoundary, makeCircle, moveLineObject,
     removeGrid,
     setGrid, setMap, setViewportTransform,
 } from "./helpers/canvas-helper"
@@ -63,7 +63,8 @@ export const Canvas = ({
                            saveCanvasState,
                            isInspectionMode,
                            deleteNotCompletedObject,
-                           completeObject
+                           completeObject,
+                           saveState
                        }) => {
 
     const dispatch = useDispatch()
@@ -104,16 +105,13 @@ export const Canvas = ({
 
     useEffect(() => {
         if (objectToDelete) {
-            // const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo"])
-            // dispatch(setCanvasState(canvasState))
-            // setProjectState(currentProject)
-            // setProjectHistory(history => [...history, currentProject].slice(-HISTORY_DEPTH))
-
             canvas.remove(objectToDelete.circle1)
             canvas.remove(objectToDelete.circle2)
             canvas.remove(objectToDelete)
             canvas.renderAll()
             setObjectToDelete(null)
+
+            //saveState()
         }
     }, [objectToDelete])
 
@@ -432,66 +430,10 @@ export const Canvas = ({
                     let _curXm = (_curX - e.e.clientX) / zoom
                     let _curYm = (_curY - e.e.clientY) / zoom
 
-                    //limitCanvasBoundary(p.circle1, height, width)
-                    //limitCanvasBoundary(p.circle2, height, width)
+                    const _cur = moveLineObject(e, p, canvas, _curXm, _curYm, mapDistance, height)
 
-                    p.circle1.set({
-                        stroke: "#aaaaaa",
-                        'left': (p.circle1.left - _curXm),
-                        'top': (p.circle1.top - _curYm)
-                    })
-                    p.circle1.setCoords()
-
-                    p.circle2.set({
-                        stroke: "#aaaaaa",
-                        'left': (p.circle2.left - _curXm),
-                        'top': (p.circle2.top - _curYm)
-                    })
-                    p.circle2.setCoords()
-
-                    if (p.circle1.connectedTo) {
-                        const lineCircle = canvas.getObjects().find(obj => {
-                            if (obj.type === "circle") return (obj.id === p.circle1.connectedTo.id && obj.name === p.circle1.connectedTo.name)
-                        })
-
-                        lineCircle.set({
-                            stroke: "#aaaaaa",
-                        })
-
-                        p.circle1.set({connectedTo: null})
-                    }
-
-                    if (p.circle2.connectedTo) {
-                        const lineCircle = canvas.getObjects().find(obj => {
-                            if (obj.type === "circle") return (obj.id === p.circle2.connectedTo.id && obj.name === p.circle2.connectedTo.name)
-                        })
-
-                        lineCircle.set({
-                            stroke: "#aaaaaa",
-                        })
-
-                        p.circle2.set({connectedTo: null})
-                    }
-
-                    p && p.set({
-                        'x1': p.circle1.left,
-                        'y1': p.circle1.top
-                    })
-
-                    p && p.set({
-                        'x2': p.circle2.left,
-                        'y2': p.circle2.top
-                    })
-
-                    p.setCoords()
-
-                    _curX = e.e.clientX
-                    _curY = e.e.clientY
-
-                    const distance = calculateLineDistance(p, mapDistance, height)
-                    p.set({distance})
-
-                    canvas.renderAll()
+                    _curX = _cur._curX
+                    _curY = _cur._curY
                 }
             }
         }

@@ -15,7 +15,6 @@ export const NetPresentValue = ({marketPaybackPeriod, height, width}) => {
 
     useEffect(() => {
         const yearlyNPV = getNPVChartData(marketPaybackPeriod.yearlyNPV)
-        console.log(yearlyNPV)
         setYearlyNPV(yearlyNPV)
     }, [])
 

@@ -46,5 +46,17 @@ export const AuthAPI = {
             })
 
     },
+
+    async getUserProjects() {
+        const instance = await createAxiosInstance(true);
+
+        return instance.get(`users/my_systems/`)
+            .then(response => {
+                return response.data;
+            }).catch((e) => {
+                return e
+            })
+
+    },
 }
 

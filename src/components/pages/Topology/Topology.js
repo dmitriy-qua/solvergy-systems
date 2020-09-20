@@ -33,6 +33,7 @@ export const Topology = ({
                              saveCanvasState,
                              isInspectionMode,
                              deleteNotCompletedObject,
+                             saveState,
     completeObject
                          }) => {
 
@@ -65,6 +66,7 @@ export const Topology = ({
                         isInspectionMode={isInspectionMode}
                         deleteNotCompletedObject={deleteNotCompletedObject}
                         completeObject={completeObject}
+                        saveState={saveState}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}

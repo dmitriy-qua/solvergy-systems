@@ -108,7 +108,6 @@ export const calculateProject = (project) => (dispatch) => {
 export const saveProject = (project) => (dispatch) => {
     return new Promise(async (res) => {
         const calculationResult = await ProjectsAPI.saveProject(project)
-        console.log(calculationResult)
     });
 }
 

@@ -20,7 +20,7 @@ import {
     FaObjectUngroup,
     FaTrashAlt,
     FaPencilAlt,
-    FaWrench,
+    FaKey,
     FaSignOutAlt,
     FaQuestionCircle,
     FaUsersCog,
@@ -37,6 +37,8 @@ import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go';
 import {useDispatch, useSelector} from "react-redux";
 import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
+
+const { app } = window.require('electron').remote
 
 const TOOLTIP_HOVER_OPEN_DELAY = 750
 
@@ -75,7 +77,9 @@ export const ToolsBar = ({
                              setMapImageAnalysisIsOpened,
                              mapImageShouldBeAnalyzed,
                              canvas,
-                             projectHistoryLength
+                             projectHistory,
+                             projectStateInHistoryIndex,
+                             setOpenProjectDialogIsOpened
                          }) => {
 
     const styles = useStyles()
@@ -93,9 +97,9 @@ export const ToolsBar = ({
             <MenuDivider/>
             <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>}
                       text="Open project..."
+                      disabled={!isAuth}
                       onClick={() => {
-                          dispatch(openProject("test"))
-                          if (toaster) toaster.show({message: `Project opened.`, intent: Intent.SUCCESS, timeout: 3000})
+                          setOpenProjectDialogIsOpened(true)
                       }}
             />
             <MenuDivider/>
@@ -109,18 +113,18 @@ export const ToolsBar = ({
             />
             <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project}/>
             <MenuDivider/>
-            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit"/>
+            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit" onClick={() => app.quit()}/>
         </Menu>
     }
 
     const EditMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
 
-            <MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project || projectHistoryLength === 0}
-                      onClick={() => onUndo()}/>
-            <MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project || projectHistoryLength === 0}
-                      onClick={() => onRedo()}/>
-            <MenuDivider/>
+            {/*<MenuItem icon={<FaUndo size={"1rem"} className={"bp3-icon"}/>} text="Undo" disabled={!project || projectHistory.length === 1 || projectStateInHistoryIndex === 0}*/}
+            {/*          onClick={() => onUndo()}/>*/}
+            {/*<MenuItem icon={<FaRedo size={"1rem"} className={"bp3-icon"}/>} text="Redo" disabled={!project || projectHistory.length === 1 || projectStateInHistoryIndex === projectHistory.length - 1}*/}
+            {/*          onClick={() => onRedo()}/>*/}
+            {/*<MenuDivider/>*/}
 
             <MenuItem icon={<FaObjectUngroup size={"1rem"} className={"bp3-icon"}/>} text="Add new object"
                       disabled={!project}>
@@ -207,7 +211,7 @@ export const ToolsBar = ({
 
     const SettingsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem icon={<FaWrench size={"1rem"} className={"bp3-icon"}/>} text="Preferences"/>
+            <MenuItem disabled={!isAuth} icon={<FaKey size={"1rem"} className={"bp3-icon"}/>} text="License..."/>
             <MenuDivider/>
             <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>}
                       text={isAuth ? "Sign out" : "Sign in"}
@@ -291,48 +295,48 @@ export const ToolsBar = ({
                 </Popover>
             </NavbarGroup>
 
-            {project && currentPage === "topology" &&
+            {project && currentPage === "topology" && isAuth &&
             <NavbarGroup align={Alignment.RIGHT} style={{height: headerHeight}}>
 
-                <Tooltip content="Undo"
-                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
-                         position={Position.BOTTOM}
-                         usePortal={true}
-                         modifiers={{
-                             arrow: {enabled: true},
-                             flip: {enabled: false},
-                             keepTogether: {enabled: true},
-                             preventOverflow: {enabled: false},
-                         }}
-                >
-                    <Button
-                        disabled={!project || projectHistoryLength === 0}
-                        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL]}
-                        onClick={() => onUndo()}
-                    />
-                </Tooltip>
+                {/*<Tooltip content="Undo"*/}
+                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
+                {/*         position={Position.BOTTOM}*/}
+                {/*         usePortal={true}*/}
+                {/*         modifiers={{*/}
+                {/*             arrow: {enabled: true},*/}
+                {/*             flip: {enabled: false},*/}
+                {/*             keepTogether: {enabled: true},*/}
+                {/*             preventOverflow: {enabled: false},*/}
+                {/*         }}*/}
+                {/*>*/}
+                {/*    <Button*/}
+                {/*        disabled={!project || projectHistory.length === 1 || projectStateInHistoryIndex === 0}*/}
+                {/*        icon={<Icon icon={<FaUndo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
+                {/*        className={[Classes.MINIMAL]}*/}
+                {/*        onClick={() => onUndo()}*/}
+                {/*    />*/}
+                {/*</Tooltip>*/}
 
-                <Tooltip content="Redo"
-                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
-                         position={Position.BOTTOM}
-                         usePortal={true}
-                         modifiers={{
-                             arrow: {enabled: true},
-                             flip: {enabled: false},
-                             keepTogether: {enabled: true},
-                             preventOverflow: {enabled: false},
-                         }}
-                >
-                    <Button
-                        disabled={!project || projectHistoryLength === 0}
-                        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL, styles.iconButton]}
-                        onClick={() => onRedo()}
-                    />
-                </Tooltip>
+                {/*<Tooltip content="Redo"*/}
+                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
+                {/*         position={Position.BOTTOM}*/}
+                {/*         usePortal={true}*/}
+                {/*         modifiers={{*/}
+                {/*             arrow: {enabled: true},*/}
+                {/*             flip: {enabled: false},*/}
+                {/*             keepTogether: {enabled: true},*/}
+                {/*             preventOverflow: {enabled: false},*/}
+                {/*         }}*/}
+                {/*>*/}
+                {/*    <Button*/}
+                {/*        disabled={!project || projectHistory.length === 1 || projectStateInHistoryIndex === projectHistory.length - 1}*/}
+                {/*        icon={<Icon icon={<FaRedo size={14} className={"bp3-icon material-icon"}/>}/>}*/}
+                {/*        className={[Classes.MINIMAL, styles.iconButton]}*/}
+                {/*        onClick={() => onRedo()}*/}
+                {/*    />*/}
+                {/*</Tooltip>*/}
 
-                <NavbarDivider/>
+                {/*<NavbarDivider/>*/}
 
                 <Tooltip content="Calculate project"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}

@@ -4,8 +4,9 @@ import {mdiPlusBoxOutline, mdiFolderOutline, mdiHelpCircleOutline, mdiLoginVaria
 import {StartDialog} from "./components/StartDialog";
 import {AuthDialog} from "../../common/Authentication/AuthDialog";
 import {useDispatch, useSelector} from "react-redux";
+import {OpenProjectDialog} from "../../common/ToolsBar/components/OpenProjectDialog";
 
-export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog}) => {
+export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, openProjectDialogIsOpened, setOpenProjectDialogIsOpened}) => {
 
     const isAuth = useSelector(state => state.auth.isAuth)
 
@@ -16,8 +17,7 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog}) 
                      icon={mdiPlusBoxOutline}
                      label="Create project..."
                      description={"Start new project, upload the map and set scale distance"}/>
-        <StartButton action={() => {
-        }}
+        <StartButton action={() => setOpenProjectDialogIsOpened(true)}
                      icon={mdiFolderOutline}
                      label="Open project..."
                      description={"Open a previously saved project and continue working"}/>
@@ -37,6 +37,10 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog}) 
 
         <AuthDialog startDialog={authDialog}
                      setStartDialog={setAuthDialog}
+        />
+
+        <OpenProjectDialog dialogIsOpened={openProjectDialogIsOpened}
+                           setDialogIsOpened={setOpenProjectDialogIsOpened}
         />
     </div>
 }

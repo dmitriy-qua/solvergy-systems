@@ -7,6 +7,7 @@
 
 *::-webkit-scrollbar {
     width: 10px;
+    height: 10px
 }
 *::-webkit-scrollbar-track {
     background: #ebf1f5;
@@ -20,6 +21,7 @@
 
 .App {
     height: 100vh;
+    user-select: none
 }
 
 svg.material-icon {
@@ -39,6 +41,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    user-select: none
 }
 
 .start {
@@ -119,6 +122,9 @@ body {
 .bp3-tree .bp3-tree-node.bp3-tree-node-selected > .bp3-tree-node-content {
     background-color: #78909c;
 }
+
+.bp3-tree .bp3-tree-node .bp3-tree-node-caret-none{
+    min-width:14px; }
 
 .bp3-dialog {
     user-select: initial !important;

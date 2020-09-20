@@ -506,6 +506,7 @@ export const calculateLineDistance = (line, mapDistance, mapHeight) => {
 }
 
 export const setEnlivenObjects = (canvas, objects, setObjectType) => {
+    canvas.clear()
 
     fabric.util.enlivenObjects(objects, function (objs) {
         objs.forEach(function (o) {
@@ -576,5 +577,70 @@ export const toggleInspectionMode = (canvas, isInspectionMode) => {
 
         canvas.renderAll()
     }
+}
+
+export const moveLineObject = (e, p, canvas, _curXm, _curYm, mapDistance, height) => {
+    //limitCanvasBoundary(p.circle1, height, width)
+    //limitCanvasBoundary(p.circle2, height, width)
+
+    p.circle1.set({
+        stroke: "#aaaaaa",
+        'left': (p.circle1.left - _curXm),
+        'top': (p.circle1.top - _curYm)
+    })
+    p.circle1.setCoords()
+
+    p.circle2.set({
+        stroke: "#aaaaaa",
+        'left': (p.circle2.left - _curXm),
+        'top': (p.circle2.top - _curYm)
+    })
+    p.circle2.setCoords()
+
+    if (p.circle1.connectedTo) {
+        const lineCircle = canvas.getObjects().find(obj => {
+            if (obj.type === "circle") return (obj.id === p.circle1.connectedTo.id && obj.name === p.circle1.connectedTo.name)
+        })
+
+        lineCircle.set({
+            stroke: "#aaaaaa",
+        })
+
+        p.circle1.set({connectedTo: null})
+    }
+
+    if (p.circle2.connectedTo) {
+        const lineCircle = canvas.getObjects().find(obj => {
+            if (obj.type === "circle") return (obj.id === p.circle2.connectedTo.id && obj.name === p.circle2.connectedTo.name)
+        })
+
+        lineCircle.set({
+            stroke: "#aaaaaa",
+        })
+
+        p.circle2.set({connectedTo: null})
+    }
+
+    p && p.set({
+        'x1': p.circle1.left,
+        'y1': p.circle1.top
+    })
+
+    p && p.set({
+        'x2': p.circle2.left,
+        'y2': p.circle2.top
+    })
+
+    p.setCoords()
+
+    // _curX = e.e.clientX
+    // _curY = e.e.clientY
+
+    const distance = calculateLineDistance(p, mapDistance, height)
+    p.set({distance})
+
+    canvas.renderAll()
+
+    return {_curX: e.e.clientX, _curY: e.e.clientY}
 }
 
