@@ -21,7 +21,7 @@ import Consumer from "./objects/consumer";
 import {
     addNewConsumer,
     addNewNetwork,
-    addNewSupplier, setCanvasState, setNodes,
+    addNewSupplier, calculateProject, saveProject, setCanvasState, setNodes,
     setObjects, setProject,
 } from "./redux/actions/project";
 import Supplier from "./objects/supplier";
@@ -44,6 +44,10 @@ import {MapImageAnalysisDialog} from "./components/common/ToolsBar/components/Ma
 import {Loading} from "./components/common/Loading/Loading";
 import {StartDialog} from "./components/pages/Start/components/StartDialog";
 import {OpenProjectDialog} from "./components/common/ToolsBar/components/OpenProjectDialog";
+import {SaveAsProjectDialog} from "./components/common/ToolsBar/components/SaveAsProjectDialog";
+import {useHotkeys} from "react-hotkeys-hook";
+import {HelpDialog} from "./components/common/ToolsBar/components/HelpDialog";
+const { app } = window.require('electron').remote
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -54,6 +58,7 @@ const HISTORY_DEPTH = 10
 let creatingObjectData = null
 let currentToaster = null
 let currentProject = null
+let currentResults = null
 
 export const App = () => {
 
@@ -61,7 +66,9 @@ export const App = () => {
 
     const project = useSelector(state => state.project)
 
+
     const objects = useSelector(state => state.project && state.project.objects)
+    const results = useSelector(state => state.project && state.project.results)
     const nodes = useSelector(state => state.project && state.project.nodes)
     const networkTemplates = useSelector(state => state.project && state.project.templates.networks)
     const isAuth = useSelector(state => state.auth.isAuth)
@@ -105,6 +112,8 @@ export const App = () => {
     const [resultsIsOpened, setResultsIsOpened] = useState(false)
     const [mapImageAnalysisIsOpened, setMapImageAnalysisIsOpened] = useState(false)
     const [openProjectDialogIsOpened, setOpenProjectDialogIsOpened] = useState(false)
+    const [saveAsProjectDialogIsOpened, setSaveAsProjectDialogIsOpened] = useState(false)
+    const [helpDialogIsOpened, setHelpDialogIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
@@ -116,6 +125,84 @@ export const App = () => {
     useEffect(() => {
         currentProject = project
     }, [project])
+
+
+    useHotkeys('ctrl+d', () => {
+        if (!!project && !saveAsProjectDialogIsOpened) setSaveAsProjectDialogIsOpened(true)
+    }, [project, saveAsProjectDialogIsOpened])
+
+    useHotkeys('ctrl+e', () => {
+        if (!openProjectDialogIsOpened) setOpenProjectDialogIsOpened(true)
+    }, [openProjectDialogIsOpened])
+
+    useHotkeys('alt+q', () => {
+        app.quit()
+    }, [])
+
+    useHotkeys('ctrl+s', () => {
+        if (!!project) {
+            dispatch(saveProject(project))
+            toaster.show({message: `Project saved.`, intent: Intent.SUCCESS, timeout: 3000})
+        }
+    }, [project, toaster])
+
+    useHotkeys('shift+r', () => {
+        if (!resultsIsOpened && !!project && !!results) setResultsIsOpened(true)
+    }, [project, results, resultsIsOpened])
+
+    useHotkeys('shift+m', () => {
+        if (!modelSettingsIsOpened && !!project) setModelSettingsIsOpened(true)
+    }, [project, modelSettingsIsOpened])
+
+    useHotkeys('shift+x', () => {
+        if (!!project) dispatch(calculateProject(project))
+    }, [project])
+
+    useHotkeys('shift+g', () => {
+        if (!!project) setGridIsVisible(prevState => !prevState)
+    }, [project])
+
+    useHotkeys('shift+c', () => {
+        if (!!project && !consumerDialogType) {
+            if (objectType !== "consumer") {
+                setConsumerDialogType("new")
+            } else {
+                setObjectType("none")
+            }
+        }
+    }, [consumerDialogType, objectType, project])
+
+    useHotkeys('shift+s', () => {
+        if (!!project && !supplierDialogType) {
+            if (objectType !== "supplier") {
+                setSupplierDialogType("new")
+            } else {
+                setObjectType("none")
+            }
+        }
+    }, [supplierDialogType, objectType, project])
+
+    useHotkeys('shift+z', () => {
+        if (!!project && !networkDialogType) {
+            if (objectType !== "network") {
+                setNetworkDialogType("new")
+            } else {
+                setObjectType("none")
+            }
+        }
+    }, [networkDialogType, objectType, project])
+
+    useHotkeys('shift+q', () => {
+        if (!!project && !producersDialogIsOpened) setProducersDialogIsOpened(true)
+    }, [project, producersDialogIsOpened])
+
+    useHotkeys('shift+w', () => {
+        if (!!project && !suppliersTemplatesDialogIsOpened) setSuppliersTemplatesDialogIsOpened(true)
+    }, [project, suppliersTemplatesDialogIsOpened])
+
+    useHotkeys('shift+e', () => {
+        if (!!project && !networksTemplatesDialogIsOpened) setNetworksTemplatesDialogIsOpened(true)
+    }, [project, networksTemplatesDialogIsOpened])
 
     useEffect(() => {
         if (canvas && loadedProject) {
@@ -454,6 +541,8 @@ export const App = () => {
                               projectHistory={projectHistory}
                               projectStateInHistoryIndex={projectStateInHistoryIndex}
                               setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
+                              setSaveAsProjectDialogIsOpened={setSaveAsProjectDialogIsOpened}
+                              setHelpDialogIsOpened={setHelpDialogIsOpened}
                     />
                 </ReflexElement>
 
@@ -557,10 +646,21 @@ export const App = () => {
 
                                 <StartDialog startDialog={startDialog}
                                              setStartDialog={setStartDialog}
+                                             canvas={canvas}
                                 />
 
                                 <OpenProjectDialog dialogIsOpened={openProjectDialogIsOpened}
                                                    setDialogIsOpened={setOpenProjectDialogIsOpened}
+                                                   project={project}
+                                />
+
+                                <SaveAsProjectDialog dialogIsOpened={saveAsProjectDialogIsOpened}
+                                                     setDialogIsOpened={setSaveAsProjectDialogIsOpened}
+                                                     project={project}
+                                />
+
+                                <HelpDialog dialogIsOpened={helpDialogIsOpened}
+                                                     setDialogIsOpened={setHelpDialogIsOpened}
                                 />
 
                                 <Loading isOpen={projectIsCalculating}/>
@@ -576,6 +676,8 @@ export const App = () => {
                                setAuthDialog={setAuthDialog}
                                openProjectDialogIsOpened={openProjectDialogIsOpened}
                                setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
+                               helpDialogIsOpened={helpDialogIsOpened}
+                               setHelpDialogIsOpened={setHelpDialogIsOpened}
                         />
 
                         <Loading isOpen={!project && projectIsLoading}/>

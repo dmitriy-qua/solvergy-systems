@@ -8,7 +8,7 @@ import usePlacesAutocomplete, {
 import useOnclickOutside from "react-cool-onclickoutside"
 import {generateId} from "../../../../../helpers/data-helper";
 
-export const ProjectInfo = ({name, setName, location, setLocation, currency, setCurrency}) => {
+export const ProjectInfo = ({name, setName, location, setLocation, currency, setCurrency, coordinates, setCoordinates}) => {
 
     const styles = useStyles()
 

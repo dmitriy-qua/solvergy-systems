@@ -10,7 +10,7 @@ import {
 } from "../constants/project";
 
 import {ProjectsAPI} from "../../api/projects";
-import {setLoadedProjectId, setProjectIsCalculating, setProjectIsLoading} from "./auth";
+import {getUserProjects, setLoadedProjectId, setProjectIsCalculating, setProjectIsLoading} from "./auth";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
@@ -100,6 +100,14 @@ export const calculateProject = (project) => (dispatch) => {
         }
 
         const calculationResult = await ProjectsAPI.calculateProject(projectData)
+
+        const newProjectData = {
+            ...project,
+            results: calculationResult.data.results
+        }
+
+        await ProjectsAPI.saveProject(newProjectData)
+
         dispatch(setProjectResult(calculationResult.data.results))
         dispatch(setProjectIsCalculating(false))
     });
@@ -108,6 +116,25 @@ export const calculateProject = (project) => (dispatch) => {
 export const saveProject = (project) => (dispatch) => {
     return new Promise(async (res) => {
         const calculationResult = await ProjectsAPI.saveProject(project)
+    });
+}
+
+export const saveAsProject = (project, oldId) => (dispatch) => {
+    return new Promise(async (res) => {
+        dispatch(setProjectIsLoading(true))
+        const copyStatus = await ProjectsAPI.copyMapImage({oldId, newId: project.id})
+        const createdProject = await ProjectsAPI.createProject(project)
+
+        dispatch(setInitialState())
+        dispatch(setProject(createdProject.data))
+        dispatch(setProjectIsLoading(false))
+    });
+}
+
+export const deleteProject = (id) => (dispatch) => {
+    return new Promise(async (res) => {
+        const deletedId = await ProjectsAPI.deleteProject(id)
+        dispatch(getUserProjects())
     });
 }
 
@@ -121,15 +148,18 @@ export const openProject = (id) => (dispatch) => {
     });
 }
 
-export const createNewProject = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType}) => (dispatch) => {
+export const createNewProject = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, coordinates, currency, modelType, energySystemType}) => (dispatch) => {
     return new Promise(async (res) => {
         dispatch(setProjectIsLoading(true))
+        dispatch(setInitialState())
         const response = await ProjectsAPI.getMapImageUrl({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri})
 
-        const newProject = getNewProjectData({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType})
+        const newProject = getNewProjectData({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, coordinates, currency, modelType, energySystemType, polygons: response.data})
 
-        dispatch(setProject(newProject))
-        dispatch(setMapImageAnalyzedPolygons(response.data))
+        const createdProject = await ProjectsAPI.createProject(newProject)
+
+        dispatch(setProject(createdProject.data))
+        //dispatch(setMapImageAnalyzedPolygons(response.data))
         dispatch(setProjectIsLoading(false))
     });
 }
@@ -139,15 +169,15 @@ export const setMapImageAnalyzedPolygons = (data) => ({
     data
 })
 
-const getNewProjectData = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, currency, modelType, energySystemType}) => {
+const getNewProjectData = ({id, mapImageUri, mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri, name, location, coordinates, currency, modelType, energySystemType, polygons}) => {
     return {
         id,
-        info: {name, location, currency},
+        info: {name, location, currency, coordinates},
         type: {modelType, energySystemType},
         map: {mapDistance, mapImageShouldBeAnalyzed, mapImageForAnalysisUri},
         results: null,
         settings: null,
-        polygons: null,
+        polygons,
         objects: {
             consumers: [],
             suppliers: [],

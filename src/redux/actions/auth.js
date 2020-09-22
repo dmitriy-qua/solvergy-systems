@@ -9,6 +9,7 @@ import {
 } from "../constants/auth";
 import {AuthAPI} from "../../api/auth"
 import {ProjectsAPI} from "../../api/projects";
+import {setInitialState} from "./project";
 
 function requestLogin(login) { return { type: REQUEST_LOGIN, login } }
 export function successLogin(user) { return { type: SUCCESS_LOGIN, user } }
@@ -68,7 +69,8 @@ export function signInGoogle({login}) {
 
 export function logout() {
     return dispatch => {
-        AuthAPI.logout();
+        AuthAPI.logout()
+        dispatch(setInitialState())
         dispatch(signout())
     }
 }

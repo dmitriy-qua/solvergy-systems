@@ -66,10 +66,43 @@ export const ProjectsAPI = {
             })
     },
 
+    async copyMapImage({newId, oldId}) {
+        const instance = await createAxiosInstance(true);
+
+        return instance.post(`systems/copy_map_image`, {newId, oldId})
+            .then(response => {
+                return response.data;
+            }).catch((e) => {
+                return e
+            })
+    },
+
+    async createProject(project) {
+        const instance = await createAxiosInstance(true);
+
+        return instance.post(`systems/`, project)
+            .then(response => {
+                return response.data;
+            }).catch((e) => {
+                return e
+            })
+    },
+
     async openProject(id) {
         const instance = await createAxiosInstance(true);
 
         return instance.get(`systems/${id}`)
+            .then(response => {
+                return response.data;
+            }).catch((e) => {
+                return e
+            })
+    },
+
+    async deleteProject(id) {
+        const instance = await createAxiosInstance(true);
+
+        return instance.delete(`systems/${id}`)
             .then(response => {
                 return response.data;
             }).catch((e) => {

@@ -34,7 +34,7 @@ export const Topology = ({
                              isInspectionMode,
                              deleteNotCompletedObject,
                              saveState,
-    completeObject
+                             completeObject
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)

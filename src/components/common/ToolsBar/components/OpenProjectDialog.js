@@ -12,10 +12,10 @@ import {useDispatch, useSelector} from "react-redux";
 import 'rc-slider/assets/index.css';
 import {getUserProjects} from "../../../../redux/actions/auth";
 import {forEachNode, updateNodeProperty} from "../../../pages/Topology/components/Canvas/helpers/tree-helper";
-import {openProject, setNodes} from "../../../../redux/actions/project";
+import {deleteProject, openProject, setNodes} from "../../../../redux/actions/project";
 import {Loading} from "../../Loading/Loading";
 
-export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
+export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = null}) => {
 
     const styles = useStyles()
 
@@ -29,13 +29,19 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
     useEffect(() => {
         if (dialogIsOpened) {
             dispatch(getUserProjects())
+
         }
     }, [dialogIsOpened])
 
     useEffect(() => {
         if (userProjects) {
-            const nodes = renderNodes(userProjects)
+            const nodes = renderNodes(userProjects, project)
             setNodes(nodes)
+            if (project) {
+                const currentProject = userProjects.find(({id}) => id === project.id)
+                setSelectedProject(currentProject)
+            }
+
         }
     }, [userProjects])
 
@@ -65,7 +71,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
 
             {userProjects && nodes ? <>
                     <div style={{display: "flex"}}>
-                        <div style={{flex: "40%"}}>
+                        <div style={{flex: "50%"}}>
                             <p className={styles.dialogText}>
                                 Select project:
                             </p>
@@ -86,7 +92,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
                         <div style={{flex: "1%", borderLeft: "1px solid #e0e0e0"}}>
 
                         </div>
-                        <div style={{flex: "59%"}}>
+                        <div style={{flex: "49%"}}>
                             {selectedProject && <>
                                 <p className={styles.dialogText}>
                                     Project information:
@@ -137,6 +143,15 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
                         }}>
                     Close
                 </Button>
+                <Button intent={Intent.DANGER}
+                        disabled={!selectedProject || (project && selectedProject.id === project.id)}
+                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => {
+                            dispatch(deleteProject(selectedProject.id))
+                            setSelectedProject(null)
+                        }}>
+                    Delete
+                </Button>
                 <Button disabled={!selectedProject}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={"Open"}
@@ -154,15 +169,16 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened}) => {
 
 }
 
-const renderNodes = (userProjects) => {
-    return userProjects.map(project => {
+const renderNodes = (userProjects, project) => {
+    return userProjects.map(({id, info}) => {
         return {
-            id: project.id,
-            hasCaret: false,
+            id,
+            hasCaret: true,
             isExpanded: false,
-            label: project.info.name,
-            isSelected: false,
-            icon: "folder-open"
+            label: info.name,
+            isSelected: project && id === project.id,
+            icon: "document",
+            secondaryLabel: project && id === project.id ? "(current)" : ""
         }
     })
 }

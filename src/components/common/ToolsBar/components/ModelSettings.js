@@ -122,7 +122,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
-        style={{width: 600, height: 660, borderRadius: 2}}
+        style={{width: 600, height: 615, borderRadius: 2}}
         isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]} style={{overflow: "auto", paddingRight: 4, paddingLeft: 4}}>

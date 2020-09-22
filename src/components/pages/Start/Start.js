@@ -5,8 +5,9 @@ import {StartDialog} from "./components/StartDialog";
 import {AuthDialog} from "../../common/Authentication/AuthDialog";
 import {useDispatch, useSelector} from "react-redux";
 import {OpenProjectDialog} from "../../common/ToolsBar/components/OpenProjectDialog";
+import {HelpDialog} from "../../common/ToolsBar/components/HelpDialog";
 
-export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, openProjectDialogIsOpened, setOpenProjectDialogIsOpened}) => {
+export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, openProjectDialogIsOpened, setOpenProjectDialogIsOpened, helpDialogIsOpened, setHelpDialogIsOpened}) => {
 
     const isAuth = useSelector(state => state.auth.isAuth)
 
@@ -25,8 +26,7 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, o
                      icon={isAuth ? mdiLogoutVariant  : mdiLoginVariant}
                      label={isAuth ? "Sign out" : "Sign in"}
                      description={"You must be logged in to be able to save projects"}/>
-        <StartButton action={() => {
-        }}
+        <StartButton action={() => setHelpDialogIsOpened(true)}
                      icon={mdiHelpCircleOutline}
                      label="Help"
                      description={"Learn how to create projects in Solvergy: Systems"}/>
@@ -41,6 +41,10 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, o
 
         <OpenProjectDialog dialogIsOpened={openProjectDialogIsOpened}
                            setDialogIsOpened={setOpenProjectDialogIsOpened}
+        />
+
+        <HelpDialog dialogIsOpened={helpDialogIsOpened}
+                    setDialogIsOpened={setHelpDialogIsOpened}
         />
     </div>
 }

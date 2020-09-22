@@ -423,8 +423,8 @@ export const setMapForAnalysis = (canvas, projectId, dialogWidth, dialogHeight) 
 export const setMap = (canvas, projectId) => {
     canvas.clear()
 
-    const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
-    //const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
+    //const imagePath = "https://serving.photos.photobox.com/02915431de16107f0826909e7e542578c22f8674f038e0621ba87aa64a7353c93fc55c48.jpg"
+    const imagePath = getStorageBaseUrl() + `${projectId}/photoOfMap`
 
     const mapHeight = 2000
     let mapWidth

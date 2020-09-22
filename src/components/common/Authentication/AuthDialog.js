@@ -4,10 +4,13 @@ import {createUseStyles} from "react-jss";
 import {FaProjectDiagram} from 'react-icons/fa';
 import {Authentication} from "../../pages/Start/components/pages/Authentication";
 import {SignIn} from "./SignIn";
+import {useSelector} from "react-redux";
 
 export const AuthDialog = ({startDialog, setStartDialog}) => {
 
     const styles = useStyles()
+
+    const isAuth = useSelector(state => state.auth.isAuth)
 
     const [login, setLogin] = useState("")
     const [password, setPassword] = useState("")
@@ -17,7 +20,7 @@ export const AuthDialog = ({startDialog, setStartDialog}) => {
         onClose={() => {
             setStartDialog(false)
         }}
-        title={<span className={styles.dialogTitle}>Sign In</span>}
+        title={<span className={styles.dialogTitle}>{isAuth ? "Sign out" : "Sign in"}</span>}
         autoFocus={false}
         enforceFocus={false}
         canEscapeKeyClose={false}

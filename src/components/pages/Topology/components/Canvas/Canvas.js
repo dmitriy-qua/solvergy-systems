@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react"
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react"
 import {ContextMenu, Menu, MenuDivider, MenuItem} from "@blueprintjs/core";
 import {fabric} from "fabric"
 import {lineGenerated} from "./shapes/line/config"
@@ -15,11 +15,11 @@ import {lineCircle} from "./shapes/circle/config"
 import {useDispatch, useSelector} from "react-redux"
 import ResizeSensor from 'resize-sensor'
 import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMenu";
-import {setCanvasState} from "../../../../../redux/actions/project";
+import {saveProject, setCanvasState} from "../../../../../redux/actions/project";
 import {NotCompletedObjectContextMenu} from "../../../../common/ContextMenu/NotCompletedObjectContextMenu";
+import $ from 'jquery'
 
 //let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
-const HISTORY_DEPTH = 10
 
 let zoom = 1
 let _line, isDown, currentFigureType, currentCreatingObjectData
@@ -203,9 +203,12 @@ export const Canvas = ({
                     disposeRef.current = onChange(fabricRef.current);
                 }
             } else if (fabricRef.current) {
-                fabricRef.current.dispose();
+                fabricRef.current.clear()
+                fabricRef.current.dispose()
+                $(fabricRef.current.wrapperEl).remove()
+                setCanvas(null)
+
                 if (disposeRef.current) {
-                    //disposeRef.current();
                     disposeRef.current = undefined;
                 }
             }
@@ -223,6 +226,8 @@ export const Canvas = ({
             fitResponsiveCanvas(fabricCanvas, mapHeight, mapWidth)
         });
 
+        const canvasState = fabricCanvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+
         fabricCanvas.on('mouse:down', onMouseDown(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('mouse:move', onMouseMove(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('mouse:up', onMouseUp(fabricCanvas, mapHeight, mapWidth))
@@ -231,9 +236,10 @@ export const Canvas = ({
         fabricCanvas.on('mouse:over', onMouseOver(fabricCanvas))
         fabricCanvas.on('mouse:out', onMouseOut(fabricCanvas))
 
-        //dispatch(setCanvasState(fabricCanvas.toJSON(["id"])))
-
+        saveCanvasState(fabricCanvas)
         setCanvas(fabricCanvas)
+
+        dispatch(saveProject({...project, canvas: canvasState}))
     })
 
     useEffect(() => {

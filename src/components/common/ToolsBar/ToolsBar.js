@@ -79,7 +79,9 @@ export const ToolsBar = ({
                              canvas,
                              projectHistory,
                              projectStateInHistoryIndex,
-                             setOpenProjectDialogIsOpened
+                             setOpenProjectDialogIsOpened,
+                             setSaveAsProjectDialogIsOpened,
+                             setHelpDialogIsOpened
                          }) => {
 
     const styles = useStyles()
@@ -92,11 +94,12 @@ export const ToolsBar = ({
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..."
+            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..." labelElement="CTRL + W"
                       onClick={() => setStartDialog(true)}/>
             <MenuDivider/>
             <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>}
                       text="Open project..."
+                      labelElement="CTRL + E"
                       disabled={!isAuth}
                       onClick={() => {
                           setOpenProjectDialogIsOpened(true)
@@ -105,15 +108,16 @@ export const ToolsBar = ({
             <MenuDivider/>
             <MenuItem icon={<FaSave size={"1rem"} className={"bp3-icon"}/>}
                       text="Save"
+                      labelElement="CTRL + S"
                       disabled={!project}
                       onClick={() => {
                           dispatch(saveProject(project))
                           toaster.show({message: `Project saved.`, intent: Intent.SUCCESS, timeout: 3000})
                       }}
             />
-            <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project}/>
+            <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project} onClick={() => setSaveAsProjectDialogIsOpened(true)} labelElement="CTRL + D"/>
             <MenuDivider/>
-            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit" onClick={() => app.quit()}/>
+            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit" onClick={() => app.quit()} labelElement="ALT + Q"/>
         </Menu>
     }
 
@@ -130,25 +134,58 @@ export const ToolsBar = ({
                       disabled={!project}>
                 <MenuItem icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
                           disabled={isInspectionMode || !project}
+                          labelElement="SHIFT + C"
                           text="Consumer"
-                          onClick={() => setConsumerDialogType("new")}/>
+                          onClick={() => {
+                              if (objectType !== "consumer") {
+                                  setConsumerDialogType("new")
+                              } else {
+                                  setObjectType("none")
+                              }
+                          }}/>
                 <MenuItem icon={<GiFactory size={16} className={"bp3-icon material-icon"}/>}
                           disabled={isInspectionMode || !project}
+                          labelElement="SHIFT + S"
                           text="Supplier"
-                          onClick={() => setSupplierDialogType("new")}/>
+                          onClick={() => {
+                              if (objectType !== "supplier") {
+                                  setSupplierDialogType("new")
+                              } else {
+                                  setObjectType("none")
+                              }
+                          }}/>
                 <MenuItem icon={<GiTeePipe size={16} className={"bp3-icon material-icon"}/>}
                           disabled={isInspectionMode || !project}
+                          labelElement="SHIFT + Z"
                           text="Network"
-                          onClick={() => setNetworkDialogType("new")}/>
+                          onClick={() => {
+                              if (objectType !== "network") {
+                                  setNetworkDialogType("new")
+                              } else {
+                                  setObjectType("none")
+                              }
+                          }}/>
             </MenuItem>
 
             <MenuDivider/>
 
             <MenuItem icon={<FaUsersCog size={"1rem"} className={"bp3-icon"}/>} text="Producers list..."
+                      labelElement="SHIFT + Q"
+                      onClick={() => {
+                          setProducersDialogIsOpened(true)
+                      }}
                       disabled={!project}/>
             <MenuItem icon={<FaCoins size={"1rem"} className={"bp3-icon"}/>} text="Suppliers templates..."
+                      labelElement="SHIFT + W"
+                      onClick={() => {
+                          setSuppliersTemplatesDialogIsOpened(true)
+                      }}
                       disabled={!project}/>
             <MenuItem icon={<FaLayerGroup size={"1rem"} className={"bp3-icon"}/>} text="Networks templates..."
+                      labelElement="SHIFT + E"
+                      onClick={() => {
+                          setNetworksTemplatesDialogIsOpened(true)
+                      }}
                       disabled={!project}/>
 
             <MenuDivider/>
@@ -170,12 +207,14 @@ export const ToolsBar = ({
                       disabled={!project}
                       icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>}
                       text="Calculate project"
+                      labelElement="SHIFT + X"
                       onClick={() => dispatch(calculateProject(project))}
             />
             <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
                       disabled={!project}
                       intent={modelSettings ? Intent.PRIMARY : Intent.WARNING}
                       text="Model settings..."
+                      labelElement="SHIFT + M"
                       onClick={() => setModelSettingsIsOpened(true)}
             />
             <MenuItem disabled={!results || !project}
@@ -183,26 +222,28 @@ export const ToolsBar = ({
                       intent={Intent.PRIMARY}
                       icon={<FaChartBar size={"1rem"} className={"bp3-icon"}/>}
                       text="Results..."
-                      onClick={() => setResultsIsOpened(prevState => !prevState)}
+                      labelElement="SHIFT + R"
+                      onClick={() => setResultsIsOpened(true)}
             />
             <MenuDivider/>
-            <MenuItem icon={<FaEye size={"1rem"} className={"bp3-icon"}/>}
-                      text="Inspection mode"
-                      active={isInspectionMode}
-                      disabled={!results || !project}
-                      onClick={() => setIsInspectionMode(prevState => !prevState)}
-            />
+            {/*<MenuItem icon={<FaEye size={"1rem"} className={"bp3-icon"}/>}*/}
+            {/*          text="Inspection mode"*/}
+            {/*          active={isInspectionMode}*/}
+            {/*          disabled={!results || !project}*/}
+            {/*          onClick={() => setIsInspectionMode(prevState => !prevState)}*/}
+            {/*/>*/}
             {mapImageShouldBeAnalyzed && <MenuItem icon={<FaDrawPolygon size={"1rem"} className={"bp3-icon"}/>}
                       text="Polygons analysis"
                       active={mapImageAnalysisIsOpened}
                       disabled={!project}
-                      onClick={() => setMapImageAnalysisIsOpened(prevState => !prevState)}
+                      onClick={() => setMapImageAnalysisIsOpened(true)}
             />}
 
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
                       text="Set grid"
                       active={gridIsVisible}
                       disabled={!project}
+                      labelElement="SHIFT + G"
                       onClick={() => setGridIsVisible(prevState => !prevState)}
             />
         </Menu>
@@ -217,7 +258,9 @@ export const ToolsBar = ({
                       text={isAuth ? "Sign out" : "Sign in"}
                       onClick={() => setAuthDialog(true)}/>
             <MenuDivider/>
-            <MenuItem icon={<FaQuestionCircle size={"1rem"} className={"bp3-icon"}/>} text="Help..."/>
+            <MenuItem icon={<FaQuestionCircle size={"1rem"} className={"bp3-icon"}/>} text="Help..."
+                      onClick={() => setHelpDialogIsOpened(true)}
+            />
         </Menu>
     }
 
@@ -342,6 +385,7 @@ export const ToolsBar = ({
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
                          usePortal={true}
+                         disabled={!project}
                          modifiers={{
                              arrow: {enabled: true},
                              flip: {enabled: false},
@@ -360,6 +404,7 @@ export const ToolsBar = ({
                 <Tooltip content="Model settings"
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
+                         disabled={!project}
                          usePortal={true}
                          modifiers={{
                              arrow: {enabled: true},
@@ -381,6 +426,7 @@ export const ToolsBar = ({
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
                          usePortal={true}
+                         disabled={!results || !project}
                          modifiers={{
                              arrow: {enabled: true},
                              flip: {enabled: false},
@@ -399,28 +445,30 @@ export const ToolsBar = ({
 
                 <NavbarDivider/>
 
-                <Tooltip content="Inspection mode"
-                         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
-                         position={Position.BOTTOM}
-                         usePortal={true}
-                         modifiers={{
-                             arrow: {enabled: true},
-                             flip: {enabled: false},
-                             keepTogether: {enabled: true},
-                             preventOverflow: {enabled: false},
-                         }}
-                >
-                    <Button active={isInspectionMode}
-                            disabled={!results || !project}
-                            icon={<Icon icon={<FaEye size={16} className={"bp3-icon material-icon"}/>}/>}
-                            className={[Classes.MINIMAL]}
-                            onClick={() => setIsInspectionMode(prevState => !prevState)}/>
-                </Tooltip>
+                {/*<Tooltip content="Inspection mode"*/}
+                {/*         hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}*/}
+                {/*         position={Position.BOTTOM}*/}
+                {/*         usePortal={true}*/}
+                {/*         disabled={!results || !project}*/}
+                {/*         modifiers={{*/}
+                {/*             arrow: {enabled: true},*/}
+                {/*             flip: {enabled: false},*/}
+                {/*             keepTogether: {enabled: true},*/}
+                {/*             preventOverflow: {enabled: false},*/}
+                {/*         }}*/}
+                {/*>*/}
+                {/*    <Button active={isInspectionMode}*/}
+                {/*            disabled={!results || !project}*/}
+                {/*            icon={<Icon icon={<FaEye size={16} className={"bp3-icon material-icon"}/>}/>}*/}
+                {/*            className={[Classes.MINIMAL]}*/}
+                {/*            onClick={() => setIsInspectionMode(prevState => !prevState)}/>*/}
+                {/*</Tooltip>*/}
 
                 {mapImageShouldBeAnalyzed && <Tooltip content="Analysis"
                                                       hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                                                       position={Position.BOTTOM}
                                                       usePortal={true}
+                                                      disabled={!project}
                                                       modifiers={{
                                                           arrow: {enabled: true},
                                                           flip: {enabled: false},
@@ -433,7 +481,7 @@ export const ToolsBar = ({
                         disabled={!project}
                         intent={Intent.NONE}
                         icon={<Icon icon={<FaDrawPolygon size={16} className={"bp3-icon material-icon"}/>}/>}
-                        className={[Classes.MINIMAL, styles.iconButton]}
+                        className={[Classes.MINIMAL]}
                         onClick={() => setMapImageAnalysisIsOpened(prevState => !prevState)}/>
                 </Tooltip>}
 
@@ -441,6 +489,7 @@ export const ToolsBar = ({
                          hoverOpenDelay={TOOLTIP_HOVER_OPEN_DELAY}
                          position={Position.BOTTOM}
                          usePortal={true}
+                         disabled={!project}
                          modifiers={{
                              arrow: {enabled: true},
                              flip: {enabled: false},
@@ -451,7 +500,7 @@ export const ToolsBar = ({
                     <Button active={gridIsVisible}
                             disabled={!project}
                             icon={<Icon icon={<FaBorderAll size={16} className={"bp3-icon material-icon"}/>}/>}
-                            className={[Classes.MINIMAL, styles.iconButton]}
+                            className={[Classes.MINIMAL, mapImageShouldBeAnalyzed && styles.iconButton]}
                             onClick={() => setGridIsVisible(prevState => !prevState)}/>
                 </Tooltip>
 

@@ -12,7 +12,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {createNewProject} from "../../../../redux/actions/project";
 import {generateId} from "../../../../helpers/data-helper";
 
-export const StartDialog = ({startDialog, setStartDialog}) => {
+export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
 
     const styles = useStyles()
 
@@ -25,6 +25,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
 
     const [name, setName] = useState("")
     const [location, setLocation] = useState("")
+    const [coordinates, setCoordinates] = useState({latitude: 50.383139, longitude: 30.696004})
     const [currency, setCurrency] = useState("")
 
     const [modelType, setModelType] = useState(null)
@@ -63,6 +64,7 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
             mapImageForAnalysisUri,
             name,
             location,
+            coordinates,
             currency,
             modelType,
             energySystemType
@@ -114,6 +116,8 @@ export const StartDialog = ({startDialog, setStartDialog}) => {
                                          setLocation={setLocation}
                                          currency={currency}
                                          setCurrency={setCurrency}
+                                         coordinates={coordinates}
+                                         setCoordinates={setCoordinates}
                             />
                         </View>
 
