@@ -22,6 +22,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
     const dispatch = useDispatch()
 
     const userProjects = useSelector(state => state.auth.userProjects)
+    const projectIsDeleting = useSelector(state => state.auth.projectIsDeleting)
 
     const [selectedProject, setSelectedProject] = useState(null)
     const [nodes, setNodes] = useState(null)
@@ -69,7 +70,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
     >
         <div className={[Classes.DIALOG_BODY]} style={{overflow: "auto", paddingRight: 4, paddingLeft: 4}}>
 
-            {userProjects && nodes ? <>
+            {userProjects && nodes && !projectIsDeleting ? <>
                     <div style={{display: "flex"}}>
                         <div style={{flex: "50%"}}>
                             <p className={styles.dialogText}>
@@ -128,7 +129,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
                     </div>
                 </>
                 :
-                <Loading isOpen={!userProjects || !nodes}/>
+                <Loading isOpen={!userProjects || !nodes || projectIsDeleting}/>
             }
 
         </div>

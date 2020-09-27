@@ -18,6 +18,7 @@ import {ObjectContextMenu} from "../../../../common/ContextMenu/ObjectContextMen
 import {saveProject, setCanvasState} from "../../../../../redux/actions/project";
 import {NotCompletedObjectContextMenu} from "../../../../common/ContextMenu/NotCompletedObjectContextMenu";
 import $ from 'jquery'
+import {setProjectIsLoading} from "../../../../../redux/actions/auth";
 
 //let MAP_HEIGHT = 2000, MAP_WIDTH = 2000
 
@@ -110,7 +111,7 @@ export const Canvas = ({
             canvas.remove(objectToDelete)
             canvas.renderAll()
             setObjectToDelete(null)
-
+            saveCanvasState(canvas)
             //saveState()
         }
     }, [objectToDelete])
@@ -217,6 +218,7 @@ export const Canvas = ({
 
     canvasRef = useFabric(async (fabricCanvas) => {
         //fabricCanvas.loadFromJSON(canvasState)
+        dispatch(setProjectIsLoading(true))
         fabricCanvas.setZoom(0.25)
         const {mapHeight, mapWidth} = await setMap(fabricCanvas, project.id)
 
@@ -240,6 +242,7 @@ export const Canvas = ({
         setCanvas(fabricCanvas)
 
         dispatch(saveProject({...project, canvas: canvasState}))
+        dispatch(setProjectIsLoading(false))
     })
 
     useEffect(() => {
@@ -441,6 +444,8 @@ export const Canvas = ({
                     _curX = _cur._curX
                     _curY = _cur._curY
                 }
+
+                saveCanvasState(canvas)
             }
         }
     }

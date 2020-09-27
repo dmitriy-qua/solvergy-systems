@@ -256,7 +256,11 @@ export const App = () => {
 
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
-            const selectedObjectNode = canvas.getObjects().find(object => object.id === node.id)
+            const selectedObjectNode = canvas.getObjects().find(object => {
+                if (object.type === "polygon") {
+                    return object.id === node.id
+                }
+            })
 
             const newSelectedObject = handleObjectSelection(canvas, selectedObjectNode, selectedObject)
             setSelectedObject(newSelectedObject)
@@ -394,7 +398,8 @@ export const App = () => {
                 break
         }
 
-        currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
+        currentToaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000})
+        saveCanvasState(canvas)
         creatingObjectData = null
     }
 
@@ -663,7 +668,8 @@ export const App = () => {
                                                      setDialogIsOpened={setHelpDialogIsOpened}
                                 />
 
-                                <Loading isOpen={projectIsCalculating}/>
+                                <Loading isOpen={projectIsCalculating || projectIsLoading}/>
+
                             </ReflexElement>
                         </ReflexContainer>
 

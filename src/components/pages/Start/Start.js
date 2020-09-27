@@ -20,6 +20,7 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, o
                      description={"Start new project, upload the map and set scale distance"}/>
         <StartButton action={() => setOpenProjectDialogIsOpened(true)}
                      icon={mdiFolderOutline}
+                     disabled={!isAuth}
                      label="Open project..."
                      description={"Open a previously saved project and continue working"}/>
         <StartButton action={() => setAuthDialog(true)}

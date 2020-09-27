@@ -22,6 +22,8 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
 
     const dispatch = useDispatch()
 
+    const currency = useSelector(state => state.project && state.project.info.currency)
+
     const initialTemplate = {
         name: "",
         energySource: "",
@@ -180,7 +182,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Fixed capital costs (independent of the station capacity), $:
+                    Fixed capital costs (independent of the station capacity), {currency}:
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -207,7 +209,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Variable capital costs per 1 MW of station capacity, $/MW:
+                    Variable capital costs per 1 MW of station capacity, {currency}/MW:
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -242,7 +244,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Fuel consumption (kg/MWh or m3/MWh):
+                    Fuel consumption (kg/Gcal or m3/Gcal):
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -268,7 +270,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Fuel price ($/kg or $/m3):
+                    Fuel price ({currency}/kg or {currency}/m3):
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -298,7 +300,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
         <div style={{display: "flex", marginTop: 14}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Fuel transportation costs ($/kg or $/m3):
+                    Fuel transportation costs ({currency}/kg or {currency}/m3):
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -324,7 +326,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Electricity costs ($/MWh or $/MWh):
+                    Electricity costs ({currency}/Gcal or {currency}/Gcal):
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -354,7 +356,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
         <div style={{display: "flex", marginTop: 14}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Annual salary costs for workers per 1 MW station capacity, $/MW:
+                    Annual salary costs for workers per 1 MW station capacity, {currency}/MW:
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -380,7 +382,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Annual salary costs for administration per 1 MW station capacity, $/MW:
+                    Annual salary costs for administration per 1 MW station capacity, {currency}/MW:
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {
@@ -410,7 +412,7 @@ export const SupplierTemplateForm = ({type, setType, templates, selectedTemplate
         <div style={{display: "flex", marginTop: 14}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Other costs per 1 MW station capacity, $/MW:
+                    Other costs per 1 MW station capacity, {currency}/MW:
                 </p>
                 <NumericInput placeholder="Enter value..."
                               onValueChange={(value) => {

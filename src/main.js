@@ -9,21 +9,25 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 750,
-    minHeight: 750,
-    minWidth: 1200,
-    webPreferences: {
-      webSecurity: false,
-      nodeIntegration: true
-    }});
+    mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 750,
+        minHeight: 750,
+        minWidth: 1200,
+        webPreferences: {
+            webSecurity: false,
+            nodeIntegration: true
+        },
+        icon: path.join(__dirname, '../public/icons/win/icon.ico')
+    });
 
 
-  mainWindow.setResizable(true)
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
-  mainWindow.on('closed', () => mainWindow = null)
-  if (!isDev) Menu.setApplicationMenu(null)
+    mainWindow.setResizable(true)
+    mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+    mainWindow.on('closed', () => mainWindow = null)
+
+    //if (!isDev) Menu.setApplicationMenu(null)
+    Menu.setApplicationMenu(null)
 }
 
 process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false;
@@ -32,13 +36,13 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
 app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow();
-  }
+    if (mainWindow === null) {
+        createWindow();
+    }
 });

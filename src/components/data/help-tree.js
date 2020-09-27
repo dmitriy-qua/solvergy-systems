@@ -17,7 +17,7 @@ export const helpStructure = [
         isExpanded: false,
         label: "Authentication",
         isSelected: false,
-        icon: "people",
+        icon: "user",
         childNodes: [
             {
                 id: "signin",
@@ -112,6 +112,38 @@ export const helpStructure = [
         ]
     },
     {
+        id: "templates",
+        hasCaret: true,
+        isExpanded: false,
+        label: "Templates",
+        isSelected: false,
+        icon: "layers",
+        childNodes: [
+            {
+                id: "supplierstemplates",
+                hasCaret: false,
+                isExpanded: false,
+                label: "Suppliers",
+                isSelected: false,
+            },
+            {
+                id: "networkstemplates",
+                hasCaret: false,
+                isExpanded: false,
+                label: "Networks",
+                isSelected: false,
+            },
+        ]
+    },
+    {
+        id: "producers",
+        hasCaret: false,
+        isExpanded: false,
+        label: "Producers",
+        isSelected: false,
+        icon: "people",
+    },
+    {
         id: "objects",
         hasCaret: true,
         isExpanded: false,
@@ -121,167 +153,34 @@ export const helpStructure = [
         childNodes: [
             {
                 id: "consumers",
-                hasCaret: true,
+                hasCaret: false,
                 isExpanded: false,
                 label: "Consumers",
                 isSelected: false,
-                childNodes: [
-                    {
-                        id: "createconsumer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Create",
-                        isSelected: false,
-                    },
-                    {
-                        id: "buildingsconsumer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Import from \"Solvergy: Buildings\"",
-                        isSelected: false,
-                    },
-                    {
-                        id: "polygonsconsumer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Polygons analyzer",
-                        isSelected: false,
-                    },
-                    {
-                        id: "editconsumer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Edit",
-                        isSelected: false,
-                    },
-                    {
-                        id: "deleteconsumer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Delete",
-                        isSelected: false,
-                    },
-                ]
             },
             {
                 id: "suppliers",
-                hasCaret: true,
+                hasCaret: false,
                 isExpanded: false,
                 label: "Suppliers",
                 isSelected: false,
-                childNodes: [
-                    {
-                        id: "createsupplier",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Create",
-                        isSelected: false,
-                    },
-                    {
-                        id: "templatessupplier",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Templates",
-                        isSelected: false,
-                    },
-                    {
-                        id: "polygonssupplier",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Polygons analyzer",
-                        isSelected: false,
-                    },
-                    {
-                        id: "editsupplier",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Edit",
-                        isSelected: false,
-                    },
-                    {
-                        id: "deletesupplier",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Delete",
-                        isSelected: false,
-                    },
-                ]
             },
             {
                 id: "networks",
-                hasCaret: true,
+                hasCaret: false,
                 isExpanded: false,
                 label: "Networks",
                 isSelected: false,
-                childNodes: [
-                    {
-                        id: "createnetwork",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Create",
-                        isSelected: false,
-                    },
-                    {
-                        id: "templatesnetwork",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Templates",
-                        isSelected: false,
-                    },
-                    {
-                        id: "editnetwork",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Edit",
-                        isSelected: false,
-                    },
-                    {
-                        id: "deletenetwork",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Delete",
-                        isSelected: false,
-                    },
-                ]
-            },
-            {
-                id: "producers",
-                hasCaret: true,
-                isExpanded: false,
-                label: "Producers",
-                isSelected: false,
-                childNodes: [
-                    {
-                        id: "createproducer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Create",
-                        isSelected: false,
-                    },
-                    {
-                        id: "colorsproducer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Colors",
-                        isSelected: false,
-                    },
-                    {
-                        id: "editproducer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Edit",
-                        isSelected: false,
-                    },
-                    {
-                        id: "deleteproducer",
-                        hasCaret: false,
-                        isExpanded: false,
-                        label: "Delete",
-                        isSelected: false,
-                    },
-                ]
             },
         ]
+    },
+    {
+        id: "polygons",
+        hasCaret: false,
+        isExpanded: false,
+        label: "Polygons analyzer",
+        isSelected: false,
+        icon: "polygon-filter",
     },
     {
         id: "modelsettings",

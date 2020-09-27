@@ -121,7 +121,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Network outer diameter:
+                    Pipe outer diameter:
                 </p>
                 <NumericInput placeholder="Enter value in mm..."
                               onValueChange={(value) => {
@@ -148,7 +148,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Network insulation thickness:
+                    Pipe insulation thickness:
                 </p>
                 <NumericInput placeholder="Enter value in mm..."
                               onValueChange={(value) => {
@@ -178,7 +178,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
         <div style={{display: "flex", marginTop: 12}}>
             <div style={{flex: "50%", paddingRight: 10}}>
                 <p className={styles.dialogText}>
-                    Type of network laying:
+                    Type of pipe laying:
                 </p>
                 <Select
                     items={pipeLayingTypes}
@@ -203,7 +203,7 @@ export const NetworkTemplateForm = ({type, setType, templates, selectedTemplate,
 
             <div style={{flex: "50%", paddingLeft: 10}}>
                 <p className={styles.dialogText}>
-                    Network insulation type:
+                    Pipe insulation type:
                 </p>
                 <Select
                     items={insulationTypes}

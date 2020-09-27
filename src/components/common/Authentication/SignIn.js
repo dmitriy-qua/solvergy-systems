@@ -3,7 +3,7 @@ import {createUseStyles} from "react-jss";
 import {AuthForm} from "./AuthForm";
 import {Button, Intent} from "@blueprintjs/core";
 import {useDispatch, useSelector} from "react-redux";
-import {logout, signIn} from "../../../redux/actions/auth";
+import {logout, signIn, signUp} from "../../../redux/actions/auth";
 
 export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialog}) => {
 
@@ -52,7 +52,7 @@ export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialo
             </p>
             <Button className={styles.button}
                     intent={Intent.SUCCESS}
-                    onClick={() => dispatch(signIn({login, password}))}
+                    onClick={() => isSignInPage ? dispatch(signIn({login, password})) : dispatch(signUp({login, password}))}
                     text={isSignInPage ? "Sign in" : "Sign up"}/>
         </div>
     } else {

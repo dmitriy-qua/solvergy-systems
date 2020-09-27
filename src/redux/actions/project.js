@@ -10,7 +10,13 @@ import {
 } from "../constants/project";
 
 import {ProjectsAPI} from "../../api/projects";
-import {getUserProjects, setLoadedProjectId, setProjectIsCalculating, setProjectIsLoading} from "./auth";
+import {
+    getUserProjects,
+    setLoadedProjectId,
+    setProjectIsCalculating,
+    setProjectIsDeleting,
+    setProjectIsLoading
+} from "./auth";
 
 export const setInitialState = () => ({
     type: SET_INITIAL_STATE,
@@ -133,8 +139,10 @@ export const saveAsProject = (project, oldId) => (dispatch) => {
 
 export const deleteProject = (id) => (dispatch) => {
     return new Promise(async (res) => {
+        dispatch(setProjectIsDeleting(true))
         const deletedId = await ProjectsAPI.deleteProject(id)
         dispatch(getUserProjects())
+        dispatch(setProjectIsDeleting(false))
     });
 }
 

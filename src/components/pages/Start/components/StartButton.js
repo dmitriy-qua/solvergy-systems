@@ -3,11 +3,11 @@ import {Icon} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import MaterialIcon from '@mdi/react';
 
-export const StartButton = ({action, icon, label, description}) => {
+export const StartButton = ({action, icon, label, description, disabled = false}) => {
 
-    const styles = useStyles()
+    const styles = useStyles({disabled})
 
-    return <div onClick={() => action()} className={styles.startButton}>
+    return <div onClick={() => !disabled ? action() : {}} className={styles.startButton}>
         <Icon icon={<MaterialIcon path={icon} size={1}/>}/>
         <span className={styles.text}>{label}</span>
         <span className={styles.descriptionText}>{description}</span>
@@ -16,7 +16,7 @@ export const StartButton = ({action, icon, label, description}) => {
 
 const useStyles = createUseStyles({
     startButton: {
-        color: "#5c7080",
+        color: props => props.disabled ? "#b8c2d1" : "#5c7080",
         width: 160,
         height: 160,
         borderRadius: 0,
@@ -26,10 +26,10 @@ const useStyles = createUseStyles({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        cursor: "pointer",
+        cursor: props => !props.disabled ? "pointer" : "default",
         //boxShadow: "0px 0px 2px rgb(232, 232, 232)",
         '&:hover': {
-            backgroundColor: "#eceff1",
+            backgroundColor: props => !props.disabled ? "#eceff1" : "white",
         },
     },
     text: {
