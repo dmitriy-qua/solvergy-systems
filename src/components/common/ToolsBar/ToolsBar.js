@@ -111,7 +111,14 @@ export const ToolsBar = ({
                       labelElement="CTRL + S"
                       disabled={!project}
                       onClick={() => {
-                          dispatch(saveProject(project))
+
+                          const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+                          const projectState = {
+                              ...project,
+                              canvas: canvasState
+                          }
+
+                          dispatch(saveProject(projectState))
                           toaster.show({message: `Project saved.`, intent: Intent.SUCCESS, timeout: 3000})
                       }}
             />

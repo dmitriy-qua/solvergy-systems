@@ -26,7 +26,7 @@ export const Start = ({startDialog, setStartDialog, authDialog, setAuthDialog, o
         <StartButton action={() => setAuthDialog(true)}
                      icon={isAuth ? mdiLogoutVariant  : mdiLoginVariant}
                      label={isAuth ? "Sign out" : "Sign in"}
-                     description={"You must be logged in to be able to save projects"}/>
+                     description={"You must be logged in to be able to save and open projects"}/>
         <StartButton action={() => setHelpDialogIsOpened(true)}
                      icon={mdiHelpCircleOutline}
                      label="Help"

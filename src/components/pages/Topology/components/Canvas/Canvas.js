@@ -228,7 +228,7 @@ export const Canvas = ({
             fitResponsiveCanvas(fabricCanvas, mapHeight, mapWidth)
         });
 
-        const canvasState = fabricCanvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+        //const canvasState = fabricCanvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
 
         fabricCanvas.on('mouse:down', onMouseDown(fabricCanvas, mapHeight, mapWidth))
         fabricCanvas.on('mouse:move', onMouseMove(fabricCanvas, mapHeight, mapWidth))
@@ -238,10 +238,10 @@ export const Canvas = ({
         fabricCanvas.on('mouse:over', onMouseOver(fabricCanvas))
         fabricCanvas.on('mouse:out', onMouseOut(fabricCanvas))
 
-        saveCanvasState(fabricCanvas)
+        //saveCanvasState(fabricCanvas)
         setCanvas(fabricCanvas)
 
-        dispatch(saveProject({...project, canvas: canvasState}))
+        //dispatch(saveProject({...project, canvas: canvasState}))
         dispatch(setProjectIsLoading(false))
     })
 

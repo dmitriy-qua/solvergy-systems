@@ -47,7 +47,8 @@ import {OpenProjectDialog} from "./components/common/ToolsBar/components/OpenPro
 import {SaveAsProjectDialog} from "./components/common/ToolsBar/components/SaveAsProjectDialog";
 import {useHotkeys} from "react-hotkeys-hook";
 import {HelpDialog} from "./components/common/ToolsBar/components/HelpDialog";
-const { app } = window.require('electron').remote
+
+const {app} = window.require('electron').remote
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -206,11 +207,16 @@ export const App = () => {
 
     useEffect(() => {
         if (canvas && loadedProject) {
+
             setEnlivenObjects(canvas, project.canvas.objects, setObjectType)
-            //const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
-            //dispatch(setNodes(newNodes))
+            const newNodes = forEachNode(project.nodes, n => (n.isSelected = false))
+            dispatch(setNodes(newNodes))
             setProjectState(JSON.parse(JSON.stringify(project)))
             setProjectHistory([JSON.parse(JSON.stringify(project))])
+
+            // const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+            // dispatch(saveProject({...project, canvas: canvasState}))
+
             dispatch(setLoadedProjectId(null))
         }
     }, [loadedProject, canvas])
@@ -257,7 +263,7 @@ export const App = () => {
     const getSelectedNode = (node, e, isRightClick) => {
         if (node.objectType !== undefined) {
             const selectedObjectNode = canvas.getObjects().find(object => {
-                if (object.type === "polygon") {
+                if (object.type === "polygon" || object.type === "line") {
                     return object.id === node.id
                 }
             })
@@ -484,7 +490,7 @@ export const App = () => {
                     objectData.producerId,
                     objectData.templateId
                 )
-                const producer = creatingObjectData.producers.find(producer => producer.id === creatingObjectData.producerId)
+                const producer = producers.find(producer => producer.id === objectData.producerId)
 
                 regeneratePolygon(canvas, selectedObject, mapSize.height, mapDistance, objectType, name, producer.color)
 
@@ -662,10 +668,11 @@ export const App = () => {
                                 <SaveAsProjectDialog dialogIsOpened={saveAsProjectDialogIsOpened}
                                                      setDialogIsOpened={setSaveAsProjectDialogIsOpened}
                                                      project={project}
+                                                     canvas={canvas}
                                 />
 
                                 <HelpDialog dialogIsOpened={helpDialogIsOpened}
-                                                     setDialogIsOpened={setHelpDialogIsOpened}
+                                            setDialogIsOpened={setHelpDialogIsOpened}
                                 />
 
                                 <Loading isOpen={projectIsCalculating || projectIsLoading}/>

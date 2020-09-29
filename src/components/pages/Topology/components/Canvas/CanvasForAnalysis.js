@@ -37,15 +37,22 @@ export const CanvasForAnalysis = ({
                 const newPolygon = new fabric.Polygon(points, polygonGenerated(height, mapDistance, "grey"))
                 const id = "analyzed_" + i
 
-                if (objects.some(consumer => consumer.id === id)) {
+                if (objects.some(object => object.id === id)) {
                     const existingObject = objects.find(object => object.id === id)
 
-                    if (existingObject.objectType === "consumer") {
-                        newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: null, hoverCursor: "pointer", evented: false, fill: "blue"})
+                    if (existingObject.isCompleted) {
+                        if (existingObject.objectType === "consumer") {
+                            newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: "consumer", hoverCursor: "pointer", evented: false, fill: "blue"})
+                        } else {
+                            newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: "supplier", hoverCursor: "pointer", evented: false, fill: "red"})
+                        }
                     } else {
-                        newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: null, hoverCursor: "pointer", evented: false, fill: "red"})
+                        if (existingObject.objectType === "consumer") {
+                            newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: "consumer", hoverCursor: "pointer", evented: false, stroke: "blue"})
+                        } else {
+                            newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: "supplier", hoverCursor: "pointer", evented: false, stroke: "red"})
+                        }
                     }
-
                 } else {
                     newPolygon.set({id, lockMovementY: true, lockMovementX: true, objectType: null, hoverCursor: "pointer"})
                 }

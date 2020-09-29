@@ -439,7 +439,7 @@ export const ConsumersHelp = ({styles}) => {
             <img width={gifBorderWidth} height={gifBorderHeight}
                  src={require('../../assets/help/consumers_open_dialog.gif')}
                  style={gifBorderStyle}/> <br/>
-            To add a consumer, enter his name and the amount of consumed energy, after that, click the create button.
+            To add a consumer, enter name and the amount of consumed energy, after that, click the "Create" button.
             Next, draw a polygon for the object where it will be placed.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
@@ -463,6 +463,221 @@ export const ConsumersHelp = ({styles}) => {
             <img width={gifBorderWidth} height={gifBorderHeight}
                  src={require('../../assets/help/consumers_delete.gif')}
                  style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const SuppliersHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Suppliers / Objects
+        </p>
+        <p className={styles.dialogText}>
+            Suppliers are an integral part of the energy system and act as generators of energy in it, which
+            is supplied to consumers through the network. Suppliers objects are characterized by their capacity, the
+            type of producer (main or certain independent), as well as technical and economic indicators that form the
+            price level for the energy produced. <br/><br/>
+            To open the dialog box of the supplier object creation, click the icon of the supplier in the
+            toolbar or select the corresponding button in the "Edit" menu. <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/suppliers_open_dialog.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To add a supplier, enter name, capacity, select producer and supplier template, after that, click the
+            "Create" button.
+            Next, draw a polygon for the object where it will be placed.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/create_new_supplier.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To edit supplier object, select the object in tree view or on the map with right click, and select "Edit
+            object..." button in context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/suppliers_edit.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To delete supplier object, select the object in tree view or on the map with right click, and select "Delete
+            object" button in context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/suppliers_delete.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const NetworksHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Networks / Objects
+        </p>
+        <p className={styles.dialogText}>
+            Networks are an integral part of the energy system that carry out the function of transporting energy from
+            suppliers to consumers. Networks are characterized by technical characteristics such as: length, diameter,
+            type of pipe laying, thickness and type of insulation, which are set using templates. <br/><br/>
+            To open the dialog box of the network object creation, click the icon of the network in the
+            toolbar or select the corresponding button in the "Edit" menu. <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/networks_open_dialog.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To add a network, enter name, network template, network type (supply or return) and network is new, after
+            that, click the "Create" button.
+            Next, draw a line, both circles of which should be connected to the circles of other objects (consumers,
+            suppliers or networks).
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/create_new_network.gif')}
+                 style={gifBorderStyle}/> <br/>
+            You can move the network by moving the line or circles of the line to change the position of the network an
+            connection to the other objects.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/networks_move.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To edit network object, select the object in tree view or on the map with right click, and select "Edit
+            object..." button in context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/networks_edit.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To delete network object, select the object in tree view or on the map with right click, and select "Delete
+            object" button in context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/networks_delete.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const PolygonsHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Polygons analyzer
+        </p>
+        <p className={styles.dialogText}>
+            Polygons analysis is an innovative feature that can dramatically speed up the power system design process.
+            This function analyzes the image of the map and forms polygons of the objects of consumers and
+            suppliers. <br/><br/>
+            To open the dialog for selecting analyzed polygons, click on the "Polygon analysis" icon.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_open_dialog.gif')}
+                 style={gifBorderStyle}/> <br/>
+            In the dialog, you will have access to the polygons of the analyzed objects, where you need to select the
+            relevant objects for your energy system project. In this case, when you click on an object, it will change
+            the color of the border, where the blue color will form the consumer object, and the red border object will
+            form the supplier object.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_select.gif')}
+                 style={gifBorderStyle}/> <br/>
+            When all the necessary objects are selected, click the "Generate" button
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_generate.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To complete the creation of a consumer object, right-click on the object polygon and select the "Complete
+            object..." button in the context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_complete_consumer.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To complete the creation of a supplier object, right-click on the object polygon and select the "Complete
+            object..." button in the context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_complete_supplier.gif')}
+                 style={gifBorderStyle}/> <br/>
+            To delete not completed object, right-click on the object polygon and select the "Delete object" button in
+            the context menu.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/polygons_delete.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const ModelSettingsHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Model settings
+        </p>
+        <p className={styles.dialogText}>
+            Model Settings is a dialog box in which, depending on the model type, you make model settings for
+            calculating the power system. The list of settings depends on the type of the selected project model
+            ("System" or "Market over system"). To open the dialog of model settings, click on the "Model settings"
+            icon.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/model_settings_open_dialog.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const ModelSettingsSystemHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            System / Model settings
+        </p>
+        <p className={styles.dialogText}>
+            If the type of the selected model is "System", in the open dialog box you should configure
+            the cost of electricity for transporting the heat carrier. The process of setting up a model is considered
+            sufficient if the "Model Settings" icon in the toolbar turns blue after orange.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/model_settings_set_system.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const ModelSettingsMarketOverSystemHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Market over system / Model settings
+        </p>
+        <p className={styles.dialogText}>
+            With the "Market over systems" model type, it is assumed that the type of market share coefficient is
+            selected, which determines the approach to the distribution of energy production volumes between producers.
+            Also, the following indicators must be entered:
+        </p>
+        <ul className={styles.dialogText}>
+            <li>Main producer fixed cost losses compensation</li>
+            <li>Market creation capital investment</li>
+            <li>The percentage of return on funds spent on the market creation from the annual consumers
+                part of absolute market efficiency
+            </li>
+            <li>Interest rate</li>
+            <li>Electricity price</li>
+        </ul>
+        <p className={styles.dialogText}>
+            In the case of choosing a constant coefficient of market share, it is assumed that there is an auction for
+            the sale and purchase of energy, where there is competition.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/model_settings_set_market_over_system_constant.gif')}
+                 style={gifBorderStyle}/> <br/>
+            If a manual market share coefficient is selected, the distribution of shares between producers is
+            determined manually.
+            <br/>
+            <img width={gifBorderWidth} height={gifBorderHeight}
+                 src={require('../../assets/help/model_settings_set_market_over_system_manual.gif')}
+                 style={gifBorderStyle}/> <br/>
+        </p>
+    </div>
+}
+
+export const CalculateSystemHelp = ({styles}) => {
+    return <div style={{padding: 6, textAlign: "justify"}}>
+        <p className={styles.dialogTitle}>
+            Calculation
+        </p>
+        <p className={styles.dialogText}>
+            After the project has been fully developed and completed, it becomes possible to carry out calculations. To
+            calculate the developed project of the power system, click the "Calculate" icon, or select the corresponding
+            button in the "Tools" menu.
         </p>
     </div>
 }

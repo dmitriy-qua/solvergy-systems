@@ -149,6 +149,7 @@ export const deleteProject = (id) => (dispatch) => {
 export const openProject = (id) => (dispatch) => {
     return new Promise(async (res) => {
         dispatch(setProjectIsLoading(true))
+        dispatch(setProject(null))
         const project = await ProjectsAPI.openProject(id)
         dispatch(setProject(project.data))
         dispatch(setLoadedProjectId(project.data.id))

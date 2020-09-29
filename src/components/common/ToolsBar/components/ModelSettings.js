@@ -32,10 +32,10 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
     const producers = useSelector(state => state.project && state.project.objects.producers)
 
     const defaultSharesArray = producers.map((producer, i) => {
-            return {
-                id: producer.id,
-                share: i === producers.length - 1 ? 100 : (100 / producers.length) * (i + 1)
-            }
+        return {
+            id: producer.id,
+            share: i === producers.length - 1 ? 100 : (100 / producers.length) * (i + 1)
+        }
     })
 
     const initialSettings = {
@@ -68,7 +68,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                 }
             } else {
                 return {
-                    backgroundColor: producers[i+1].color,
+                    backgroundColor: producers[i + 1].color,
                     borderColor: producer.color
                 }
             }
@@ -139,7 +139,11 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                             itemRenderer={renderMarketShareCoefficientTypeItem}
                             activeItem={settings.marketShareCoefficientType && settings.marketShareCoefficientType.name}
                             className="fullwidth"
-                            popoverProps={{minimal: true, portalClassName: "fullwidth", popoverClassName: "selectPopover"}}
+                            popoverProps={{
+                                minimal: true,
+                                portalClassName: "fullwidth",
+                                popoverClassName: "selectPopover"
+                            }}
                             filterable={false}
                             onItemSelect={handleMarketShareCoefficientTypeSelect}
                         >
@@ -206,7 +210,7 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                                        trackStyle={producersRangeData}
                                        handleStyle={producersRangeData}
                                        disabled={producers.length === 1}
-                                       railStyle={{backgroundColor: producers.length === 1 ? "lightgrey" :producers[0].color}}
+                                       railStyle={{backgroundColor: producers.length === 1 ? "lightgrey" : producers[0].color}}
                                        allowCross={false}
                                     //pushable={1}
                                        step={0.1}
@@ -333,7 +337,8 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                         </div>
 
                         <p className={styles.dialogText} style={{marginTop: 14}}>
-                            The percentage of return on funds spent on the market creation from the annual consumers part of absolute market efficiency, %:
+                            The percentage of return on funds spent on the market creation from the annual consumers
+                            part of absolute market efficiency, %:
                         </p>
                         <NumericInput placeholder="Enter value..."
                                       onValueChange={(value) => {
@@ -398,9 +403,12 @@ export const ModelSettings = ({setDialogIsOpened, dialogIsOpened}) => {
                         }}>
                     Close
                 </Button>
-                <Button disabled={Object.keys(settings).some(k => {
-                    if (k !== "optimizeMarketShareCoefficient") return !settings[k]
-                })}
+                <Button disabled={modelType === "System" ?
+                    !settings.electricityPrice
+                    :
+                    Object.keys(settings).some(k => {
+                        if (k !== "optimizeMarketShareCoefficient") return !settings[k]
+                    })}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         text={"Save"}
                         intent={Intent.SUCCESS}

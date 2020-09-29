@@ -16,7 +16,7 @@ import {deleteProject, openProject, saveAsProject, setNodes} from "../../../../r
 import {Loading} from "../../Loading/Loading";
 import {generateId} from "../../../../helpers/data-helper";
 
-export const SaveAsProjectDialog = ({setDialogIsOpened, dialogIsOpened, project}) => {
+export const SaveAsProjectDialog = ({setDialogIsOpened, dialogIsOpened, project, canvas}) => {
 
     const styles = useStyles()
 
@@ -80,12 +80,16 @@ export const SaveAsProjectDialog = ({setDialogIsOpened, dialogIsOpened, project}
                         onClick={() => {
                             const id = generateId()
                             const oldId = project.id
+
+                            const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+
                             const newProject = {
                                 ...project,
                                 info: {
                                     ...project.info,
                                     name: newProjectName,
                                 },
+                                canvas: canvasState,
                                 id
                             }
 

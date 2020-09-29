@@ -15,17 +15,32 @@ import {generateId} from "../../../../helpers/data-helper";
 import {helpStructure} from "../../../data/help-tree";
 import {setNodes} from "../../../../redux/actions/project";
 import {
-    AuthenticationHelp, ConsumersHelp,
-    GeneralHelp, NetworksTemplatesHelp,
+    AuthenticationHelp, CalculateSystemHelp,
+    ConsumersHelp,
+    GeneralHelp,
+    ModelSettingsHelp,
+    ModelSettingsMarketOverSystemHelp,
+    ModelSettingsSystemHelp,
+    NetworksHelp,
+    NetworksTemplatesHelp,
     NewProjectAuthenticationHelp,
     NewProjectHelp,
     NewProjectInfoHelp,
     NewProjectMapHelp,
-    NewProjectTypeHelp, ObjectsHelp, OpenProjectHelp, ProducersHelp,
-    ProjectHelp, SaveAsProjectHelp, SaveProjectHelp,
+    NewProjectTypeHelp,
+    ObjectsHelp,
+    OpenProjectHelp,
+    PolygonsHelp,
+    ProducersHelp,
+    ProjectHelp,
+    SaveAsProjectHelp,
+    SaveProjectHelp,
     SignInHelp,
     SignOutHelp,
-    SignUpHelp, SuppliersTemplatesHelp, TemplatesHelp
+    SignUpHelp,
+    SuppliersHelp,
+    SuppliersTemplatesHelp,
+    TemplatesHelp
 } from "../../../data/help-data";
 
 
@@ -127,6 +142,13 @@ export const HelpDialog = ({setDialogIsOpened, dialogIsOpened}) => {
                         {selectedCategoryId === "producers" && <ProducersHelp styles={styles}/>}
                         {selectedCategoryId === "objects" && <ObjectsHelp styles={styles}/>}
                         {selectedCategoryId === "consumers" && <ConsumersHelp styles={styles}/>}
+                        {selectedCategoryId === "suppliers" && <SuppliersHelp styles={styles}/>}
+                        {selectedCategoryId === "networks" && <NetworksHelp styles={styles}/>}
+                        {selectedCategoryId === "polygons" && <PolygonsHelp styles={styles}/>}
+                        {selectedCategoryId === "modelsettings" && <ModelSettingsHelp styles={styles}/>}
+                        {selectedCategoryId === "system" && <ModelSettingsSystemHelp styles={styles}/>}
+                        {selectedCategoryId === "marketoversystem" && <ModelSettingsMarketOverSystemHelp styles={styles}/>}
+                        {selectedCategoryId === "calculation" && <CalculateSystemHelp styles={styles}/>}
 
 
                     </div>}

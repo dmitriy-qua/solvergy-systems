@@ -134,7 +134,7 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
             </FormGroup>
 
             <p className={styles.dialogText}>
-                Station capacity, MW::
+                Station capacity, MW:
             </p>
             <NumericInput placeholder="Enter value in MW..."
                           onValueChange={(value) => {

@@ -6,6 +6,7 @@ import {polygonDrawing, polygonGenerated, polygonLine} from "../shapes/polygon/c
 import {generateId} from "../../../../../../helpers/data-helper";
 import {getStorageBaseUrl} from "../../../../../../api/axios-connection";
 import polylabel from 'polylabel'
+import {saveProject} from "../../../../../../redux/actions/project";
 
 export const connectLineToOtherLine = (canvas, e, p) => {
 
@@ -506,7 +507,7 @@ export const calculateLineDistance = (line, mapDistance, mapHeight) => {
 }
 
 export const setEnlivenObjects = (canvas, objects, setObjectType) => {
-    canvas.clear()
+    //canvas.clear()
 
     fabric.util.enlivenObjects(objects, function (objs) {
         objs.forEach(function (o) {
@@ -515,36 +516,50 @@ export const setEnlivenObjects = (canvas, objects, setObjectType) => {
             o.perPixelTargetFind = true
             if (o.type === "polygon" || o.type === "line") {
 
-                if (o.type === "line") {
-                    o.set({
-                        x1: o.left + o.x1,
-                        x2: o.left + o.x2,
-                        y1: o.top + o.y1,
-                        y2: o.top + o.y2,
-                        stroke: o.networkType === "supply" ? 'red' : "blue"
+                if (!o.isCompleted) {
+                    if (o.type === "polygon") {
+                        //o.evented = false
+                        o.lockMovementX = true
+                        o.lockMovementY = true
+                        o.hoverCursor = "pointer"
+                        canvas.add(o)
+                    }
+                } else {
+                    if (o.type === "line") {
+                        o.set({
+                            x1: o.left + o.x1,
+                            x2: o.left + o.x2,
+                            y1: o.top + o.y1,
+                            y2: o.top + o.y2,
+                            stroke: o.networkType === "supply" ? 'red' : "blue"
+                        })
+                    }
+
+                    objs.forEach(object => {
+                        if (object.type === "circle" && object.id === o.id) {
+
+                            if (o.type === "polygon") {
+                                object.evented = false
+                                object.hoverCursor = "pointer"
+                            }
+
+                            if (object.name === "start") {
+                                o.circle1 = object
+                            } else if (object.name === "end") {
+                                o.circle2 = object
+                            }
+                        }
                     })
+
+                    canvas.add(o)
+                    canvas.add(o.circle1)
+                    canvas.add(o.circle2)
                 }
 
-                objs.forEach(object => {
-                    if (object.type === "circle" && object.id === o.id) {
 
-
-                        if (o.type === "polygon") object.evented = false
-
-                        if (object.name === "start") {
-                            o.circle1 = object
-                        } else if (object.name === "end") {
-                            o.circle2 = object
-                        }
-                    }
-                })
-
-                canvas.add(o)
-                canvas.add(o.circle1)
-                canvas.add(o.circle2)
             } else if (o.type === "image") {
-                o.evented = false
-                canvas.add(o)
+                //o.evented = false
+                //canvas.add(o)
             }
             o.setCoords()
         });
