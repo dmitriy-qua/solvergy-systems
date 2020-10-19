@@ -1,6 +1,9 @@
 {
   "name": "solvergy-systems",
+  "productName": "Solvergy: Systems",
   "version": "0.9.0",
+  "description": "Solvergy: Systems - energy systems modeling",
+  "author": "Solvergy",
   "private": true,
   "main": "public/electron.js",
   "dependencies": {
@@ -12,6 +15,7 @@
     "@nivo/bar": "^0.62.0",
     "@nivo/line": "^0.62.0",
     "axios": "^0.19.2",
+    "electron-is-dev": "^1.2.0",
     "electron-updater": "^4.3.5",
     "fabric": "^3.6.3",
     "jquery": "^3.5.1",
@@ -52,16 +56,13 @@
     "deploywin": "electron-builder build --win --publish always",
     "deploymac": "electron-builder build --mac --publish always"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/dmitriy.qua/solvergy-systems.git"
-  },
   "build": {
-    "appId": "solvergy-systems",
+    "appId": "org.solvergy.systems",
+    "productName": "Solvergy: Systems",
     "publish": [
       {
         "provider": "generic",
-        "url": "https://gitlab.com"
+        "url": "https://gitlab.com/"
       }
     ],
     "mac": {
