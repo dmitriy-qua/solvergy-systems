@@ -69,10 +69,6 @@ ipcMain.on('app_version', (event) => {
 autoUpdater.requestHeaders = { "PRIVATE-TOKEN": process.env.GITLAB_TOKEN };
 autoUpdater.autoDownload = true;
 
-autoUpdater.setFeedURL({
-    provider: "generic",
-    url: "https://gitlab.com/_example_repo_/-/jobs/artifacts/master/raw/dist?job=build"
-});
 
 autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available')
