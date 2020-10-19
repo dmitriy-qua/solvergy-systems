@@ -58,5 +58,26 @@ export const AuthAPI = {
             })
 
     },
+
+    async setInitialUserLicense() {
+        const instance = await createAxiosInstance(true);
+
+        return instance.get(`users/set_initial_systems_license/`)
+            .then(response => {
+                return response.data;
+            }).catch((e) => {
+                return e
+            })
+
+    },
+
+    async getUserProfile() {
+        const instance = await createAxiosInstance(true);
+
+        return instance.get(`users/me/`)
+            .then(async response => {
+                return response.data;
+            })
+    },
 }
 

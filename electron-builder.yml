@@ -1,0 +1,4 @@
+appId: org.solvergy.systems
+publish:
+  provider: generic
+  token: process.env.GITLAB_TOKEN

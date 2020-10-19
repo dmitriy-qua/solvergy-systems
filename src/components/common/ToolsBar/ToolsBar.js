@@ -31,14 +31,15 @@ import {
     FaChartBar,
     FaSlidersH,
     FaEye,
-    FaDrawPolygon
+    FaDrawPolygon,
+    FaInfoCircle
 } from 'react-icons/fa';
 import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go';
 import {useDispatch, useSelector} from "react-redux";
 import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
 
-const { app } = window.require('electron').remote
+const {app} = window.require('electron').remote
 
 const TOOLTIP_HOVER_OPEN_DELAY = 750
 
@@ -81,7 +82,9 @@ export const ToolsBar = ({
                              projectStateInHistoryIndex,
                              setOpenProjectDialogIsOpened,
                              setSaveAsProjectDialogIsOpened,
-                             setHelpDialogIsOpened
+                             setHelpDialogIsOpened,
+                             setLicenseDialogIsOpened,
+                             setInfoDialogIsOpened
                          }) => {
 
     const styles = useStyles()
@@ -94,7 +97,8 @@ export const ToolsBar = ({
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..." labelElement="CTRL + W"
+            <MenuItem icon={<GoPlus size={"1rem"} className={"bp3-icon"}/>} text="New project..."
+                      labelElement="CTRL + W"
                       onClick={() => setStartDialog(true)}/>
             <MenuDivider/>
             <MenuItem icon={<FaFolder size={"1rem"} className={"bp3-icon"}/>}
@@ -122,9 +126,11 @@ export const ToolsBar = ({
                           toaster.show({message: `Project saved.`, intent: Intent.SUCCESS, timeout: 3000})
                       }}
             />
-            <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project} onClick={() => setSaveAsProjectDialogIsOpened(true)} labelElement="CTRL + D"/>
+            <MenuItem icon={<FaBoxes size={"1rem"} className={"bp3-icon"}/>} text="Save as..." disabled={!project}
+                      onClick={() => setSaveAsProjectDialogIsOpened(true)} labelElement="CTRL + D"/>
             <MenuDivider/>
-            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit" onClick={() => app.quit()} labelElement="ALT + Q"/>
+            <MenuItem icon={<FaDoorOpen size={"1rem"} className={"bp3-icon"}/>} text="Exit" onClick={() => app.quit()}
+                      labelElement="ALT + Q"/>
         </Menu>
     }
 
@@ -240,10 +246,10 @@ export const ToolsBar = ({
             {/*          onClick={() => setIsInspectionMode(prevState => !prevState)}*/}
             {/*/>*/}
             {mapImageShouldBeAnalyzed && <MenuItem icon={<FaDrawPolygon size={"1rem"} className={"bp3-icon"}/>}
-                      text="Polygons analysis"
-                      active={mapImageAnalysisIsOpened}
-                      disabled={!project}
-                      onClick={() => setMapImageAnalysisIsOpened(true)}
+                                                   text="Polygons analysis"
+                                                   active={mapImageAnalysisIsOpened}
+                                                   disabled={!project}
+                                                   onClick={() => setMapImageAnalysisIsOpened(true)}
             />}
 
             <MenuItem icon={<FaBorderAll size={"1rem"} className={"bp3-icon"}/>}
@@ -259,7 +265,10 @@ export const ToolsBar = ({
 
     const SettingsMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
-            <MenuItem disabled={!isAuth} icon={<FaKey size={"1rem"} className={"bp3-icon"}/>} text="License..."/>
+            <MenuItem disabled={!isAuth}
+                      icon={<FaKey size={"1rem"} className={"bp3-icon"}/>}
+                      text="License..."
+                      onClick={() => setLicenseDialogIsOpened(true)}/>
             <MenuDivider/>
             <MenuItem icon={<FaSignOutAlt size={"1rem"} className={"bp3-icon"}/>}
                       text={isAuth ? "Sign out" : "Sign in"}
@@ -267,6 +276,9 @@ export const ToolsBar = ({
             <MenuDivider/>
             <MenuItem icon={<FaQuestionCircle size={"1rem"} className={"bp3-icon"}/>} text="Help..."
                       onClick={() => setHelpDialogIsOpened(true)}
+            />
+            <MenuItem icon={<FaInfoCircle size={"1rem"} className={"bp3-icon"}/>} text="About"
+                      onClick={() => setInfoDialogIsOpened(true)}
             />
         </Menu>
     }

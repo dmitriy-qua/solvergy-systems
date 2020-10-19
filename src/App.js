@@ -15,7 +15,7 @@ import {
 } from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
 import {useDispatch, useSelector} from "react-redux";
-import {setLoadedProjectId, successLogin} from "./redux/actions/auth";
+import {setInitialUserLicense, setLoadedProjectId, successLogin} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
 import {
@@ -41,14 +41,19 @@ import {
 } from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
 import {ResultsDialog} from "./components/common/ToolsBar/components/ResultsDialog";
 import {MapImageAnalysisDialog} from "./components/common/ToolsBar/components/MapImageAnalysisDialog";
-import {Loading} from "./components/common/Loading/Loading";
+import {Loading} from "./components/common/Notifications/Loading";
 import {StartDialog} from "./components/pages/Start/components/StartDialog";
 import {OpenProjectDialog} from "./components/common/ToolsBar/components/OpenProjectDialog";
 import {SaveAsProjectDialog} from "./components/common/ToolsBar/components/SaveAsProjectDialog";
 import {useHotkeys} from "react-hotkeys-hook";
 import {HelpDialog} from "./components/common/ToolsBar/components/HelpDialog";
+import {LicenseDialog} from "./components/common/ToolsBar/components/LicenseDialog";
+import {InfoDialog} from "./components/common/ToolsBar/components/InfoDialog";
+import {UpdateNotification} from "./components/common/Notifications/UpdateNotification";
+import {UpdateDownloadedNotification} from "./components/common/Notifications/UpdateDownloadedNotification";
 
 const {app} = window.require('electron').remote
+const { ipcRenderer } = window.require('electron')
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -67,6 +72,7 @@ export const App = () => {
 
     const project = useSelector(state => state.project)
 
+    const user = useSelector(state => state.auth.user)
 
     const objects = useSelector(state => state.project && state.project.objects)
     const results = useSelector(state => state.project && state.project.results)
@@ -115,13 +121,35 @@ export const App = () => {
     const [openProjectDialogIsOpened, setOpenProjectDialogIsOpened] = useState(false)
     const [saveAsProjectDialogIsOpened, setSaveAsProjectDialogIsOpened] = useState(false)
     const [helpDialogIsOpened, setHelpDialogIsOpened] = useState(false)
+    const [licenseDialogIsOpened, setLicenseDialogIsOpened] = useState(false)
+    const [infoDialogIsOpened, setInfoDialogIsOpened] = useState(false)
+
+    const [updateNotificationIsOpened, setUpdateNotificationIsOpened] = useState(false)
+    const [updateDownloadedNotificationIsOpened, setUpdateDownloadedNotificationIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
+
+    ipcRenderer.on('update_available', () => {
+        ipcRenderer.removeAllListeners('update_available')
+        setUpdateNotificationIsOpened(true)
+    })
+
+    ipcRenderer.on('update_downloaded', () => {
+        ipcRenderer.removeAllListeners('update_downloaded')
+        setUpdateNotificationIsOpened(false)
+        setUpdateDownloadedNotificationIsOpened(true)
+        setTimeout(() => ipcRenderer.send('restart_app'), 2000)
+    })
+
 
     useEffect(() => {
         const user = localStorage.getItem('user')
         if (user) dispatch(successLogin(JSON.parse(user).data.user))
     }, [])
+
+    useEffect(() => {
+        if (user && user.systemsLicense === undefined) dispatch(setInitialUserLicense())
+    }, [user])
 
     useEffect(() => {
         currentProject = project
@@ -554,6 +582,8 @@ export const App = () => {
                               setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
                               setSaveAsProjectDialogIsOpened={setSaveAsProjectDialogIsOpened}
                               setHelpDialogIsOpened={setHelpDialogIsOpened}
+                              setLicenseDialogIsOpened={setLicenseDialogIsOpened}
+                              setInfoDialogIsOpened={setInfoDialogIsOpened}
                     />
                 </ReflexElement>
 
@@ -675,6 +705,17 @@ export const App = () => {
                                             setDialogIsOpened={setHelpDialogIsOpened}
                                 />
 
+                                <LicenseDialog dialogIsOpened={licenseDialogIsOpened}
+                                               setDialogIsOpened={setLicenseDialogIsOpened}
+                                />
+
+                                <InfoDialog dialogIsOpened={infoDialogIsOpened}
+                                            setDialogIsOpened={setInfoDialogIsOpened}
+                                />
+
+                                <UpdateNotification isOpen={updateNotificationIsOpened}/>
+                                <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
+
                                 <Loading isOpen={projectIsCalculating || projectIsLoading}/>
 
                             </ReflexElement>
@@ -691,9 +732,17 @@ export const App = () => {
                                setOpenProjectDialogIsOpened={setOpenProjectDialogIsOpened}
                                helpDialogIsOpened={helpDialogIsOpened}
                                setHelpDialogIsOpened={setHelpDialogIsOpened}
+                               licenseDialogIsOpened={licenseDialogIsOpened}
+                               setLicenseDialogIsOpened={setLicenseDialogIsOpened}
+                               infoDialogIsOpened={infoDialogIsOpened}
+                               setInfoDialogIsOpened={setInfoDialogIsOpened}
                         />
 
+                        <UpdateNotification isOpen={updateNotificationIsOpened}/>
+                        <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
+
                         <Loading isOpen={!project && projectIsLoading}/>
+
                     </ReflexElement>
                 }
 

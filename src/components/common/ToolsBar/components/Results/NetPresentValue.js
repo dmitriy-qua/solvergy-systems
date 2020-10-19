@@ -25,10 +25,10 @@ export const NetPresentValue = ({marketPaybackPeriod, height, width}) => {
 
         <hr className={styles.divider}/>
 
-        <p className={styles.dialogText}>
+        {marketPaybackPeriod.paybackPeriod && <p className={styles.dialogText}>
             Discounted payback period: <span
             className={styles.bold}>{marketPaybackPeriod.paybackPeriod.toFixed(2)}</span> years
-        </p>
+        </p>}
 
         <br/>
 

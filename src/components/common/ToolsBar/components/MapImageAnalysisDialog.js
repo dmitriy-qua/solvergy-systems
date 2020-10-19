@@ -64,7 +64,7 @@ export const MapImageAnalysisDialog = ({dialogIsOpened, setDialogIsOpened, heigh
                 <Button intent={Intent.SUCCESS}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
-                            const canvasObjects = canvas.getObjects().filter(object => object.type === "polygon" && object.objectType)
+                            const canvasObjects = canvas.getObjects().filter(object => object.type === "polygon" && object.objectType && currentCanvasObjects.find(obj => obj.id === object.id) === undefined)
                             saveAnalyzedObjects(canvasObjects)
                             setCanvas(null)
                             setDialogIsOpened(false)

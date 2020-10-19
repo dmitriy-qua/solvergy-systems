@@ -1,6 +1,6 @@
 {
   "name": "solvergy-systems",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "private": true,
   "main": "src/main.js",
   "dependencies": {
@@ -12,6 +12,7 @@
     "@nivo/bar": "^0.62.0",
     "@nivo/line": "^0.62.0",
     "axios": "^0.19.2",
+    "electron-updater": "^4.3.5",
     "fabric": "^3.6.3",
     "jquery": "^3.5.1",
     "polylabel": "^1.1.0",
@@ -20,6 +21,7 @@
     "react-color": "^2.18.1",
     "react-cool-onclickoutside": "^1.5.5",
     "react-dom": "^16.13.1",
+    "react-google-login": "^5.1.21",
     "react-hotkeys-hook": "^2.3.1",
     "react-icons": "^3.10.0",
     "react-jss": "^10.3.0",
@@ -38,11 +40,43 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ed": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron": "electron ."
+    "electron": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "buildwin": "electron-builder build --win --publish never",
+    "build": "electron-builder build --mac --win --publish never",
+    "deploywin": "electron-builder build --win --publish always",
+    "deploy": "electron-builder build --mac --win --publish always"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://gitlab.com/dmitriy.qua/solvergy-systems.git"
+  },
+  "build": {
+    "appId": "solvergy-systems",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://gitlab.com"
+      }
+    ],
+    "mac": {
+      "category": "org.solvergy.systems",
+      "target": "zip"
+    },
+    "win": {
+      "icon": "public/icons/win/icon.ico",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
   },
   "eslintConfig": {
     "extends": "react-app"

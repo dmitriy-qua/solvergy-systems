@@ -3,7 +3,11 @@ import {createUseStyles} from "react-jss";
 import {AuthForm} from "./AuthForm";
 import {Button, Intent} from "@blueprintjs/core";
 import {useDispatch, useSelector} from "react-redux";
-import {logout, signIn, signUp} from "../../../redux/actions/auth";
+import {logout, signIn, signInGoogle, signUp} from "../../../redux/actions/auth";
+import GoogleLogin from "react-google-login";
+import {FaGoogle} from "react-icons/fa";
+
+const { shell } = window.require("electron").remote;
 
 export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialog}) => {
 
@@ -16,6 +20,16 @@ export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialo
 
     const dispatch = useDispatch()
 
+    const responseGoogle = (response) => {
+
+        //console.log(response);
+
+        if (response.profileObj !== undefined) {
+            dispatch(signInGoogle({login: response.profileObj.email,}))
+        } else {
+            console.log("cancelled")
+        }
+    }
 
     if (!isAuth) {
         return <div>
@@ -54,6 +68,30 @@ export const SignIn = ({login, setLogin, password, setPassword, isFromStartDialo
                     intent={Intent.SUCCESS}
                     onClick={() => isSignInPage ? dispatch(signIn({login, password})) : dispatch(signUp({login, password}))}
                     text={isSignInPage ? "Sign in" : "Sign up"}/>
+
+            {/*<Button className={styles.button}*/}
+            {/*        intent={Intent.DANGER}*/}
+            {/*        style={{marginLeft: 10}}*/}
+            {/*        icon={<FaGoogle size={"1rem"} className={"bp3-icon"}/>}*/}
+            {/*        onClick={() => shell.openExternal("http://localhost:3000/googlesignin")}*/}
+            {/*        text={"Google"}/>*/}
+
+            {/*<GoogleLogin*/}
+            {/*    clientId="386191605453-1btp3i21gb08828e31snlg08hieno984.apps.googleusercontent.com"*/}
+            {/*    buttonText="Login"*/}
+            {/*    render={renderProps => (*/}
+            {/*        <Button className={styles.button}*/}
+            {/*                intent={Intent.DANGER}*/}
+            {/*                style={{marginLeft: 10}}*/}
+            {/*                icon={<FaGoogle size={"1rem"} className={"bp3-icon"}/>}*/}
+            {/*                onClick={renderProps.onClick} disabled={renderProps.disabled}*/}
+            {/*                text={"Google"}/>*/}
+            {/*    )}*/}
+            {/*    onSuccess={responseGoogle}*/}
+            {/*    onFailure={responseGoogle}*/}
+            {/*    cookiePolicy={'single_host_origin'}*/}
+            {/*/>*/}
+
         </div>
     } else {
         return <div>

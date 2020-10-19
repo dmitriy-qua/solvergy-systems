@@ -13,7 +13,7 @@ import 'rc-slider/assets/index.css';
 import {getUserProjects} from "../../../../redux/actions/auth";
 import {forEachNode, updateNodeProperty} from "../../../pages/Topology/components/Canvas/helpers/tree-helper";
 import {deleteProject, openProject, saveAsProject, setNodes} from "../../../../redux/actions/project";
-import {Loading} from "../../Loading/Loading";
+import {Loading} from "../../Notifications/Loading";
 import {generateId} from "../../../../helpers/data-helper";
 
 export const SaveAsProjectDialog = ({setDialogIsOpened, dialogIsOpened, project, canvas}) => {
