@@ -6,6 +6,7 @@ const path = require('path')
 const url = require('url')
 const isDev = require('electron-is-dev')
 const ipcMain = electron.ipcMain
+const nativeImage = electron.nativeImage
 
 const { autoUpdater } = require('electron-updater')
 
@@ -24,7 +25,7 @@ function createWindow() {
             contextIsolation: false,
             allowRunningInsecureContent: true
         },
-        icon: path.join(__dirname, '../public/icons/win/icon.ico')
+        icon: nativeImage.createFromPath(path.join(__dirname, '../public/icons/win/icon.ico'))
     })
 
 
@@ -69,6 +70,10 @@ ipcMain.on('app_version', (event) => {
 autoUpdater.requestHeaders = { "PRIVATE-TOKEN": process.env.GITLAB_TOKEN };
 autoUpdater.autoDownload = true;
 
+autoUpdater.setFeedURL({
+    provider: "generic",
+    url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/raw/dist?job=build"
+});
 
 autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available')

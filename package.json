@@ -62,6 +62,8 @@
     "publish": [
       {
         "provider": "generic",
+        "owner": "dmitriy.qua",
+        "repo": "solvergy-systems",
         "url": "https://gitlab.com/"
       }
     ],
