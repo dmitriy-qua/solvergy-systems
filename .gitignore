@@ -20,7 +20,7 @@
 .env.production.local
 /.env
 
-.electron-builder.yml
+electron-builder.yml
 
 npm-debug.log*
 yarn-debug.log*
