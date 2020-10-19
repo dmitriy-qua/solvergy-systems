@@ -32,13 +32,13 @@ function createWindow() {
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
     mainWindow.on('closed', () => mainWindow = null)
 
-    //if (!isDev) Menu.setApplicationMenu(null)
+    mainWindow.once('ready-to-show', () => {
+        autoUpdater.checkForUpdatesAndNotify()
+    })
+
+    if (!isDev) Menu.setApplicationMenu(null)
     //Menu.setApplicationMenu(null)
 }
-
-mainWindow.once('ready-to-show', () => {
-    autoUpdater.checkForUpdatesAndNotify()
-})
 
 process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true

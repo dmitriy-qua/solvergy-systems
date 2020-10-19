@@ -2,7 +2,7 @@
   "name": "solvergy-systems",
   "version": "0.9.0",
   "private": true,
-  "main": "src/main.js",
+  "main": "public/electron.js",
   "dependencies": {
     "@blueprintjs/core": "^3.29.0",
     "@blueprintjs/select": "^3.13.5",
@@ -40,21 +40,21 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ed": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron": "electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps",
     "buildwin": "electron-builder build --win --publish never",
-    "build": "electron-builder build --mac --win --publish never",
+    "buildmac": "electron-builder build --mac --publish never",
     "deploywin": "electron-builder build --win --publish always",
-    "deploy": "electron-builder build --mac --win --publish always"
+    "deploymac": "electron-builder build --mac --publish always"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://gitlab.com/dmitriy.qua/solvergy-systems.git"
+    "type": "git",
+    "url": "https://gitlab.com/dmitriy.qua/solvergy-systems.git"
   },
   "build": {
     "appId": "solvergy-systems",
@@ -98,7 +98,6 @@
     "electron": "^9.1.0",
     "electron-builder": "^22.7.0",
     "electron-icon-builder": "^1.0.2",
-    "electron-is-dev": "^1.2.0",
     "wait-on": "^5.1.0"
   }
 }

@@ -1,9 +1,10 @@
 import axios from "axios";
 
-export const getBaseUrl = () => 'http://192.168.1.111:3001/v1/'
-export const getStorageBaseUrl = () => 'http://192.168.1.111:3001/storage/'
+//export const getBaseUrl = () => 'http://192.168.1.111:3001/v1/'
+//export const getStorageBaseUrl = () => 'http://192.168.1.111:3001/storage/'
 //export const getBaseUrl = () => 'http://192.168.88.240:3000/v1/'
-//export const getBaseUrl = () => 'http://api.solvergy.org:3000/v1/'
+export const getBaseUrl = () => 'http://api.solvergy.org:3000/v1/'
+export const getStorageBaseUrl = () => 'http://api.solvergy.org:3000/storage/'
 
 export const createAxiosInstance = async (withHeader = false, contentType = 'application/json') => {
 
