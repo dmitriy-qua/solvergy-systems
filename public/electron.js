@@ -9,9 +9,7 @@ const ipcMain = electron.ipcMain
 const nativeImage = electron.nativeImage
 
 const { autoUpdater } = require('electron-updater')
-const log = require('electron-log');
-log.transports.file.level = 'info'
-log.transports.file.file = __dirname + 'logs.log'
+
 let mainWindow
 let splash
 
@@ -69,6 +67,13 @@ process.env.ELECTRON_ENABLE_LOGGING = 1
 
 //app.userAgentFallback = app.userAgentFallback.replace('Electron/' + process.versions.electron, '');
 
+// Object.defineProperty(app, 'isPackaged', {
+//     get() {
+//         return true;
+//     }
+// });
+
+app.setAppUserModelId("org.solvergy.systems")
 
 app.on('ready', () => {
     createWindow()
@@ -90,13 +95,18 @@ ipcMain.on('app_version', (event) => {
     event.sender.send('app_version', { version: app.getVersion() })
 })
 
-autoUpdater.requestHeaders = { "PRIVATE-TOKEN": process.env.GITLAB_TOKEN };
-autoUpdater.autoDownload = true;
+//autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "X1oaeFeGp8KcxhUeHzoi" };
+//autoUpdater.autoDownload = true
 
-autoUpdater.setFeedURL({
-    provider: "generic",
-    url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/download?job=build"
-})
+// autoUpdater.setFeedURL({
+//     provider: "generic",
+//     channel: "latest",
+//     private: true,
+//     owner: "dmitriy.qua",
+//     repo: "solvergy-systems",
+//     token: "X1oaeFeGp8KcxhUeHzoi",
+//     url: "https://gitlab.com/"
+// })
 
 autoUpdater.on('checking-for-update', function () {
     sendStatusToWindow('Checking for update...');
@@ -121,7 +131,7 @@ autoUpdater.on('error', function (err) {
 })
 
 function sendStatusToWindow(message) {
-    log.info(message);
+    console.log(message);
 }
 
 ipcMain.on('restart_app', () => {

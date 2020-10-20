@@ -1,8 +1,8 @@
 {
   "name": "solvergy-systems",
-  "productName": "Solvergy: Systems",
-  "version": "0.9.4",
-  "description": "Solvergy: Systems - energy systems modeling",
+  "productName": "Solvergy Systems",
+  "version": "0.9.5",
+  "description": "Solvergy Systems - energy systems modeling",
   "author": "Solvergy",
   "private": true,
   "homepage": "./",
@@ -60,12 +60,15 @@
   },
   "build": {
     "appId": "org.solvergy.systems",
-    "productName": "Solvergy: Systems",
+    "productName": "Solvergy Systems",
     "publish": [
       {
         "provider": "generic",
+        "channel": "latest",
+        "private": true,
         "owner": "dmitriy.qua",
         "repo": "solvergy-systems",
+        "token": "X1oaeFeGp8KcxhUeHzoi",
         "url": "https://gitlab.com/"
       }
     ],

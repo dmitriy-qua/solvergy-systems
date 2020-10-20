@@ -1,5 +1,5 @@
 variables:
-  VERSION_ID: '0.9.4'
+  VERSION_ID: '0.9.5'
 
 before_script:
   - node -v
@@ -21,3 +21,4 @@ build:
     - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
     - sed "s/0.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
     - npm install && CI=false npm run build
+    - npm run deploywin
