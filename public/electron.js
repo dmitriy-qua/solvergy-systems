@@ -65,14 +65,6 @@ process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 process.env.ELECTRON_ENABLE_LOGGING = 1
 
-//app.userAgentFallback = app.userAgentFallback.replace('Electron/' + process.versions.electron, '');
-
-// Object.defineProperty(app, 'isPackaged', {
-//     get() {
-//         return true;
-//     }
-// });
-
 app.setAppUserModelId("org.solvergy.systems")
 
 app.on('ready', () => {
@@ -94,19 +86,6 @@ app.on('activate', () => {
 ipcMain.on('app_version', (event) => {
     event.sender.send('app_version', { version: app.getVersion() })
 })
-
-//autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "X1oaeFeGp8KcxhUeHzoi" };
-//autoUpdater.autoDownload = true
-
-// autoUpdater.setFeedURL({
-//     provider: "generic",
-//     channel: "latest",
-//     private: true,
-//     owner: "dmitriy.qua",
-//     repo: "solvergy-systems",
-//     token: "X1oaeFeGp8KcxhUeHzoi",
-//     url: "https://gitlab.com/"
-// })
 
 autoUpdater.on('checking-for-update', function () {
     sendStatusToWindow('Checking for update...');
