@@ -30,7 +30,14 @@ function createWindow() {
 
 
     mainWindow.setResizable(true)
-    mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+
+    const startUrl = process.env.ELECTRON_START_URL || url.format({
+        pathname: path.join(__dirname, '/../build/index.html'),
+        protocol: 'file:',
+        slashes: true
+    });
+
+    mainWindow.loadURL(isDev ? 'http://localhost:3000' : startUrl)
     mainWindow.on('closed', () => mainWindow = null)
 
     mainWindow.once('ready-to-show', () => {
@@ -73,7 +80,7 @@ autoUpdater.autoDownload = true;
 autoUpdater.setFeedURL({
     provider: "generic",
     url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/raw/dist?job=build"
-});
+})
 
 autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available')

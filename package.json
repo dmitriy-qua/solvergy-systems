@@ -1,10 +1,11 @@
 {
   "name": "solvergy-systems",
   "productName": "Solvergy: Systems",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Solvergy: Systems - energy systems modeling",
   "author": "Solvergy",
   "private": true,
+  "homepage": "./",
   "main": "public/electron.js",
   "dependencies": {
     "@blueprintjs/core": "^3.29.0",
