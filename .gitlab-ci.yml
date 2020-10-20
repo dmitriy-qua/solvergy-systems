@@ -3,8 +3,15 @@ image: node:10.15.3
 variables:
   VERSION_ID: '0.9.0'
 
+before_script:
+  - node -v
+
 stages:
   - build
+
+cache:
+  paths:
+    - node_modules/
 
 build:
   image: slauta93/electron-builder-win
