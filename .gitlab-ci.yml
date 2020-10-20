@@ -16,7 +16,7 @@ build:
   stage: build
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/dist/*.*
+      - electron-release/*.*
   script:
     - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
     - sed "s/0.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json

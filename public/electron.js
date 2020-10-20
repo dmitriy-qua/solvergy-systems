@@ -11,6 +11,7 @@ const nativeImage = electron.nativeImage
 const { autoUpdater } = require('electron-updater')
 
 let mainWindow
+let splash
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -25,22 +26,34 @@ function createWindow() {
             contextIsolation: false,
             allowRunningInsecureContent: true
         },
-        icon: nativeImage.createFromPath(path.join(__dirname, '../public/icons/win/icon.ico'))
+        icon: nativeImage.createFromPath(path.join(__dirname, '../public/icons/win/icon.ico')),
+        show: false
     })
 
 
-    mainWindow.setResizable(true)
+
+    const splashUrl = url.format({
+        pathname: path.join(__dirname, '/../build/splash.html'),
+        protocol: 'file:',
+        slashes: true
+    })
+
+    splash = new BrowserWindow({width: 1200, height: 750, transparent: true, frame: false, alwaysOnTop: true});
+    splash.loadURL(isDev ? 'http://localhost:3000/splash.html' : splashUrl)
 
     const startUrl = process.env.ELECTRON_START_URL || url.format({
         pathname: path.join(__dirname, '/../build/index.html'),
         protocol: 'file:',
         slashes: true
-    });
+    })
 
+    mainWindow.setResizable(true)
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : startUrl)
     mainWindow.on('closed', () => mainWindow = null)
 
     mainWindow.once('ready-to-show', () => {
+        splash.destroy()
+        mainWindow.show()
         autoUpdater.checkForUpdatesAndNotify()
     })
 
