@@ -1,4 +1,4 @@
-image: node:10.15.3
+#image: node:10.15.3
 
 variables:
   VERSION_ID: '0.9.0'
@@ -14,7 +14,8 @@ cache:
     - node_modules/
 
 build:
-  image: slauta93/electron-builder-win
+#  image: slauta93/electron-builder-win
+  image: node:10.15.3
   stage: build
   artifacts:
     paths:
