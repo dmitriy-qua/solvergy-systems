@@ -92,7 +92,7 @@ autoUpdater.autoDownload = true;
 
 autoUpdater.setFeedURL({
     provider: "generic",
-    url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/raw/dist?job=build"
+    url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/download?job=build"
 })
 
 autoUpdater.on('update-available', () => {
