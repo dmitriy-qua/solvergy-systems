@@ -114,5 +114,5 @@ function sendStatusToWindow(message) {
 }
 
 ipcMain.on('restart_app', () => {
-    autoUpdater.quitAndInstall()
+    autoUpdater.quitAndInstall(true, true)
 })
