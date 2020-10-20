@@ -1,7 +1,7 @@
 {
   "name": "solvergy-systems",
   "productName": "Solvergy: Systems",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Solvergy: Systems - energy systems modeling",
   "author": "Solvergy",
   "private": true,
@@ -17,6 +17,7 @@
     "@nivo/line": "^0.62.0",
     "axios": "^0.19.2",
     "electron-is-dev": "^1.2.0",
+    "electron-log": "^4.2.4",
     "electron-updater": "^4.3.5",
     "fabric": "^3.6.3",
     "jquery": "^3.5.1",
@@ -74,7 +75,8 @@
     },
     "win": {
       "icon": "public/icons/win/icon.ico",
-      "target": "nsis"
+      "target": "nsis",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,

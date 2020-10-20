@@ -9,7 +9,9 @@ const ipcMain = electron.ipcMain
 const nativeImage = electron.nativeImage
 
 const { autoUpdater } = require('electron-updater')
-
+const log = require('electron-log');
+log.transports.file.level = 'info'
+log.transports.file.file = __dirname + 'logs.log'
 let mainWindow
 let splash
 
@@ -63,6 +65,7 @@ function createWindow() {
 
 process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
+process.env.ELECTRON_ENABLE_LOGGING = 1
 
 //app.userAgentFallback = app.userAgentFallback.replace('Electron/' + process.versions.electron, '');
 
@@ -95,17 +98,31 @@ autoUpdater.setFeedURL({
     url: "https://gitlab.com/dmitriy.qua/solvergy-systems/-/jobs/artifacts/master/download?job=build"
 })
 
+autoUpdater.on('checking-for-update', function () {
+    sendStatusToWindow('Checking for update...');
+});
+
+autoUpdater.on('update-not-available', function (info) {
+    sendStatusToWindow('Update not available. Info: ', info);
+});
+
 autoUpdater.on('update-available', () => {
+    sendStatusToWindow('Update available.');
     mainWindow.webContents.send('update_available')
 })
 
 autoUpdater.on('update-downloaded', () => {
+    sendStatusToWindow('Update downloaded; will install in 1 seconds');
     mainWindow.webContents.send('update_downloaded')
 })
 
 autoUpdater.on('error', function (err) {
-    console.log('Error in auto-updater.')
+    sendStatusToWindow('Error in auto-updater. Error: ', err)
 })
+
+function sendStatusToWindow(message) {
+    log.info(message);
+}
 
 ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall()
