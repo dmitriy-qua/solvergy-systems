@@ -1,7 +1,7 @@
 {
   "name": "solvergy-systems",
   "productName": "Solvergy Systems",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Solvergy Systems - energy systems modeling",
   "author": "Solvergy",
   "private": true,
@@ -58,6 +58,10 @@
     "deploywin": "electron-builder build --win --publish always",
     "deploymac": "electron-builder build --mac --publish always"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmitriy-qua/solvergy-systems.git"
+  },
   "build": {
     "appId": "org.solvergy.systems",
     "productName": "Solvergy Systems",
@@ -66,9 +70,9 @@
         "provider": "github",
         "channel": "latest",
         "private": true,
-        "owner": "dmitriy.qua",
+        "owner": "dmitriy-qua",
         "repo": "solvergy-systems",
-        "token": "X1oaeFeGp8KcxhUeHzoi"
+        "token": "e85ddfabdc3a1bcc16d76fa89bd848ec30ee6381"
       }
     ],
     "mac": {
