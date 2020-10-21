@@ -46,13 +46,13 @@ export const SignInHelp = ({styles}) => {
         <p className={styles.dialogText}>
             To log into your account, you must open the authorization dialog box through: <br/><br/>
             - the start screen: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                           src={require('../../assets/help/sign_in_main_page.gif')}
+                                           src={'https://solvergy.org/static/help/sign_in_main_page.gif'}
                                            style={gifBorderStyle}/> <br/>
             - the "Settings" menu bar: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                  src={require('../../assets/help/sign_in_menu_bar.gif')}
+                                                  src={'https://solvergy.org/static/help/sign_in_menu_bar.gif'}
                                                   style={gifBorderStyle}/> <br/>
             - the project creation dialog:<br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                     src={require('../../assets/help/sign_in_new_project.gif')}
+                                                     src={'https://solvergy.org/static/help/sign_in_new_project.gif'}
                                                      style={gifBorderStyle}/>
         </p>
     </div>
@@ -66,13 +66,13 @@ export const SignOutHelp = ({styles}) => {
         <p className={styles.dialogText}>
             To log out from your account, you must open the authorization dialog box through: <br/><br/>
             - the start screen: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                           src={require('../../assets/help/sign_out_main_page.gif')}
+                                           src={'https://solvergy.org/static/help/sign_out_main_page.gif'}
                                            style={gifBorderStyle}/> <br/>
             - the "Settings" menu bar: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                  src={require('../../assets/help/sign_out_menu_bar.gif')}
+                                                  src={'https://solvergy.org/static/help/sign_out_menu_bar.gif'}
                                                   style={gifBorderStyle}/> <br/>
             - the project creation dialog:<br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                     src={require('../../assets/help/sign_out_new_project.gif')}
+                                                     src={'https://solvergy.org/static/help/sign_out_new_project.gif'}
                                                      style={gifBorderStyle}/>
         </p>
     </div>
@@ -87,13 +87,13 @@ export const SignUpHelp = ({styles}) => {
             You must have an account to start developing projects. You can create an account in the following
             ways: <br/><br/>
             - through the start screen: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                   src={require('../../assets/help/sign_up_main_page.gif')}
+                                                   src={'https://solvergy.org/static/help/sign_up_main_page.gif'}
                                                    style={gifBorderStyle}/> <br/>
             - through the "Settings" menu bar: <br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                          src={require('../../assets/help/sign_up_menu_bar.gif')}
+                                                          src={'https://solvergy.org/static/help/sign_up_menu_bar.gif'}
                                                           style={gifBorderStyle}/> <br/>
             - through the project creation dialog:<br/> <img width={gifBorderWidth} height={gifBorderHeight}
-                                                             src={require('../../assets/help/sign_up_new_project.gif')}
+                                                             src={'https://solvergy.org/static/help/sign_up_new_project.gif'}
                                                              style={gifBorderStyle}/>
         </p>
     </div>
@@ -119,11 +119,11 @@ export const NewProjectHelp = ({styles}) => {
         <p className={styles.dialogText}>
             To start creating a project, you need to click on the "Create project..." button on the start screen, <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_project.gif')}
+                 src={'https://solvergy.org/static/help/create_project.gif'}
                  style={gifBorderStyle}/> <br/>
             or click the "New project..." button in the "File" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/new_project_menu.gif')}
+                 src={'https://solvergy.org/static/help/new_project_menu.gif'}
                  style={gifBorderStyle}/> <br/>
             After that, the starting dialog for creating a new project will
             open, in which you will need to go through 4 steps: <br/>
@@ -144,7 +144,7 @@ export const NewProjectAuthenticationHelp = ({styles}) => {
             Before you can start creating a new project, you must be logged into your account. After authorization,
             press the "Next" button. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/new_project_auth_step.gif')}
+                 src={'https://solvergy.org/static/help/new_project_auth_step.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -161,7 +161,7 @@ export const NewProjectInfoHelp = ({styles}) => {
             be performed. When finished, press the "Next" button.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/new_project_info_step.gif')}
+                 src={'https://solvergy.org/static/help/new_project_info_step.gif'}
                  style={gifBorderStyle}/>
             <br/>
         </p>
@@ -182,7 +182,7 @@ export const NewProjectTypeHelp = ({styles}) => {
             After selecting the model type, press the button.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/new_project_type_step.gif')}
+                 src={'https://solvergy.org/static/help/new_project_type_step.gif'}
                  style={gifBorderStyle}/>
             <br/>
         </p>
@@ -206,7 +206,7 @@ export const NewProjectMapHelp = ({styles}) => {
             terms of polygon differentiation. When finished, press the "Create" button.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/new_project_map_step.gif')}
+                 src={'https://solvergy.org/static/help/new_project_map_step.gif'}
                  style={gifBorderStyle}/>
             <br/>
         </p>
@@ -222,16 +222,16 @@ export const OpenProjectHelp = ({styles}) => {
             To open an existing project, you must be logged in. To open the dialog box for selecting an existing
             project, you must press the "Open project..." button on the main screen, <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/open_project_main_page.gif')}
+                 src={'https://solvergy.org/static/help/open_project_main_page.gif'}
                  style={gifBorderStyle}/> <br/>
             or through the menu with "Open project..." button in the toolbar. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/open_project_menu.gif')}
+                 src={'https://solvergy.org/static/help/open_project_menu.gif'}
                  style={gifBorderStyle}/> <br/>
             Also, through the dialog box of opening a project, you can delete an existing project using the "Delete"
             button.
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/delete_project.gif')}
+                 src={'https://solvergy.org/static/help/delete_project.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -246,7 +246,7 @@ export const SaveProjectHelp = ({styles}) => {
             To save the state of the project under development, select the "Save project" button in the "File" toolbar
             menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/save_project.gif')}
+                 src={'https://solvergy.org/static/help/save_project.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -263,7 +263,7 @@ export const SaveAsProjectHelp = ({styles}) => {
             will see a dialog box in which you need to enter a new name for the project. After, click the "save"
             button. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/save_as_project.gif')}
+                 src={'https://solvergy.org/static/help/save_as_project.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -291,7 +291,7 @@ export const SuppliersTemplatesHelp = ({styles}) => {
             To open the dialog box of the supplier templates editor, click the icon of the supplier templates in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_templates_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_templates_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To create a new template, click the "Add New" button. A form will open in front of you, in which you must
             enter the following data:
@@ -314,16 +314,16 @@ export const SuppliersTemplatesHelp = ({styles}) => {
         <p className={styles.dialogText}>
             When finished, press "Create" button, or press "Cancel" button, to cancel template creation process. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_supplier_template.gif')}
+                 src={'https://solvergy.org/static/help/create_new_supplier_template.gif'}
                  style={gifBorderStyle}/> <br/>
             Besides creating templates, you can edit and delete them. To edit a template, select a template and click
             the "Edit" button. After that, a form will be opened in which it will be possible to make changes. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_templates_edit.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_templates_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete a template, select the desired template and click the "Delete" button. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_templates_delete.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_templates_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -338,7 +338,7 @@ export const NetworksTemplatesHelp = ({styles}) => {
             To open the dialog box of the network templates editor, click the icon of the network templates in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_templates_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/networks_templates_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To create a new template, click the "Add New" button. A form will open in front of you, in which you must
             enter the following data:
@@ -353,16 +353,16 @@ export const NetworksTemplatesHelp = ({styles}) => {
         <p className={styles.dialogText}>
             When finished, press "Create" button, or press "Cancel" button, to cancel template creation process. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_network_template.gif')}
+                 src={'https://solvergy.org/static/help/create_new_network_template.gif'}
                  style={gifBorderStyle}/> <br/>
             Besides creating templates, you can edit and delete them. To edit a template, select a template and click
             the "Edit" button. After that, a form will be opened in which it will be possible to make changes. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_templates_edit.gif')}
+                 src={'https://solvergy.org/static/help/networks_templates_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete a template, select the desired template and click the "Delete" button. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_templates_delete.gif')}
+                 src={'https://solvergy.org/static/help/networks_templates_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -383,22 +383,22 @@ export const ProducersHelp = ({styles}) => {
             To open the dialog box of the producers editor, click the icon of the producers in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/producers_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/producers_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To create a new producer, click the "Add New" button. A form will open in front of you, in which you must
             set name and color of producer.
             When finished, press "Create" button, or press "Cancel" button, to cancel producer creation process. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_producer.gif')}
+                 src={'https://solvergy.org/static/help/create_new_producer.gif'}
                  style={gifBorderStyle}/> <br/>
             Besides creating producers, you can edit and delete them. To edit a producer, select a producer and click
             the "Edit" button. After that, a form will be opened in which it will be possible to make changes. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/producers_edit.gif')}
+                 src={'https://solvergy.org/static/help/producers_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete a producer, select the desired producer and click the "Delete" button. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/producers_delete.gif')}
+                 src={'https://solvergy.org/static/help/producers_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -437,31 +437,31 @@ export const ConsumersHelp = ({styles}) => {
             To open the dialog box of the consumer object creation, click the icon of the consumer in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/consumers_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/consumers_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To add a consumer, enter name and the amount of consumed energy, after that, click the "Create" button.
             Next, draw a polygon for the object where it will be placed.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_consumer.gif')}
+                 src={'https://solvergy.org/static/help/create_new_consumer.gif'}
                  style={gifBorderStyle}/> <br/>
             If your consumer object is calculated using "Solvergy: Buildings" mobile software, select the "Import
             consumer data from Solvergy: Buildings" switch button and select your object results.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_consumer_buildings.gif')}
+                 src={'https://solvergy.org/static/help/create_new_consumer_buildings.gif'}
                  style={gifBorderStyle}/> <br/>
             To edit consumer object, select the object in tree view or on the map with right click, and select "Edit
             object..." button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/consumers_edit.gif')}
+                 src={'https://solvergy.org/static/help/consumers_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete consumer object, select the object in tree view or on the map with right click, and select "Delete
             object" button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/consumers_delete.gif')}
+                 src={'https://solvergy.org/static/help/consumers_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -480,26 +480,26 @@ export const SuppliersHelp = ({styles}) => {
             To open the dialog box of the supplier object creation, click the icon of the supplier in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To add a supplier, enter name, capacity, select producer and supplier template, after that, click the
             "Create" button.
             Next, draw a polygon for the object where it will be placed.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_supplier.gif')}
+                 src={'https://solvergy.org/static/help/create_new_supplier.gif'}
                  style={gifBorderStyle}/> <br/>
             To edit supplier object, select the object in tree view or on the map with right click, and select "Edit
             object..." button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_edit.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete supplier object, select the object in tree view or on the map with right click, and select "Delete
             object" button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/suppliers_delete.gif')}
+                 src={'https://solvergy.org/static/help/suppliers_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -517,7 +517,7 @@ export const NetworksHelp = ({styles}) => {
             To open the dialog box of the network object creation, click the icon of the network in the
             toolbar or select the corresponding button in the "Edit" menu. <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/networks_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             To add a network, enter name, network template, network type (supply or return) and network is new, after
             that, click the "Create" button.
@@ -525,25 +525,25 @@ export const NetworksHelp = ({styles}) => {
             suppliers or networks).
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/create_new_network.gif')}
+                 src={'https://solvergy.org/static/help/create_new_network.gif'}
                  style={gifBorderStyle}/> <br/>
             You can move the network by moving the line or circles of the line to change the position of the network an
             connection to the other objects.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_move.gif')}
+                 src={'https://solvergy.org/static/help/networks_move.gif'}
                  style={gifBorderStyle}/> <br/>
             To edit network object, select the object in tree view or on the map with right click, and select "Edit
             object..." button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_edit.gif')}
+                 src={'https://solvergy.org/static/help/networks_edit.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete network object, select the object in tree view or on the map with right click, and select "Delete
             object" button in context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/networks_delete.gif')}
+                 src={'https://solvergy.org/static/help/networks_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -561,7 +561,7 @@ export const PolygonsHelp = ({styles}) => {
             To open the dialog for selecting analyzed polygons, click on the "Polygon analysis" icon.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/polygons_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
             In the dialog, you will have access to the polygons of the analyzed objects, where you need to select the
             relevant objects for your energy system project. In this case, when you click on an object, it will change
@@ -569,30 +569,30 @@ export const PolygonsHelp = ({styles}) => {
             form the supplier object.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_select.gif')}
+                 src={'https://solvergy.org/static/help/polygons_select.gif'}
                  style={gifBorderStyle}/> <br/>
             When all the necessary objects are selected, click the "Generate" button
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_generate.gif')}
+                 src={'https://solvergy.org/static/help/polygons_generate.gif'}
                  style={gifBorderStyle}/> <br/>
             To complete the creation of a consumer object, right-click on the object polygon and select the "Complete
             object..." button in the context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_complete_consumer.gif')}
+                 src={'https://solvergy.org/static/help/polygons_complete_consumer.gif'}
                  style={gifBorderStyle}/> <br/>
             To complete the creation of a supplier object, right-click on the object polygon and select the "Complete
             object..." button in the context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_complete_supplier.gif')}
+                 src={'https://solvergy.org/static/help/polygons_complete_supplier.gif'}
                  style={gifBorderStyle}/> <br/>
             To delete not completed object, right-click on the object polygon and select the "Delete object" button in
             the context menu.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/polygons_delete.gif')}
+                 src={'https://solvergy.org/static/help/polygons_delete.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -610,7 +610,7 @@ export const ModelSettingsHelp = ({styles}) => {
             icon.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/model_settings_open_dialog.gif')}
+                 src={'https://solvergy.org/static/help/model_settings_open_dialog.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -627,7 +627,7 @@ export const ModelSettingsSystemHelp = ({styles}) => {
             sufficient if the "Model Settings" icon in the toolbar turns blue after orange.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/model_settings_set_system.gif')}
+                 src={'https://solvergy.org/static/help/model_settings_set_system.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
@@ -657,13 +657,13 @@ export const ModelSettingsMarketOverSystemHelp = ({styles}) => {
             the sale and purchase of energy, where there is competition.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/model_settings_set_market_over_system_constant.gif')}
+                 src={'https://solvergy.org/static/help/model_settings_set_market_over_system_constant.gif'}
                  style={gifBorderStyle}/> <br/>
             If a manual market share coefficient is selected, the distribution of shares between producers is
             determined manually.
             <br/>
             <img width={gifBorderWidth} height={gifBorderHeight}
-                 src={require('../../assets/help/model_settings_set_market_over_system_manual.gif')}
+                 src={'https://solvergy.org/static/help/model_settings_set_market_over_system_manual.gif'}
                  style={gifBorderStyle}/> <br/>
         </p>
     </div>
