@@ -1,7 +1,7 @@
 {
   "name": "solvergy-systems",
   "productName": "Solvergy Systems",
-  "version": "0.9.10",
+  "version": "0.9.11",
   "description": "Solvergy Systems - energy systems modeling",
   "author": "Solvergy",
   "private": true,
@@ -20,6 +20,7 @@
     "electron-log": "^4.2.4",
     "electron-updater": "^4.3.5",
     "fabric": "^3.6.3",
+    "is-online": "^8.5.1",
     "jquery": "^3.5.1",
     "polylabel": "^1.1.0",
     "rc-slider": "^9.3.1",

@@ -7,7 +7,6 @@ const url = require('url')
 const isDev = require('electron-is-dev')
 const ipcMain = electron.ipcMain
 const nativeImage = electron.nativeImage
-
 const { autoUpdater } = require('electron-updater')
 
 let mainWindow
@@ -26,11 +25,9 @@ function createWindow() {
             contextIsolation: false,
             allowRunningInsecureContent: true
         },
-        icon: nativeImage.createFromPath(path.join(__dirname, '../public/icons/win/icon.ico')),
+        icon: nativeImage.createFromPath(path.join(__dirname, 'icons/win/icon.ico')),
         show: false
     })
-
-
 
     const splashUrl = url.format({
         pathname: path.join(__dirname, '/../build/splash.html'),
@@ -51,6 +48,7 @@ function createWindow() {
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : startUrl)
     mainWindow.on('closed', () => mainWindow = null)
 
+
     mainWindow.once('ready-to-show', () => {
         splash.destroy()
         mainWindow.show()
@@ -64,6 +62,12 @@ function createWindow() {
 process.env.ELECTRON_ENABLE_SECURITY_WARNINGS = false
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 process.env.ELECTRON_ENABLE_LOGGING = 1
+
+// Object.defineProperty(app, 'isPackaged', {
+//     get() {
+//         return true;
+//     }
+// });
 
 app.setAppUserModelId("org.solvergy.systems")
 
@@ -79,7 +83,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
     if (mainWindow === null) {
-        createWindow();
+        createWindow()
     }
 })
 
@@ -96,12 +100,14 @@ autoUpdater.on('update-not-available', function (info) {
 });
 
 autoUpdater.on('update-available', () => {
-    sendStatusToWindow('Update available.');
     mainWindow.webContents.send('update_available')
 })
 
+autoUpdater.on('download-progress', (progressObj) => {
+    mainWindow.webContents.send('progress_object', progressObj)
+})
+
 autoUpdater.on('update-downloaded', () => {
-    sendStatusToWindow('Update downloaded; will install in 1 seconds');
     mainWindow.webContents.send('update_downloaded')
 })
 

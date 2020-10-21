@@ -50,10 +50,13 @@ import {HelpDialog} from "./components/common/ToolsBar/components/HelpDialog";
 import {LicenseDialog} from "./components/common/ToolsBar/components/LicenseDialog";
 import {InfoDialog} from "./components/common/ToolsBar/components/InfoDialog";
 import {UpdateNotification} from "./components/common/Notifications/UpdateNotification";
-import {UpdateDownloadedNotification} from "./components/common/Notifications/UpdateDownloadedNotification";
+import {UpdateDownloadedNotification} from "./components/common/Notifications/UpdateDownloadedNotification"
+import {InternetConnectionDialog} from "./components/common/ToolsBar/components/InternetConnectionDialog";
+
+const isOnline = require('is-online')
 
 const {app} = window.require('electron').remote
-const { ipcRenderer } = window.require('electron')
+const {ipcRenderer} = window.require('electron')
 
 const HEADER_HEIGHT = 50
 //const LEFT_MENU_WIDTH = 134
@@ -125,6 +128,11 @@ export const App = () => {
     const [infoDialogIsOpened, setInfoDialogIsOpened] = useState(false)
 
     const [updateNotificationIsOpened, setUpdateNotificationIsOpened] = useState(false)
+    const [updateNotificationData, setUpdateNotificationData] = useState({percent: 0})
+
+    const [hasInternetConnection, setHasInternetConnection] = useState(true)
+    const [internetConnectionDialogIsOpened, setInternetConnectionDialogIsOpened] = useState(false)
+
     const [updateDownloadedNotificationIsOpened, setUpdateDownloadedNotificationIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
@@ -141,6 +149,29 @@ export const App = () => {
         setTimeout(() => ipcRenderer.send('restart_app'), 2000)
     })
 
+    ipcRenderer.on('progress_object', (event, progressObj) => {
+        setUpdateNotificationData(progressObj)
+    })
+
+    const checkInternetConnection = async () => {
+        const hasInternetConnection = await isOnline()
+        setHasInternetConnection(hasInternetConnection)
+        return hasInternetConnection
+    }
+
+    useEffect(() => {
+        checkInternetConnection()
+        const interval = setInterval(checkInternetConnection, 10000)
+        return () => clearInterval(interval)
+    }, [])
+
+    useEffect(() => {
+        if (!hasInternetConnection) {
+            setInternetConnectionDialogIsOpened(true)
+        } else {
+            setInternetConnectionDialogIsOpened(false)
+        }
+    }, [hasInternetConnection])
 
     useEffect(() => {
         const user = localStorage.getItem('user')
@@ -713,7 +744,13 @@ export const App = () => {
                                             setDialogIsOpened={setInfoDialogIsOpened}
                                 />
 
-                                <UpdateNotification isOpen={updateNotificationIsOpened}/>
+                                <InternetConnectionDialog dialogIsOpened={internetConnectionDialogIsOpened}
+                                                          setDialogIsOpened={setInternetConnectionDialogIsOpened}
+                                                          checkInternetConnection={checkInternetConnection}
+                                />
+
+                                <UpdateNotification isOpen={updateNotificationIsOpened}
+                                                    updateNotificationData={updateNotificationData}/>
                                 <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
 
                                 <Loading isOpen={projectIsCalculating || projectIsLoading}/>
@@ -738,7 +775,13 @@ export const App = () => {
                                setInfoDialogIsOpened={setInfoDialogIsOpened}
                         />
 
-                        <UpdateNotification isOpen={updateNotificationIsOpened}/>
+                        <InternetConnectionDialog dialogIsOpened={internetConnectionDialogIsOpened}
+                                                  setDialogIsOpened={setInternetConnectionDialogIsOpened}
+                                                  checkInternetConnection={checkInternetConnection}
+                        />
+
+                        <UpdateNotification isOpen={updateNotificationIsOpened}
+                                            updateNotificationData={updateNotificationData}/>
                         <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
 
                         <Loading isOpen={!project && projectIsLoading}/>

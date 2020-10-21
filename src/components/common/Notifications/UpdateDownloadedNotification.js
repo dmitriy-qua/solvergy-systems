@@ -10,7 +10,7 @@ export const UpdateDownloadedNotification = ({isOpen}) => {
                  left:"50%",
                  transform:"translate(-50%, -50%)",
                  width: 400,
-                 height: 100,
+                 height: 120,
                  display: "flex",
                  flexDirection: "column",
                  justifyContent: "center",
