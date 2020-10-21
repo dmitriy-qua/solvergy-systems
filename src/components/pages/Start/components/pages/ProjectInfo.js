@@ -42,18 +42,18 @@ export const ProjectInfo = ({name, setName, location, setLocation, currency, set
     const handleSelect = ({ description }) => () => {
         setLocationTouched(true)
         setLocation(description)
-        setValue(description, false);
-        clearSuggestions();
+        setValue(description, false)
+        clearSuggestions()
 
-        // Get latitude and longitude via utility functions
-        // getGeocode({ address: description })
-        //     .then((results) => getLatLng(results[0]))
-        //     .then(({ lat, lng }) => {
-        //         console.log("📍 Coordinates: ", { lat, lng });
-        //     })
-        //     .catch((error) => {
-        //         console.log("😱 Error: ", error);
-        //     });
+        getGeocode({ address: description })
+            .then((results) => getLatLng(results[0]))
+            .then(({ lat, lng }) => {
+                setCoordinates({latitude: lat, longitude: lng})
+                //console.log("Coordinates: ", { lat, lng });
+            })
+            .catch((error) => {
+                console.log("Error: ", error);
+            });
     }
 
     const renderSuggestions = () =>

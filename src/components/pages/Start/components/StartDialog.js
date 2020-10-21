@@ -25,7 +25,7 @@ export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
 
     const [name, setName] = useState("")
     const [location, setLocation] = useState("")
-    const [coordinates, setCoordinates] = useState({latitude: 50.383139, longitude: 30.696004})
+    const [coordinates, setCoordinates] = useState({latitude: null, longitude: null})
     const [currency, setCurrency] = useState("")
 
     const [modelType, setModelType] = useState(null)
