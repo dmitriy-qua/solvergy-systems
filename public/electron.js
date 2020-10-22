@@ -20,6 +20,7 @@ function createWindow() {
         minWidth: 1200,
         webPreferences: {
             sandbox: false,
+            preload: path.join(__dirname, 'preload.js'),
             webSecurity: false,
             nodeIntegration: true,
             contextIsolation: false,
