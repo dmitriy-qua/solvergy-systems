@@ -1,9 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');*/
 @import "~normalize.css";
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/table/lib/css/table.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 @import '~react-widgets/dist/css/react-widgets.css';
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 300;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-Light.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 400;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-Medium.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 600;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-SemiBold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 700;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-Bold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 800;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-ExtraBold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-weight: 900;
+    src: local('Montserrat'), url(./assets/fonts/Montserrat/Montserrat-Black.ttf) format('truetype');
+}
 
 *::-webkit-scrollbar {
     width: 10px;
