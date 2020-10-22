@@ -78,7 +78,8 @@
     ],
     "mac": {
       "category": "org.solvergy.systems",
-      "target": "zip"
+      "target": "default",
+      "icon": "public/icons/mac/icon.icns"
     },
     "win": {
       "icon": "public/icons/win/icon.ico",
