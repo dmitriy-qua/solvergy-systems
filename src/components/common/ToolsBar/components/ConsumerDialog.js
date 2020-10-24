@@ -17,9 +17,19 @@ import {Select} from "@blueprintjs/select";
 import {generateId, getLocationString, updateObject} from "../../../../helpers/data-helper";
 import {setObjects} from "../../../../redux/actions/project";
 import {getBuildingsResults} from "../../../../redux/actions/buildings";
+import {FaInfoCircle} from "react-icons/fa";
 
-
-export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateObject, selectedObject, updateNodeLabel, canvas, createObjectFromAnalysis}) => {
+export const ConsumerDialog = ({
+                                   dialogIsOpened,
+                                   setDialogIsOpened,
+                                   startCreateObject,
+                                   selectedObject,
+                                   updateNodeLabel,
+                                   canvas,
+                                   createObjectFromAnalysis,
+                                   setLicenseRestrictionAlertDialogIsOpened,
+                                   setLicenseRestrictionAlertMessage
+                               }) => {
 
     const styles = useStyles()
 
@@ -28,6 +38,8 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const consumers = useSelector(state => state.project.objects.consumers)
     const buildingsResults = useSelector(state => state.buildings.results)
     const buildingsResultsIsLoading = useSelector(state => state.buildings.isLoading)
+    const user = useSelector(state => state.auth.user)
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
 
     const [name, setName] = useState("")
     const [nameTouched, setNameTouched] = useState(false)
@@ -38,6 +50,12 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     const [importFromSolvergyBuildings, setImportFromSolvergyBuildings] = useState(false)
     const [selectedUserDataItem, setSelectedUserDataItem] = useState(null)
     const [selectedUserDataItemTouched, setSelectedUserDataItemTouched] = useState(false)
+
+    const restrictImportSolvergyBuildings = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to import Solvergy: Buildings results.</span>
+        setLicenseRestrictionAlertMessage(message)
+        setLicenseRestrictionAlertDialogIsOpened(true)
+    }
 
     useEffect(() => {
         if (dialogIsOpened === "edit" && selectedObject) {
@@ -64,7 +82,7 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
     }
 
     const getBuildingsResultName = (selectedUserDataItem) => {
-       return `${selectedUserDataItem.projectInfo.name} (${getLocationString(selectedUserDataItem.projectInfo.city)})`
+        return `${selectedUserDataItem.projectInfo.name} (${getLocationString(selectedUserDataItem.projectInfo.city)})`
     }
 
     const renderUserDataItem = (item) => {
@@ -142,14 +160,18 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
             {(!consumption && consumptionTouched) && <span className={styles.errorText}>Enter value...</span>}
             <br/>
             <Switch checked={importFromSolvergyBuildings}
+                    disabled={!licenseRestrictions.canImportSolvergyBuildings}
                     label={<div className={styles.switchTextContainer}>
                         <span className={styles.dialogText}>Import consumer data from
                     <span className={styles.bold}> Solvergy: Buildings </span><img
-                            className={styles.solvergyBuildingsIcon}
-                            src={require("./../../../../assets/images/solvergy-buildings-logo-sm.png")}
-                            width={16} height={16}/>
-
+                                className={styles.solvergyBuildingsIcon}
+                                src={require("./../../../../assets/images/solvergy-buildings-logo-sm.png")}
+                                width={16} height={16}/>
+                            {!licenseRestrictions.canImportSolvergyBuildings &&
+                            <FaInfoCircle size={16} className={"bp3-icon material-icon"} onClick={() => restrictImportSolvergyBuildings()}/>
+                            }
                     </span></div>}
+
                     onChange={() => {
                         if (!importFromSolvergyBuildings) {
                             dispatch(getBuildingsResults())
@@ -202,7 +224,11 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                             if (dialogIsOpened === "edit") {
                                 const updatedConsumers = updateObject(consumers, selectedObject.id, {
                                     name,
-                                    properties: {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem}
+                                    properties: {
+                                        consumption,
+                                        importFromSolvergyBuildings,
+                                        buildingsResult: selectedUserDataItem
+                                    }
                                 })
 
                                 const canvasObject = canvas.getObjects().find(object => object.id === selectedObject.id)
@@ -211,9 +237,17 @@ export const ConsumerDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                                 dispatch(setObjects({objectType: "consumers", newObjects: updatedConsumers}))
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
-                                startCreateObject("consumer", name, {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem})
+                                startCreateObject("consumer", name, {
+                                    consumption,
+                                    importFromSolvergyBuildings,
+                                    buildingsResult: selectedUserDataItem
+                                })
                             } else if (dialogIsOpened === "complete") {
-                                createObjectFromAnalysis("consumer", name, {consumption, importFromSolvergyBuildings, buildingsResult: selectedUserDataItem})
+                                createObjectFromAnalysis("consumer", name, {
+                                    consumption,
+                                    importFromSolvergyBuildings,
+                                    buildingsResult: selectedUserDataItem
+                                })
                             }
                             resetStates()
                             setDialogIsOpened(null)

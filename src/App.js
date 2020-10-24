@@ -15,7 +15,13 @@ import {
 } from "./components/pages/Topology/components/Canvas/helpers/tree-helper";
 import {Start} from "./components/pages/Start/Start";
 import {useDispatch, useSelector} from "react-redux";
-import {setInitialUserLicense, setLoadedProjectId, successLogin} from "./redux/actions/auth";
+import {
+    getUserInfo,
+    setInitialUserLicense,
+    setLicenseRestrictions,
+    setLoadedProjectId,
+    successLogin
+} from "./redux/actions/auth";
 import {generateId} from "./helpers/data-helper";
 import Consumer from "./objects/consumer";
 import {
@@ -52,6 +58,8 @@ import {InfoDialog} from "./components/common/ToolsBar/components/InfoDialog";
 import {UpdateNotification} from "./components/common/Notifications/UpdateNotification";
 import {UpdateDownloadedNotification} from "./components/common/Notifications/UpdateDownloadedNotification"
 import {InternetConnectionDialog} from "./components/common/ToolsBar/components/InternetConnectionDialog";
+import {getLicenseRestrictions} from "./components/data/license-restrictions";
+import {LicenseRestrictionAlertDialog} from "./components/common/ToolsBar/components/LicenceRestrictionAlertDialog";
 
 const isOnline = require('is-online')
 
@@ -67,7 +75,7 @@ const HISTORY_DEPTH = 10
 let creatingObjectData = null
 let currentToaster = null
 let currentProject = null
-let currentResults = null
+//let currentResults = null
 
 export const App = () => {
 
@@ -132,6 +140,9 @@ export const App = () => {
 
     const [hasInternetConnection, setHasInternetConnection] = useState(true)
     const [internetConnectionDialogIsOpened, setInternetConnectionDialogIsOpened] = useState(false)
+    const [licenseRestrictionAlertDialogIsOpened, setLicenseRestrictionAlertDialogIsOpened] = useState(false)
+
+    const [licenseRestrictionAlertMessage, setLicenseRestrictionAlertMessage] = useState("")
 
     const [updateDownloadedNotificationIsOpened, setUpdateDownloadedNotificationIsOpened] = useState(false)
 
@@ -152,6 +163,26 @@ export const App = () => {
     ipcRenderer.on('progress_object', (event, progressObj) => {
         setUpdateNotificationData(progressObj)
     })
+
+    useEffect(() => {
+        if (isAuth) {
+            dispatch(getUserInfo())
+            checkLicenseRestrictions(user)
+        }
+
+        const interval = setInterval(() => {
+            if (isAuth) {
+                dispatch(getUserInfo())
+                checkLicenseRestrictions(user)
+            }
+        }, 30000)
+        return () => clearInterval(interval)
+    }, [isAuth])
+
+    const checkLicenseRestrictions = (user) => {
+        const licenseRestrictions = getLicenseRestrictions(user.systemsLicense)
+        dispatch(setLicenseRestrictions(licenseRestrictions))
+    }
 
     const checkInternetConnection = async () => {
         const hasInternetConnection = await isOnline()
@@ -615,6 +646,8 @@ export const App = () => {
                               setHelpDialogIsOpened={setHelpDialogIsOpened}
                               setLicenseDialogIsOpened={setLicenseDialogIsOpened}
                               setInfoDialogIsOpened={setInfoDialogIsOpened}
+                              setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                              setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                     />
                 </ReflexElement>
 
@@ -661,6 +694,8 @@ export const App = () => {
                                                 updateNodeLabel={updateNodeLabel}
                                                 canvas={canvas}
                                                 createObjectFromAnalysis={createObjectFromAnalysis}
+                                                setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                                 />
 
                                 <SupplierDialog startCreateObject={startCreateObject}
@@ -718,7 +753,8 @@ export const App = () => {
 
                                 <StartDialog startDialog={startDialog}
                                              setStartDialog={setStartDialog}
-                                             canvas={canvas}
+                                             setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                             setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                                 />
 
                                 <OpenProjectDialog dialogIsOpened={openProjectDialogIsOpened}
@@ -749,6 +785,12 @@ export const App = () => {
                                                           checkInternetConnection={checkInternetConnection}
                                 />
 
+                                <LicenseRestrictionAlertDialog dialogIsOpened={licenseRestrictionAlertDialogIsOpened}
+                                                               setDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                               message={licenseRestrictionAlertMessage}
+                                                               setMessage={setLicenseRestrictionAlertMessage}
+                                />
+
                                 <UpdateNotification isOpen={updateNotificationIsOpened}
                                                     updateNotificationData={updateNotificationData}/>
                                 <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
@@ -773,11 +815,20 @@ export const App = () => {
                                setLicenseDialogIsOpened={setLicenseDialogIsOpened}
                                infoDialogIsOpened={infoDialogIsOpened}
                                setInfoDialogIsOpened={setInfoDialogIsOpened}
+                               licenseRestrictionAlertDialogIsOpened={licenseRestrictionAlertDialogIsOpened}
+                               setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                               setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                         />
 
                         <InternetConnectionDialog dialogIsOpened={internetConnectionDialogIsOpened}
                                                   setDialogIsOpened={setInternetConnectionDialogIsOpened}
                                                   checkInternetConnection={checkInternetConnection}
+                        />
+
+                        <LicenseRestrictionAlertDialog dialogIsOpened={licenseRestrictionAlertDialogIsOpened}
+                                                       setDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                       message={licenseRestrictionAlertMessage}
+                                                       setMessage={setLicenseRestrictionAlertMessage}
                         />
 
                         <UpdateNotification isOpen={updateNotificationIsOpened}

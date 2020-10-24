@@ -1,11 +1,20 @@
 import {
     APP_IS_LOADED,
-    FAILURE_LOGIN, FAILURE_SIGNUP, LOADED_PROJECT,
+    FAILURE_LOGIN,
+    FAILURE_SIGNUP,
+    LOADED_PROJECT,
     LOGOUT,
     REQUEST_LOGIN,
-    REQUEST_SIGNUP, SET_VERSION,
-    SUCCESS_LOGIN, SUCCESS_SIGNUP,
-    PROJECT_IS_LOADING, PROJECT_IS_CALCULATING, SET_USER_PROJECTS, PROJECT_IS_DELETING, SET_USER
+    REQUEST_SIGNUP,
+    SET_VERSION,
+    SUCCESS_LOGIN,
+    SUCCESS_SIGNUP,
+    PROJECT_IS_LOADING,
+    PROJECT_IS_CALCULATING,
+    SET_USER_PROJECTS,
+    PROJECT_IS_DELETING,
+    SET_USER,
+    SET_LICENSE_RESTRICTIONS
 } from "../constants/auth";
 
 const initialState = {
@@ -18,7 +27,8 @@ const initialState = {
     user: null,
     version: null,
     loadedProject: null,
-    userProjects: null
+    userProjects: null,
+    licenseRestrictions: null
 }
 
 const auth = (state = initialState, action) => {
@@ -111,6 +121,11 @@ const auth = (state = initialState, action) => {
             return {
                 ...state,
                 user: action.data,
+            }
+        case SET_LICENSE_RESTRICTIONS:
+            return {
+                ...state,
+                licenseRestrictions: action.data,
             }
         default:
             return state;

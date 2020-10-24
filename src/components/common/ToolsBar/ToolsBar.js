@@ -84,7 +84,9 @@ export const ToolsBar = ({
                              setSaveAsProjectDialogIsOpened,
                              setHelpDialogIsOpened,
                              setLicenseDialogIsOpened,
-                             setInfoDialogIsOpened
+                             setInfoDialogIsOpened,
+                             setLicenseRestrictionAlertDialogIsOpened,
+                             setLicenseRestrictionAlertMessage
                          }) => {
 
     const styles = useStyles()
@@ -94,6 +96,14 @@ export const ToolsBar = ({
     const modelSettings = useSelector(state => state.project && state.project.settings)
     const results = useSelector(state => state.project && state.project.results)
     const isAuth = useSelector(state => state.auth.isAuth)
+    const user = useSelector(state => state.auth.user)
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+
+    const restrictCalculation = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to calculate the project.</span>
+        setLicenseRestrictionAlertMessage(message)
+        setLicenseRestrictionAlertDialogIsOpened(true)
+    }
 
     const FileMenu = () => {
         return <Menu className={[Classes.ELEVATION_1, styles.menuItemText]}>
@@ -221,7 +231,10 @@ export const ToolsBar = ({
                       icon={<FaCalculator size={"1rem"} className={"bp3-icon"}/>}
                       text="Calculate project"
                       labelElement="SHIFT + X"
-                      onClick={() => dispatch(calculateProject(project))}
+                      onClick={() => {
+                          if (!licenseRestrictions.canCalculate) restrictCalculation()
+                          else dispatch(calculateProject(project))
+                      }}
             />
             <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
                       disabled={!project}
@@ -416,7 +429,10 @@ export const ToolsBar = ({
                             disabled={!project}
                             icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
                             className={[Classes.MINIMAL]}
-                            onClick={() => dispatch(calculateProject(project))}
+                            onClick={() => {
+                                if (!licenseRestrictions.canCalculate) restrictCalculation()
+                                else dispatch(calculateProject(project))
+                            }}
                     />
                 </Tooltip>
 

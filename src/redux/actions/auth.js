@@ -3,7 +3,7 @@ import {
     FAILURE_SIGNUP, LOADED_PROJECT,
     LOGOUT, PROJECT_IS_CALCULATING, PROJECT_IS_DELETING, PROJECT_IS_LOADING,
     REQUEST_LOGIN,
-    REQUEST_SIGNUP, SET_USER, SET_USER_PROJECTS,
+    REQUEST_SIGNUP, SET_LICENSE_RESTRICTIONS, SET_USER, SET_USER_PROJECTS,
     SUCCESS_LOGIN,
     SUCCESS_SIGNUP
 } from "../constants/auth";
@@ -123,5 +123,10 @@ export const getUserInfo = () => dispatch => {
 
 export const setProjectIsCalculating = (data) => ({
     type: PROJECT_IS_CALCULATING,
+    data
+})
+
+export const setLicenseRestrictions = (data) => ({
+    type: SET_LICENSE_RESTRICTIONS,
     data
 })

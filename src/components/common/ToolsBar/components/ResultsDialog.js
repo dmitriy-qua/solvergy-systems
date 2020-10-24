@@ -26,6 +26,8 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
     const styles = useStyles()
 
     const results = useSelector(state => state.project && state.project.results)
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+    const user = useSelector(state => state.auth.user)
 
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
@@ -33,15 +35,30 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
 
     useEffect(() => {
         if (results && results.systemMarketEfficiency) {
-            setSteps(stepsWithMarket)
+            if (!licenseRestrictions.networksCalculationResultIsDetailed) {
+                const filteredSteps = stepsWithMarket.filter(step => step.title !== "Networks losses (Detailed)")
+                setSteps(filteredSteps)
+            } else {
+                setSteps(stepsWithMarket)
+            }
         }
 
         if (results && results.systemMarketEfficiencyOptimizationSet) {
-            setSteps(stepsWithMarketOptimization)
+            if (!licenseRestrictions.networksCalculationResultIsDetailed) {
+                const filteredSteps = stepsWithMarket.filter(step => step.title !== "Networks losses (Detailed)")
+                setSteps(filteredSteps)
+            } else {
+                setSteps(stepsWithMarketOptimization)
+            }
         }
 
         if (results && results.systemResultWithoutMarket) {
-            setSteps(stepsWithoutMarket)
+            if (!licenseRestrictions.networksCalculationResultIsDetailed) {
+                const filteredSteps = stepsWithMarket.filter(step => step.title !== "Networks losses (Detailed)")
+                setSteps(filteredSteps)
+            } else {
+                setSteps(stepsWithoutMarket)
+            }
         }
     }, [results])
 
@@ -96,14 +113,19 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
                                 </div>
                             </View>
 
-                            <View className="view">
-                                <div className="start-block">
-                                    <NetworksLossesDetailed
-                                        networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
+                            {licenseRestrictions.networksCalculationResultIsDetailed ?
+                                <View className="view">
+                                    <div className="start-block">
+                                        <NetworksLossesDetailed
+                                            networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
+                                            height={height}
+                                            width={width}/>
+                                    </div>
+                                </View>
+                                :
+                                <></>
+                            }
+
 
                             <View className="view">
                                 <div className="start-block">
@@ -188,14 +210,18 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
                                 </div>
                             </View>
 
-                            <View className="view">
-                                <div className="start-block">
-                                    <NetworksLossesDetailed
-                                        networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
+                            {licenseRestrictions.networksCalculationResultIsDetailed ?
+                                <View className="view">
+                                    <div className="start-block">
+                                        <NetworksLossesDetailed
+                                            networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
+                                            height={height}
+                                            width={width}/>
+                                    </div>
+                                </View>
+                                :
+                                <></>
+                            }
 
                             <View className="view">
                                 <div className="start-block">
@@ -291,14 +317,18 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
                                 </div>
                             </View>
 
-                            <View className="view">
-                                <div className="start-block">
-                                    <NetworksLossesDetailed
-                                        networksResult={results.systemResultWithoutMarket.resultWithoutMarket.networksResult}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
+                            {licenseRestrictions.networksCalculationResultIsDetailed ?
+                                <View className="view">
+                                    <div className="start-block">
+                                        <NetworksLossesDetailed
+                                            networksResult={results.systemResultWithoutMarket.resultWithoutMarket.networksResult}
+                                            height={height}
+                                            width={width}/>
+                                    </div>
+                                </View>
+                                :
+                                <></>
+                            }
 
                             <View className="view">
                                 <div className="start-block">

@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import {FileInput, Intent, NumericInput, Switch} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
+import {useSelector} from "react-redux";
+import {FaInfoCircle} from "react-icons/fa";
 
 export const MapSettings = ({
                                 mapDistance,
@@ -10,14 +12,25 @@ export const MapSettings = ({
                                 mapImageShouldBeAnalyzed,
                                 setMapImageShouldBeAnalyzed,
                                 mapImageForAnalysisUri,
-                                setMapImageForAnalysisUri
+                                setMapImageForAnalysisUri,
+                                setLicenseRestrictionAlertDialogIsOpened,
+                                setLicenseRestrictionAlertMessage
                             }) => {
 
     const styles = useStyles()
 
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+    const user = useSelector(state => state.auth.user)
+
     const [mapDistanceInputTouched, setMapDistanceInputTouched] = useState(false)
     const [mapImageUriTouched, setMapImageUriTouched] = useState(false)
     const [mapImageForAnalysisUriTouched, setMapImageForAnalysisUriTouched] = useState(false)
+
+    const restrictPolygonsAnalyze = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to use "Polygons analyzer".</span>
+        setLicenseRestrictionAlertMessage(message)
+        setLicenseRestrictionAlertDialogIsOpened(true)
+    }
 
     return <div className="start-block">
         <p className={styles.dialogText}>
@@ -67,7 +80,13 @@ export const MapSettings = ({
         <br/>
 
         <Switch checked={mapImageShouldBeAnalyzed}
-                label={"Map image should be analyzed for objects detecting (opportunity to increase the speed of project development)"}
+                label={<span>Map image should be analyzed for objects detecting (opportunity to increase the speed of project development)
+                    {!licenseRestrictions.canAnalyzePolygons &&
+                    <FaInfoCircle size={16} className={"bp3-icon material-icon"}
+                                  onClick={() => restrictPolygonsAnalyze()}/>
+                    }
+                </span>}
+                disabled={!licenseRestrictions.canAnalyzePolygons}
                 onChange={() => setMapImageShouldBeAnalyzed(prevState => !prevState)}/>
 
         <br/>

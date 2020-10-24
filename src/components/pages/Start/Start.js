@@ -22,6 +22,9 @@ export const Start = ({
                           setLicenseDialogIsOpened,
                           infoDialogIsOpened,
                           setInfoDialogIsOpened,
+                          licenseRestrictionAlertDialogIsOpened,
+                          setLicenseRestrictionAlertDialogIsOpened,
+                          setLicenseRestrictionAlertMessage
 }) => {
 
     const isAuth = useSelector(state => state.auth.isAuth)
@@ -49,6 +52,8 @@ export const Start = ({
 
         <StartDialog startDialog={startDialog}
                      setStartDialog={setStartDialog}
+                     setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                     setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
         />
 
         <AuthDialog startDialog={authDialog}

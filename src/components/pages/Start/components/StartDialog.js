@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Classes, Dialog, Intent} from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
 import {FaProjectDiagram} from 'react-icons/fa';
@@ -7,18 +7,22 @@ import {Authentication} from "./pages/Authentication";
 import {ProjectInfo} from "./pages/ProjectInfo";
 import {MapSettings} from "./pages/MapSettings";
 import {ModelType} from "./pages/ModelType";
-import { ViewPager, Frame, Track, View } from 'react-view-pager'
+import {ViewPager, Frame, Track, View} from 'react-view-pager'
 import {useDispatch, useSelector} from "react-redux";
 import {createNewProject} from "../../../../redux/actions/project";
 import {generateId} from "../../../../helpers/data-helper";
+import {getUserProjects} from "../../../../redux/actions/auth";
 
-export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
+export const StartDialog = ({startDialog, setStartDialog, setLicenseRestrictionAlertDialogIsOpened, setLicenseRestrictionAlertMessage}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
     const isAuth = useSelector(state => state.auth.isAuth)
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+    const userProjects = useSelector(state => state.auth.userProjects)
+    const user = useSelector(state => state.auth.user)
 
     const [login, setLogin] = useState("")
     const [password, setPassword] = useState("")
@@ -39,10 +43,14 @@ export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
 
+    useEffect(() => {
+        if (isAuth) dispatch(getUserProjects())
+    }, [isAuth])
+
     const validateStep = (activeStep) => {
         switch (activeStep) {
             case 0:
-                return isAuth
+                return isAuth && licenseRestrictions && userProjects
             case 1:
                 return name && location
             case 2:
@@ -69,6 +77,12 @@ export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
             modelType,
             energySystemType
         }))
+    }
+
+    const restrictProjectCreating = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You have used the maximum number of projects created.</span>
+        setLicenseRestrictionAlertMessage(message)
+        setLicenseRestrictionAlertDialogIsOpened(true)
     }
 
     return <Dialog
@@ -138,6 +152,8 @@ export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
                                          setMapImageShouldBeAnalyzed={setMapImageShouldBeAnalyzed}
                                          mapImageForAnalysisUri={mapImageForAnalysisUri}
                                          setMapImageForAnalysisUri={setMapImageForAnalysisUri}
+                                         setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                         setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                             />
                         </View>
 
@@ -172,10 +188,22 @@ export const StartDialog = ({startDialog, setStartDialog, canvas = null}) => {
                         intent={Intent.SUCCESS}
                         onClick={() => {
                             if (activeStep < steps.length - 1) {
-                                setActiveStep(prevState => {
-                                    if (prevState < steps.length - 1) return prevState + 1
-                                    else return prevState
-                                })
+                                if (activeStep === 0) {
+                                    if (userProjects && licenseRestrictions && userProjects.length > licenseRestrictions.maxProjectsCount) {
+                                        restrictProjectCreating()
+                                    } else {
+                                        setActiveStep(prevState => {
+                                            if (prevState < steps.length - 1) return prevState + 1
+                                            else return prevState
+                                        })
+                                    }
+                                } else {
+                                    setActiveStep(prevState => {
+                                        if (prevState < steps.length - 1) return prevState + 1
+                                        else return prevState
+                                    })
+                                }
+
                             } else {
                                 createProject()
                                 setStartDialog(false)
