@@ -63,7 +63,7 @@
 
 .App {
     height: 100vh;
-    user-select: none
+    user-select: none;
 }
 
 svg.material-icon {
@@ -83,7 +83,8 @@ body {
     font-family: 'Montserrat', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    user-select: none
+    user-select: none;
+    background-color: white;
 }
 
 .start {

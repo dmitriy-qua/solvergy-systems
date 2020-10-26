@@ -19,30 +19,33 @@ export const NetPresentValue = ({marketPaybackPeriod, height, width}) => {
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
-        <p className={styles.dialogTitle}>
-            Discounted payback period of thermal energy market creation
-        </p>
+        <div id="netpresentvalue-description">
+            <p className={styles.dialogTitle}>
+                Discounted payback period of thermal energy market creation
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
 
-        {marketPaybackPeriod.paybackPeriod && <p className={styles.dialogText}>
-            Discounted payback period: <span
-            className={styles.bold}>{marketPaybackPeriod.paybackPeriod.toFixed(2)}</span> years
-        </p>}
+            {marketPaybackPeriod.paybackPeriod && <p className={styles.dialogText}>
+                Discounted payback period: <span
+                className={styles.bold}>{marketPaybackPeriod.paybackPeriod.toFixed(2)}</span> years
+            </p>}
 
-        <br/>
+            <br/>
 
-        <p className={styles.dialogTitle}>
-            NPV chart:
-        </p>
+            <p className={styles.dialogTitle}>
+                NPV chart:
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
+        </div>
 
-        <div style={{height: 400, textAlign: "center"}}>
+
+        <div style={{height: 600, textAlign: "center"}} id="netpresentvalue-chart">
             <ResponsiveLineChart data={yearlyNPV}
                                  axisLeftName={`NPV, ${currency} M`}
                                  axisBottomName={"Year"}
-                                 height={400}
+                                 height={600}
                                  width={(width - 100)}
                                  colorsScheme={"purples"}
                                  colors={["#ffca28"]}

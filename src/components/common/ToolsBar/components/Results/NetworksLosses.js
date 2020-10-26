@@ -27,37 +27,42 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
-        <p className={styles.dialogTitle}>
-            Annual networks losses:
-        </p>
+        <div id="networks-losses-description">
+            <p className={styles.dialogTitle}>
+                Annual networks losses:
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
 
-        <p className={styles.dialogText}>
-            Annual networks heat losses: <span className={styles.bold}>{totalHeatLoss.toFixed(2)}</span> Gcal
-        </p>
+            <p className={styles.dialogText}>
+                Annual networks heat losses: <span className={styles.bold}>{totalHeatLoss.toFixed(2)}</span> Gcal
+            </p>
 
-        <p className={styles.dialogText}>
-            Annual electricity consumption for heat carrier transportation through networks: <span className={styles.bold}>{totalElectricityConsumption.toFixed(2)}</span> kWh
-        </p>
+            <p className={styles.dialogText}>
+                Annual electricity consumption for heat carrier transportation through networks: <span
+                className={styles.bold}>{totalElectricityConsumption.toFixed(2)}</span> kWh
+            </p>
 
-        <br/>
+            <br/>
+        </div>
 
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly networks heat losses:
-                </p>
+                <div id="monthly-networks-losses-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly networks heat losses:
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="monthly-networks-losses-chart">
                     <ResponsiveBarChart data={networksHeatLosses}
                                         keys={["Heat loss"]}
                                         indexBy={"Month"}
                                         axisLeftName={"Heat losses, Gcal"}
                                         axisBottomName={"Month"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"reds"}
@@ -67,19 +72,21 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
             </div>
 
             <div style={{flex: "50%", paddingLeft: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly electricity consumption (heat carrier transportation):
-                </p>
+                <div id="monthly-electricity-consumption-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly electricity consumption (heat carrier transportation):
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="monthly-electricity-consumption-chart">
                     <ResponsiveBarChart data={networksElectricityConsumption}
                                         keys={["Electricity consumption"]}
                                         indexBy={"Month"}
                                         axisLeftName={"Electricity consumption, kWh"}
                                         axisBottomName={"Month"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"purples"}
@@ -88,8 +95,6 @@ export const NetworksLosses = ({totalMonthlyNetworkLosses, totalElectricityConsu
                 </div>
             </div>
         </div>
-
-
 
 
     </div>

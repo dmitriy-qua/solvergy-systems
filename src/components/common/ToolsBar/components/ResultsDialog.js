@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {
     Button,
@@ -20,24 +20,46 @@ import {ProducersFinancialResult} from "./Results/ProducersFinancialResult";
 import {MarketEfficiency} from "./Results/MarketEfficiency";
 import {MarketEfficiencyOptimization} from "./Results/MarketEfficiencyOptimization";
 import {NetPresentValue} from "./Results/NetPresentValue";
+import {jsPDF} from 'jspdf'
+import html2canvas from "html2canvas";
+import {MontserratBoldBase64} from "../../../../assets/fonts/Montserrat/MontserratBoldBase64";
+import {setProjectIsLoading} from "../../../../redux/actions/auth";
+import {
+    generateEnergyAmountPage,
+    generateFrontPage, generateMainProducerFinancialResultPage,
+    generateMarketEfficiencyOptimizationPage,
+    generateMarketEfficiencyPage,
+    generateNetPresentValuePage,
+    generateNetworksLossesPage,
+    generateProducersFinancialResultPage,
+    generateTariffsPage, generateTariffsWithMarketPage
+} from "../../../../helpers/pdf-helper";
 
-export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}) => {
+
+export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width, setResultsDialogSize}) => {
 
     const styles = useStyles()
 
+    const dispatch = useDispatch()
+
     const results = useSelector(state => state.project && state.project.results)
+    const producers = useSelector(state => state.project && state.project.objects.producers)
     const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
     const user = useSelector(state => state.auth.user)
+    const project = useSelector(state => state.project)
+    const projectIsLoading = useSelector(state => state.auth.projectIsLoading)
 
     const [activeStep, setActiveStep] = useState(0)
     const [viewPager, setViewPager] = useState(null)
     const [steps, setSteps] = useState([])
+
 
     useEffect(() => {
         if (results && results.systemMarketEfficiency) {
             if (!licenseRestrictions.networksCalculationResultIsDetailed) {
                 const filteredSteps = stepsWithMarket.filter(step => step.title !== "Networks losses (Detailed)")
                 setSteps(filteredSteps)
+
             } else {
                 setSteps(stepsWithMarket)
             }
@@ -62,6 +84,48 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
         }
     }, [results])
 
+
+    const generateReportPDF = async () => {
+        dispatch(setProjectIsLoading(true))
+        const oldWidth = width
+        setResultsDialogSize(prevState => ({...prevState, width: 1400}))
+
+        setTimeout(async () => {
+            const doc = new jsPDF('l', 'px', "a4")
+            doc.addFileToVFS("Montserrat-Bold.ttf", MontserratBoldBase64)
+            doc.addFont('Montserrat-Bold.ttf', 'Montserrat', 'normal')
+            doc.setFont('Montserrat')
+
+            const width = doc.internal.pageSize.getWidth()
+            const widthWithPadding = width * 0.9
+            const padding = (width - widthWithPadding) / 2
+
+            await generateFrontPage(doc, padding, widthWithPadding, project)
+
+            if (results.systemMarketEfficiency) {
+                await generateEnergyAmountPage(doc, padding, widthWithPadding)
+                await generateNetworksLossesPage(doc, padding, widthWithPadding)
+                await generateProducersFinancialResultPage(doc, padding, widthWithPadding, producers)
+                await generateTariffsWithMarketPage(doc, padding, widthWithPadding)
+                await generateMarketEfficiencyPage(doc, padding, widthWithPadding)
+                if (results.systemMarketEfficiencyOptimizationSet) await generateMarketEfficiencyOptimizationPage(doc, padding, widthWithPadding)
+                await generateNetPresentValuePage(doc, padding, widthWithPadding)
+            } else {
+                await generateEnergyAmountPage(doc, padding, widthWithPadding)
+                await generateNetworksLossesPage(doc, padding, widthWithPadding)
+                await generateMainProducerFinancialResultPage(doc, padding, widthWithPadding, producers)
+                await generateTariffsPage(doc, padding, widthWithPadding)
+            }
+
+            doc.save(`solvergy-systems-report-${project.info.name}.pdf`)
+            setResultsDialogSize(prevState => ({...prevState, width: oldWidth}))
+
+            dispatch(setProjectIsLoading(false))
+        }, 3000)
+
+
+    }
+
     return <Dialog
         icon={<FaChartBar size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => setDialogIsOpened(false)}
@@ -70,109 +134,13 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
         enforceFocus={false}
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
-        usePortal={true}
+        usePortal={!projectIsLoading}
         style={{width, height}}
         isOpen={dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]}>
-            {results && results.systemMarketEfficiency && !results.systemMarketEfficiencyOptimizationSet && <div>
-                <div className='stepper-container'>
-                    <Stepper steps={steps} activeStep={activeStep} {...stepperStyle} />
-                </div>
-                <br/>
 
-                <ViewPager tag="main">
-                    <Frame className="frame" accessibility={false}>
-                        <Track
-                            ref={c => setViewPager(c)}
-                            viewsToShow={1}
-                            swipe={false}
-                            currentView={activeStep}
-                            className="track"
-                            style={{overflow: "auto", width: width}}
-                        >
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <EnergyAmounts
-                                        consumersMonthlyWeightedTariff={results.systemMarketEfficiency.consumersMonthlyWeightedTariffWithMarket}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <NetworksLosses
-                                        totalMonthlyNetworkLosses={results.systemMarketEfficiency.resultWithMarket.totalMonthlyNetworkLosses}
-                                        totalElectricityConsumption={results.systemMarketEfficiency.resultWithMarket.totalElectricityConsumption}
-                                        totalHeatLoss={results.systemMarketEfficiency.resultWithMarket.totalHeatLoss}
-                                        height={height}
-                                        width={width}
-                                    />
-                                </div>
-                            </View>
-
-                            {licenseRestrictions.networksCalculationResultIsDetailed ?
-                                <View className="view">
-                                    <div className="start-block">
-                                        <NetworksLossesDetailed
-                                            networksResult={results.systemMarketEfficiency.resultWithMarket.networksResult}
-                                            height={height}
-                                            width={width}/>
-                                    </div>
-                                </View>
-                                :
-                                <></>
-                            }
-
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <ProducersFinancialResult
-                                        financialResult={results.systemMarketEfficiency.resultWithMarket.financialResult}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <TariffsWithMarket
-                                        consumersAnnualWeightedTariffsWithAdditionalExpenses={results.systemMarketEfficiency.consumersAnnualWeightedTariffsWithAdditionalExpenses}
-                                        monthlyMarketEfficiency={results.systemMarketEfficiency.monthlyMarketEfficiency}
-                                        height={height}
-                                        width={width}/>
-                                </div>
-                            </View>
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <MarketEfficiency
-                                        monthlyMarketEfficiency={results.systemMarketEfficiency.monthlyMarketEfficiency}
-                                        annualMarketEfficiency={results.systemMarketEfficiency.annualMarketEfficiency}
-                                        height={height}
-                                        width={width}
-                                    />
-                                </div>
-                            </View>
-
-                            <View className="view">
-                                <div className="start-block">
-                                    <NetPresentValue
-                                        marketPaybackPeriod={results.systemMarketEfficiency.marketPaybackPeriod}
-                                        height={height}
-                                        width={width}
-                                    />
-                                </div>
-                            </View>
-
-                        </Track>
-                    </Frame>
-                </ViewPager>
-            </div>}
-
-            {results && results.systemMarketEfficiency && results.systemMarketEfficiencyOptimizationSet && <div>
+            {results && results.systemMarketEfficiency && <div>
                 <div className='stepper-container'>
                     <Stepper steps={steps} activeStep={activeStep} {...stepperStyle} />
                 </div>
@@ -242,16 +210,21 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
                                 </div>
                             </View>
 
-                            <View className="view">
-                                <div className="start-block">
-                                    <MarketEfficiencyOptimization
-                                        systemMarketEfficiencyOptimizationSet={results.systemMarketEfficiencyOptimizationSet}
-                                        annualMarketEfficiency={results.systemMarketEfficiency.annualMarketEfficiency}
-                                        height={height}
-                                        width={width}
-                                    />
-                                </div>
-                            </View>
+                            {results.systemMarketEfficiencyOptimizationSet ?
+                                <View className="view">
+                                    <div className="start-block">
+                                        <MarketEfficiencyOptimization
+                                            systemMarketEfficiencyOptimizationSet={results.systemMarketEfficiencyOptimizationSet}
+                                            annualMarketEfficiency={results.systemMarketEfficiency.annualMarketEfficiency}
+                                            height={height}
+                                            width={width}
+                                        />
+                                    </div>
+                                </View>
+                                :
+                                <></>
+                            }
+
 
                             <View className="view">
                                 <div className="start-block">
@@ -360,15 +333,24 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                 <Button intent={Intent.NONE}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
                             setDialogIsOpened(false)
                         }}>
                     Close
                 </Button>
+
+                <Button intent={Intent.NONE}
+                    //disabled={!licenseRestrictions.reports}
+                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={generateReportPDF}>
+                    Export PDF
+                </Button>
+
+
                 <Button disabled={activeStep === 0}
                         intent={Intent.PRIMARY}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
                             setActiveStep(prevState => {
                                 if (prevState > 0) return prevState - 1
@@ -378,7 +360,7 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width}
                     Back
                 </Button>
                 <Button disabled={activeStep === steps.length - 1}
-                        style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
                         text={activeStep === steps.length - 1 ? "Start" : "Next"}
                         intent={Intent.SUCCESS}
                         onClick={() => {
@@ -454,6 +436,19 @@ const useStyles = createUseStyles({
         fontWeight: 600,
         fontSize: 13,
         fontFamily: "Montserrat"
+    },
+    dialogBackdrop: {
+        //backgroundColor: "white",
+        boxShadow: "none"
+    },
+    page: {
+        flexDirection: 'row',
+        backgroundColor: '#E4E4E4'
+    },
+    section: {
+        margin: 10,
+        padding: 10,
+        flexGrow: 1
     },
     bold: {
         fontWeight: 700,

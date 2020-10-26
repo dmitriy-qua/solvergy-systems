@@ -26,37 +26,43 @@ export const MarketEfficiency = ({monthlyMarketEfficiency, annualMarketEfficienc
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
-        <p className={styles.dialogTitle}>
-            Annual market efficiency:
-        </p>
+        <div id="market-efficiency-description">
+            <p className={styles.dialogTitle}>
+                Annual market efficiency:
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
 
-        <p className={styles.dialogText}>
-            Annual relative market efficiency: <span className={styles.bold}>{(annualMarketEfficiency.marketRelativeEfficiency * 100).toFixed(2)}</span> %
-        </p>
+            <p className={styles.dialogText}>
+                Annual relative market efficiency: <span
+                className={styles.bold}>{(annualMarketEfficiency.marketRelativeEfficiency * 100).toFixed(2)}</span> %
+            </p>
 
-        <p className={styles.dialogText}>
-            Annual absolute market efficiency: <span className={styles.bold}>{(annualMarketEfficiency.marketAbsoluteEfficiency / 1000000).toFixed(3)}</span> {currency} M
-        </p>
+            <p className={styles.dialogText}>
+                Annual absolute market efficiency: <span
+                className={styles.bold}>{(annualMarketEfficiency.marketAbsoluteEfficiency / 1000000).toFixed(3)}</span> {currency} M
+            </p>
 
-        <br/>
+            <br/>
+        </div>
 
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly relative market efficiency:
-                </p>
+                <div id="market-efficiency-relative-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly relative market efficiency:
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="market-efficiency-relative-chart">
                     <ResponsiveBarChart data={relativeMarketEfficiency}
                                         keys={["Relative market efficiency"]}
                                         indexBy={"Month"}
                                         axisLeftName={"Relative market efficiency, %"}
                                         axisBottomName={"Month"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"reds"}
@@ -66,19 +72,21 @@ export const MarketEfficiency = ({monthlyMarketEfficiency, annualMarketEfficienc
             </div>
 
             <div style={{flex: "50%", paddingLeft: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly absolute market efficiency:
-                </p>
+                <div id="market-efficiency-absolute-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly absolute market efficiency:
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="market-efficiency-absolute-chart">
                     <ResponsiveBarChart data={absoluteMarketEfficiency}
                                         keys={["Absolute market efficiency"]}
                                         indexBy={"Month"}
                                         axisLeftName={`Absolute market efficiency, ${currency} M`}
                                         axisBottomName={"Month"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         groupMode={"grouped"}
                                         colorsScheme={"purples"}

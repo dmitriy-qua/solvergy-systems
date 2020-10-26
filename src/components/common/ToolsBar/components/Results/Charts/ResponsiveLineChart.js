@@ -36,6 +36,7 @@ export const ResponsiveLineChart = ({data, height, width, axisBottomName, axisLe
         pointBorderWidth={1}
         pointBorderColor={{ from: 'serieColor' }}
         pointLabel="y"
+        animate={false}
         pointLabelYOffset={-12}
         areaBaselineValue={130}
         areaOpacity={0.4}

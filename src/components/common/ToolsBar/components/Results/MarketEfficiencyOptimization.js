@@ -30,17 +30,19 @@ export const MarketEfficiencyOptimization = ({systemMarketEfficiencyOptimization
     return <div style={{height: height - 280, overflow: "auto"}}>
         <div style={{display: "flex"}}>
             <div style={{flex: "50%", paddingRight: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly relative market efficiency:
-                </p>
+                <div id="market-efficiency-relative-optimization-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly relative market efficiency:
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="market-efficiency-relative-optimization-chart">
                     <ResponsiveLineChart data={relativeMarketEfficiency}
                                         axisLeftName={"Relative market efficiency, %"}
                                         axisBottomName={"Market share coefficient"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         colorsScheme={"reds"}
                                         colors={["#9ccc65"]}
@@ -49,17 +51,19 @@ export const MarketEfficiencyOptimization = ({systemMarketEfficiencyOptimization
             </div>
 
             <div style={{flex: "50%", paddingLeft: 10}}>
-                <p className={styles.dialogTitle}>
-                    Monthly absolute market efficiency:
-                </p>
+                <div id="market-efficiency-absolute-optimization-description">
+                    <p className={styles.dialogTitle}>
+                        Monthly absolute market efficiency:
+                    </p>
 
-                <hr className={styles.divider}/>
+                    <hr className={styles.divider}/>
+                </div>
 
-                <div style={{height: 400, textAlign: "center"}}>
+                <div style={{height: 600, textAlign: "center"}} id="market-efficiency-absolute-optimization-chart">
                     <ResponsiveLineChart data={absoluteMarketEfficiency}
                                         axisLeftName={`Absolute market efficiency, ${currency} M`}
                                         axisBottomName={"Market share coefficient"}
-                                        height={400}
+                                        height={600}
                                         width={(width - 150) / 2}
                                         colorsScheme={"purples"}
                                         colors={["#ffca28"]}

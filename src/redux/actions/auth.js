@@ -117,6 +117,7 @@ export const setInitialUserLicense = () => dispatch => {
 export const getUserInfo = () => dispatch => {
     return new Promise(async (res) => {
         const user = await AuthAPI.getUserProfile()
+
         dispatch(setUser(user.data))
     });
 }

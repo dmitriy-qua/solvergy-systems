@@ -26,26 +26,29 @@ export const ProducersFinancialResult = ({financialResult, height, width}) => {
 
         <hr className={styles.divider}/>
 
-        {producers.map(({name, id}) => {
+        {producers.map(({name, id}, i) => {
             return <div key={id} style={{marginTop: 10}}>
                 <p className={styles.dialogText}>
                     {name}
                 </p>
 
-                {rows.length > 0 &&
-                <Table numRows={rows.length} columnWidths={getColumnWidth(financialResult)} enableRowHeader={false}
-                       enableColumnResizing={false}>
-                    <Column name="Parameter" className={[styles.text, styles.bold]} cellRenderer={(rowIndex) => <Cell>{`${rows[rowIndex].name}`}</Cell>}/>
-                    {financialResult.map((monthData, i) => {
-                        const monthName = getMonthInfo(monthData.month).fullName
+                {rows.length > 0 && <div id={`producer${i+1}`}>
+                    <Table numRows={rows.length} columnWidths={getColumnWidth(financialResult)} enableRowHeader={false}
+                           enableColumnResizing={false}>
+                        <Column name="Parameter" className={[styles.text, styles.bold]}
+                                cellRenderer={(rowIndex) => <Cell>{`${rows[rowIndex].name}`}</Cell>}/>
+                        {financialResult.map((monthData, i) => {
+                            const monthName = getMonthInfo(monthData.month).fullName
 
-                        const mainProducerData = monthData.producerFinancialResults.find(producer => producer.id === id)
+                            const mainProducerData = monthData.producerFinancialResults.find(producer => producer.id === id)
 
-                        return <Column className={styles.text} key={monthName} name={monthName} cellRenderer={(rowIndex) => {
-                            return <Cell>{`${mainProducerData[rows[rowIndex].key].toFixed(2)} ${rows[rowIndex].measureUnit}`}</Cell>
-                        }}/>
-                    })}
-                </Table>}
+                            return <Column className={styles.text} key={monthName} name={monthName}
+                                           cellRenderer={(rowIndex) => {
+                                               return <Cell>{`${mainProducerData[rows[rowIndex].key].toFixed(2)} ${rows[rowIndex].measureUnit}`}</Cell>
+                                           }}/>
+                        })}
+                    </Table>
+                </div>}
             </div>
         })}
 

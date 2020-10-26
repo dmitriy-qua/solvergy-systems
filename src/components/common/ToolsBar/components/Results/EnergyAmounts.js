@@ -11,7 +11,10 @@ export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) =
     const dispatch = useDispatch()
 
     const [energyAmounts, setEnergyAmounts] = useState([])
-    const [annualEnergyAmounts, setAnnualEnergyAmounts] = useState({annualEnergyConsumption: 0, annualEnergyProduction: 0})
+    const [annualEnergyAmounts, setAnnualEnergyAmounts] = useState({
+        annualEnergyConsumption: 0,
+        annualEnergyProduction: 0
+    })
 
     useEffect(() => {
         const energyAmounts = getMonthlyEnergyAmountsChartData(consumersMonthlyWeightedTariff)
@@ -21,6 +24,7 @@ export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) =
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
+        <div id="energy-amounts-description">
             <p className={styles.dialogTitle}>
                 Annual energy consumption/production:
             </p>
@@ -40,20 +44,22 @@ export const EnergyAmounts = ({consumersMonthlyWeightedTariff, height, width}) =
             </p>
 
             <hr className={styles.divider}/>
+        </div>
 
-        <div style={{height: 400, textAlign: "center"}}>
+
+        <div style={{height: 600, textAlign: "center"}} id="energy-amounts">
             <ResponsiveBarChart data={energyAmounts}
                                 keys={["Consumption", "Production"]}
                                 indexBy={"Month"}
                                 axisLeftName={"Energy amount"}
                                 axisBottomName={"Month"}
-                                height={400}
+                                height={600}
                                 width={width - 200}
                                 groupMode={"grouped"}
                                 colorsScheme={"accent"}
             />
         </div>
-        </div>
+    </div>
 }
 
 

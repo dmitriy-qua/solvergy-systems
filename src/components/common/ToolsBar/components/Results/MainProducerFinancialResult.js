@@ -23,18 +23,24 @@ export const MainProducerFinancialResult = ({financialResult, height, width}) =>
             Main producer financial results:
         </p>
 
-        {rows.length > 0 && <Table numRows={rows.length} columnWidths={getColumnWidth(financialResult)} enableRowHeader={false} enableColumnResizing={false}>
-            <Column name="Parameter" className={[styles.text, styles.bold]} cellRenderer={(rowIndex) => <Cell>{`${rows[rowIndex].name}`}</Cell>}/>
-            {financialResult.map((monthData, i) => {
-                const monthName = getMonthInfo(monthData.month).fullName
+        {rows.length > 0 && <div id={`main-producer-financial-result`}>
+            <Table numRows={rows.length} columnWidths={getColumnWidth(financialResult)} enableRowHeader={false}
+                   enableColumnResizing={false}>
+                <Column name="Parameter" className={[styles.text, styles.bold]}
+                        cellRenderer={(rowIndex) => <Cell>{`${rows[rowIndex].name}`}</Cell>}/>
+                {financialResult.map((monthData, i) => {
+                    const monthName = getMonthInfo(monthData.month).fullName
 
-                const mainProducerData = monthData.producerFinancialResults.find(producer => producer.id === "main_producer")
+                    const mainProducerData = monthData.producerFinancialResults.find(producer => producer.id === "main_producer")
 
-                return <Column className={styles.text} key={monthName} name={monthName} cellRenderer={(rowIndex) => {
-                    return <Cell>{`${mainProducerData[rows[rowIndex].key].toFixed(2)} ${rows[rowIndex].measureUnit}`}</Cell>
-                }}/>
-            })}
-        </Table>}
+                    return <Column className={styles.text} key={monthName} name={monthName}
+                                   cellRenderer={(rowIndex) => {
+                                       return <Cell>{`${mainProducerData[rows[rowIndex].key].toFixed(2)} ${rows[rowIndex].measureUnit}`}</Cell>
+                                   }}/>
+                })}
+            </Table>
+        </div>
+        }
     </div>
 }
 

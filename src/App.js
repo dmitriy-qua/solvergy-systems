@@ -1,5 +1,5 @@
 import './App.css'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {ReflexContainer, ReflexElement} from 'react-reflex'
 import {ToolsBar} from "./components/common/ToolsBar/ToolsBar";
 import {Topology} from "./components/pages/Topology/Topology";
@@ -75,6 +75,7 @@ const HISTORY_DEPTH = 10
 let creatingObjectData = null
 let currentToaster = null
 let currentProject = null
+let currentUser = null
 //let currentResults = null
 
 export const App = () => {
@@ -165,23 +166,30 @@ export const App = () => {
     })
 
     useEffect(() => {
+        currentUser = user
+    }, [user])
+
+    useEffect(() => {
         if (isAuth) {
             dispatch(getUserInfo())
-            checkLicenseRestrictions(user)
+            checkLicenseRestrictions(currentUser)
         }
 
         const interval = setInterval(() => {
             if (isAuth) {
                 dispatch(getUserInfo())
-                checkLicenseRestrictions(user)
+                checkLicenseRestrictions(currentUser)
             }
         }, 30000)
         return () => clearInterval(interval)
     }, [isAuth])
 
-    const checkLicenseRestrictions = (user) => {
-        const licenseRestrictions = getLicenseRestrictions(user.systemsLicense)
-        dispatch(setLicenseRestrictions(licenseRestrictions))
+
+    const checkLicenseRestrictions = (currentUser) => {
+        if (currentUser) {
+            const licenseRestrictions = getLicenseRestrictions(currentUser.systemsLicense)
+            dispatch(setLicenseRestrictions(licenseRestrictions))
+        }
     }
 
     const checkInternetConnection = async () => {
@@ -207,6 +215,7 @@ export const App = () => {
     useEffect(() => {
         const user = localStorage.getItem('user')
         if (user) dispatch(successLogin(JSON.parse(user).data.user))
+        dispatch(getUserInfo())
     }, [])
 
     useEffect(() => {
@@ -216,7 +225,6 @@ export const App = () => {
     useEffect(() => {
         currentProject = project
     }, [project])
-
 
     useHotkeys('ctrl+d', () => {
         if (!!project && !saveAsProjectDialogIsOpened) setSaveAsProjectDialogIsOpened(true)
@@ -737,6 +745,7 @@ export const App = () => {
                                                setDialogIsOpened={setResultsIsOpened}
                                                height={resultsDialogSize.height - 50}
                                                width={resultsDialogSize.width - 50}
+                                               setResultsDialogSize={setResultsDialogSize}
                                 />
 
                                 <MapImageAnalysisDialog dialogIsOpened={mapImageAnalysisIsOpened}

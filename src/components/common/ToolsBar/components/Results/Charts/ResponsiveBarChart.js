@@ -6,8 +6,8 @@ export const ResponsiveBarChart = ({data, height, width, keys, indexBy, axisBott
             data={data}
             keys={keys}
             indexBy={indexBy}
-            margin={{top: 50, right: 60, bottom: 70, left: 70}}
-            padding={0.2}
+            margin={{top: 30, right: 10, bottom: 180, left: 40}}
+            padding={0.1}
             theme={{
                 fontFamily: "Montserrat"
             }}
@@ -51,11 +51,35 @@ export const ResponsiveBarChart = ({data, height, width, keys, indexBy, axisBott
                 legendPosition: 'middle',
                 legendOffset: -60
             }}
-            animate={true}
+            animate={false}
             motionStiffness={90}
             motionDamping={15}
             width={width}
             height={height}
             groupMode={groupMode}
+            legends={[
+                {
+                    dataFrom: 'keys',
+                    anchor: 'bottom-left',
+                    direction: 'column',
+                    justify: false,
+                    translateX: 0,
+                    translateY: 120,
+                    itemsSpacing: 2,
+                    itemWidth: 200,
+                    itemHeight: 18,
+                    itemDirection: 'left-to-right',
+                    itemOpacity: 0.85,
+                    symbolSize: 16,
+                    effects: [
+                        {
+                            on: 'hover',
+                            style: {
+                                itemOpacity: 1
+                            }
+                        }
+                    ]
+                }
+            ]}
         />
 }

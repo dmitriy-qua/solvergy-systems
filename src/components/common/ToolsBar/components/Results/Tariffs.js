@@ -20,31 +20,34 @@ export const Tariffs = ({consumersMonthlyWeightedTariff, consumersAnnualWeighted
     }, [])
 
     return <div style={{height: height - 280, overflow: "auto"}}>
-        <p className={styles.dialogTitle}>
-            Annual tariff:
-        </p>
+        <div id="tariffs-description">
+            <p className={styles.dialogTitle}>
+                Annual tariff:
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
 
-        <p className={styles.dialogText}>
-            Annual average weighted tariff for consumers: <span className={styles.bold}>{consumersAnnualWeightedTariff.tariff.toFixed(2)}</span> {currency}/Gcal
-        </p>
+            <p className={styles.dialogText}>
+                Annual average weighted tariff for consumers: <span className={styles.bold}>{consumersAnnualWeightedTariff.tariff.toFixed(2)}</span> {currency}/Gcal
+            </p>
 
-        <br/>
+            <br/>
 
-        <p className={styles.dialogTitle}>
-            Monthly financial results:
-        </p>
+            <p className={styles.dialogTitle}>
+                Monthly financial results:
+            </p>
 
-        <hr className={styles.divider}/>
+            <hr className={styles.divider}/>
+        </div>
 
-        <div style={{height: 400, textAlign: "center"}}>
+
+        <div style={{height: 600, textAlign: "center"}} id="tariffs-chart">
             <ResponsiveBarChart data={tariffs}
                                 keys={["Tariff"]}
                                 indexBy={"Month"}
                                 axisLeftName={"Tariff"}
                                 axisBottomName={"Month"}
-                                height={400}
+                                height={600}
                                 width={width - 200}
                                 groupMode={"stacked"}
                                 colorsScheme={"pastel1"}
