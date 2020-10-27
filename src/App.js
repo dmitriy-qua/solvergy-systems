@@ -60,6 +60,8 @@ import {UpdateDownloadedNotification} from "./components/common/Notifications/Up
 import {InternetConnectionDialog} from "./components/common/ToolsBar/components/InternetConnectionDialog";
 import {getLicenseRestrictions} from "./components/data/license-restrictions";
 import {LicenseRestrictionAlertDialog} from "./components/common/ToolsBar/components/LicenceRestrictionAlertDialog";
+import {ImportNetworksTemplatesDialog} from "./components/common/ToolsBar/components/ImportNetworksTemplatesDialog";
+import {ImportSuppliersTemplatesDialog} from "./components/common/ToolsBar/components/ImportSuppliersTemplatesDialog";
 
 const isOnline = require('is-online')
 
@@ -141,11 +143,14 @@ export const App = () => {
 
     const [hasInternetConnection, setHasInternetConnection] = useState(true)
     const [internetConnectionDialogIsOpened, setInternetConnectionDialogIsOpened] = useState(false)
-    const [licenseRestrictionAlertDialogIsOpened, setLicenseRestrictionAlertDialogIsOpened] = useState(false)
 
+    const [licenseRestrictionAlertDialogIsOpened, setLicenseRestrictionAlertDialogIsOpened] = useState(false)
     const [licenseRestrictionAlertMessage, setLicenseRestrictionAlertMessage] = useState("")
 
     const [updateDownloadedNotificationIsOpened, setUpdateDownloadedNotificationIsOpened] = useState(false)
+
+    const [importNetworksTemplatesDialogIsOpened, setImportNetworksTemplatesDialogIsOpened] = useState(false)
+    const [importSuppliersTemplatesDialogIsOpened, setImportSuppliersTemplatesDialogIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
 
@@ -214,8 +219,10 @@ export const App = () => {
 
     useEffect(() => {
         const user = localStorage.getItem('user')
-        if (user) dispatch(successLogin(JSON.parse(user).data.user))
-        dispatch(getUserInfo())
+        if (user) dispatch(getUserInfo())
+
+        //dispatch(successLogin(JSON.parse(user).data.user))
+
     }, [])
 
     useEffect(() => {
@@ -695,6 +702,13 @@ export const App = () => {
                                           completeObject={completeObject}
                                           saveState={saveState}
                                 />
+
+                                <LicenseRestrictionAlertDialog dialogIsOpened={licenseRestrictionAlertDialogIsOpened}
+                                                               setDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                               message={licenseRestrictionAlertMessage}
+                                                               setMessage={setLicenseRestrictionAlertMessage}
+                                />
+
                                 <ConsumerDialog startCreateObject={startCreateObject}
                                                 selectedObject={selectedObject}
                                                 dialogIsOpened={consumerDialogType}
@@ -732,10 +746,25 @@ export const App = () => {
                                 <NetworksTemplatesDialog dialogIsOpened={networksTemplatesDialogIsOpened}
                                                          setDialogIsOpened={setNetworksTemplatesDialogIsOpened}
                                                          canvas={canvas}
+                                                         setImportNetworksTemplatesDialogIsOpened={setImportNetworksTemplatesDialogIsOpened}
+                                                         setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                         setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
+                                />
+
+                                <ImportNetworksTemplatesDialog dialogIsOpened={importNetworksTemplatesDialogIsOpened}
+                                                               setDialogIsOpened={setImportNetworksTemplatesDialogIsOpened}
                                 />
 
                                 <SuppliersTemplatesDialog dialogIsOpened={suppliersTemplatesDialogIsOpened}
-                                                          setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}/>
+                                                          setDialogIsOpened={setSuppliersTemplatesDialogIsOpened}
+                                                          setImportSuppliersTemplatesDialogIsOpened={setImportSuppliersTemplatesDialogIsOpened}
+                                                          setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                                          setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
+                                />
+
+                                <ImportSuppliersTemplatesDialog dialogIsOpened={importSuppliersTemplatesDialogIsOpened}
+                                                               setDialogIsOpened={setImportSuppliersTemplatesDialogIsOpened}
+                                />
 
                                 <ModelSettings dialogIsOpened={modelSettingsIsOpened}
                                                setDialogIsOpened={setModelSettingsIsOpened}
@@ -746,6 +775,8 @@ export const App = () => {
                                                height={resultsDialogSize.height - 50}
                                                width={resultsDialogSize.width - 50}
                                                setResultsDialogSize={setResultsDialogSize}
+                                               setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
+                                               setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
                                 />
 
                                 <MapImageAnalysisDialog dialogIsOpened={mapImageAnalysisIsOpened}
@@ -794,19 +825,16 @@ export const App = () => {
                                                           checkInternetConnection={checkInternetConnection}
                                 />
 
-                                <LicenseRestrictionAlertDialog dialogIsOpened={licenseRestrictionAlertDialogIsOpened}
-                                                               setDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
-                                                               message={licenseRestrictionAlertMessage}
-                                                               setMessage={setLicenseRestrictionAlertMessage}
-                                />
-
                                 <UpdateNotification isOpen={updateNotificationIsOpened}
                                                     updateNotificationData={updateNotificationData}/>
                                 <UpdateDownloadedNotification isOpen={updateDownloadedNotificationIsOpened}/>
 
                                 <Loading isOpen={projectIsCalculating || projectIsLoading}/>
 
+
+
                             </ReflexElement>
+
                         </ReflexContainer>
 
                     </ReflexElement>

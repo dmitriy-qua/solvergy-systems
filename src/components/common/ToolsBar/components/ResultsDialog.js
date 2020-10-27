@@ -36,7 +36,15 @@ import {
 } from "../../../../helpers/pdf-helper";
 
 
-export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width, setResultsDialogSize}) => {
+export const ResultsDialog = ({
+                                  dialogIsOpened,
+                                  setDialogIsOpened,
+                                  height,
+                                  width,
+                                  setResultsDialogSize,
+                                  setLicenseRestrictionAlertDialogIsOpened,
+                                  setLicenseRestrictionAlertMessage
+}) => {
 
     const styles = useStyles()
 
@@ -84,6 +92,11 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width,
         }
     }, [results])
 
+    const restrictReports = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to export report.</span>
+        setLicenseRestrictionAlertMessage(message)
+        setLicenseRestrictionAlertDialogIsOpened(true)
+    }
 
     const generateReportPDF = async () => {
         dispatch(setProjectIsLoading(true))
@@ -333,7 +346,7 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width,
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                 <Button intent={Intent.NONE}
-                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 100, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
                             setDialogIsOpened(false)
                         }}>
@@ -341,16 +354,15 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width,
                 </Button>
 
                 <Button intent={Intent.NONE}
-                    //disabled={!licenseRestrictions.reports}
-                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
-                        onClick={generateReportPDF}>
-                    Export PDF
+                        style={{width: 120, fontFamily: "Montserrat", fontSize: 13}}
+                        onClick={() => licenseRestrictions.reports ? generateReportPDF() : restrictReports()}>
+                    Export PDF...
                 </Button>
 
 
                 <Button disabled={activeStep === 0}
                         intent={Intent.PRIMARY}
-                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 100, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
                             setActiveStep(prevState => {
                                 if (prevState > 0) return prevState - 1
@@ -360,7 +372,7 @@ export const ResultsDialog = ({dialogIsOpened, setDialogIsOpened, height, width,
                     Back
                 </Button>
                 <Button disabled={activeStep === steps.length - 1}
-                        style={{width: 110, fontFamily: "Montserrat", fontSize: 13}}
+                        style={{width: 100, fontFamily: "Montserrat", fontSize: 13}}
                         text={activeStep === steps.length - 1 ? "Start" : "Next"}
                         intent={Intent.SUCCESS}
                         onClick={() => {

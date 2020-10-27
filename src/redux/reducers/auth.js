@@ -120,7 +120,9 @@ const auth = (state = initialState, action) => {
         case SET_USER:
             return {
                 ...state,
+                isAuth: true,
                 user: action.data,
+                error: false
             }
         case SET_LICENSE_RESTRICTIONS:
             return {

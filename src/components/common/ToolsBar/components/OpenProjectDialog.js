@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {
     Button,
@@ -10,7 +10,7 @@ import {FaFolder} from "react-icons/fa";
 import {useDispatch, useSelector} from "react-redux";
 
 import 'rc-slider/assets/index.css';
-import {getUserProjects} from "../../../../redux/actions/auth";
+import {getUserProjects, setProjectIsLoading} from "../../../../redux/actions/auth";
 import {forEachNode, updateNodeProperty} from "../../../pages/Topology/components/Canvas/helpers/tree-helper";
 import {deleteProject, openProject, setNodes} from "../../../../redux/actions/project";
 import {Loading} from "../../Notifications/Loading";
@@ -29,8 +29,9 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
 
     useEffect(() => {
         if (dialogIsOpened) {
+            dispatch(setProjectIsLoading(true))
             dispatch(getUserProjects())
-
+            setTimeout(() => dispatch(setProjectIsLoading(false)), 1500)
         }
     }, [dialogIsOpened])
 
@@ -42,8 +43,8 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
                 const currentProject = userProjects.find(({id}) => id === project.id)
                 setSelectedProject(currentProject)
             }
-
         }
+
     }, [userProjects])
 
     const handleNodeClick = (nodeData, _nodePath, e) => {
@@ -86,6 +87,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
                                     contents={nodes}
                                     onNodeClick={handleNodeClick}
                                     className={[styles.text]}
+
                                 />
                             </div>
 

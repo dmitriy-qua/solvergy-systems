@@ -8,6 +8,8 @@ import {
 } from "@blueprintjs/core";
 import {FaInfoCircle} from "react-icons/fa";
 
+const { shell } = window.require('electron').remote
+
 export const LicenseRestrictionAlertDialog = ({setDialogIsOpened, dialogIsOpened, message, setMessage}) => {
 
     const styles = useStyles()
@@ -20,8 +22,9 @@ export const LicenseRestrictionAlertDialog = ({setDialogIsOpened, dialogIsOpened
         canEscapeKeyClose={false}
         canOutsideClickClose={false}
         usePortal={true}
+        portalClassName={styles.portal}
         isCloseButtonShown={false}
-        style={{width: 400, height: 220, borderRadius: 2}}
+        style={{width: 400, height: 300, borderRadius: 2}}
         isOpen={!!dialogIsOpened}
     >
         <div className={[Classes.DIALOG_BODY]} style={{overflow: "hidden", paddingRight: 4, paddingLeft: 4}}>
@@ -32,13 +35,25 @@ export const LicenseRestrictionAlertDialog = ({setDialogIsOpened, dialogIsOpened
                 </span>
             </div>
 
+            <br/>
+            <br/>
+            <p className={styles.text} style={{fontSize: 13 }}>
+                Visit <b>Solvergy</b> website to manage your license.
+            </p>
+
+            <Button intent={Intent.PRIMARY}
+                    style={{width: 180, fontFamily: "Montserrat", fontSize: 14, fontWeight: 700, padding: 2, marginTop: 6}}
+                    onClick={() => shell.openExternal('https://solvergy.org')}>
+                Go to solvergy.org
+            </Button>
+
         </div>
 
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                <Button intent={Intent.PRIMARY}
+                <Button intent={Intent.NONE}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
-                        onClick={async () => {
+                        onClick={() => {
                             setDialogIsOpened(false)
                             setMessage("")
                         }}>
@@ -117,5 +132,8 @@ const useStyles = createUseStyles({
         height: 0,
         borderTop: "1px solid rgba(0, 0, 0, 0.1)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.3)"
+    },
+    portal: {
+        zIndex: 100
     }
 })

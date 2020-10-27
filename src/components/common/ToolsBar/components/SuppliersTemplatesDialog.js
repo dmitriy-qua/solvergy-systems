@@ -6,20 +6,36 @@ import {
     Intent,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
-import {GiHouse} from 'react-icons/gi';
+import {FaCoins} from 'react-icons/fa';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setSuppliersTemplates} from "../../../../redux/actions/project";
 import {SupplierTemplateForm} from "./SupplierTemplateForm";
 
 
-export const SuppliersTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) => {
+export const SuppliersTemplatesDialog = ({
+                                             dialogIsOpened,
+                                             setDialogIsOpened,
+                                             setImportSuppliersTemplatesDialogIsOpened,
+                                             setLicenseRestrictionAlertDialogIsOpened,
+                                             setLicenseRestrictionAlertMessage,
+}) => {
 
     const styles = useStyles()
 
     const dispatch = useDispatch()
 
     const templates = useSelector(state => state.project.templates.suppliers)
+
+    const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+    const user = useSelector(state => state.auth.user)
+
+    const restrictTemplateImport = () => {
+        const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to import templates.</span>
+        setLicenseRestrictionAlertMessage(message)
+
+        setLicenseRestrictionAlertDialogIsOpened(true)
+    }
 
     let listItem = ({item}) => {
         return <span className={styles.selectText}>
@@ -31,7 +47,7 @@ export const SuppliersTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) =>
     const [formType, setFormType] = useState(null)
 
     return <Dialog
-        icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
+        icon={<FaCoins size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
             setDialogIsOpened(false)
         }}
@@ -85,6 +101,18 @@ export const SuppliersTemplatesDialog = ({dialogIsOpened, setDialogIsOpened}) =>
                                 setFormType("edit")
                             }}>
                         Edit
+                    </Button>
+
+                    <Button intent={Intent.NONE}
+                            style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
+                            onClick={() => {
+                                if (licenseRestrictions.canImportTemplates) {
+                                    setImportSuppliersTemplatesDialogIsOpened(true)
+                                } else {
+                                    restrictTemplateImport()
+                                }
+                            }}>
+                        Import...
                     </Button>
                 </div>
             </>}

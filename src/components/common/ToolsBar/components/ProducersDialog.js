@@ -6,7 +6,7 @@ import {
     Intent,
 } from "@blueprintjs/core";
 import {createUseStyles} from "react-jss";
-import {GiHouse} from 'react-icons/gi';
+import {FaUsersCog} from 'react-icons/fa';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setProducers} from "../../../../redux/actions/project";
@@ -37,7 +37,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, save
     const [nameTextFieldType, setNameTextFieldType] = useState(null)
 
     return <Dialog
-        icon={<GiHouse size={16} className={"bp3-icon material-icon"}/>}
+        icon={<FaUsersCog size={16} className={"bp3-icon material-icon"}/>}
         onClose={() => {
             setDialogIsOpened(false)
         }}
