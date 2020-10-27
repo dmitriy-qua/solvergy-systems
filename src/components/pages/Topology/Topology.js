@@ -34,7 +34,8 @@ export const Topology = ({
                              isInspectionMode,
                              deleteNotCompletedObject,
                              saveState,
-                             completeObject
+                             completeObject,
+                             setDeleteConfirmationDialogIsOpened
                          }) => {
 
     const [treeWidth, setTreeWidth] = useState(250)
@@ -67,6 +68,7 @@ export const Topology = ({
                         deleteNotCompletedObject={deleteNotCompletedObject}
                         completeObject={completeObject}
                         saveState={saveState}
+                        setDeleteConfirmationDialogIsOpened={setDeleteConfirmationDialogIsOpened}
                 />
                 <Toaster position={Position.BOTTOM} ref={ref => setToaster(ref)} maxToasts={2}>
                     {toasts.map(toast => <Toast {...toast} />)}

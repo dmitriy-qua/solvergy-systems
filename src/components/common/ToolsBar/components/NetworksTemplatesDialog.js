@@ -9,9 +9,10 @@ import {createUseStyles} from "react-jss";
 import {FaLayerGroup} from 'react-icons/fa';
 import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
-import {setNetworkTemplates} from "../../../../redux/actions/project";
+import {deleteProject, setNetworkTemplates} from "../../../../redux/actions/project";
 import {ProducerPropertiesForm} from "./ProducerPropertiesForm";
 import {NetworkTemplateForm} from "./NetworkTemplateForm";
+import {DeleteConfirmationDialog} from "./DeleteConfirmationDialog";
 
 
 export const NetworksTemplatesDialog = ({
@@ -32,6 +33,11 @@ export const NetworksTemplatesDialog = ({
     const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
     const user = useSelector(state => state.auth.user)
 
+    const [selectedTemplate, setSelectedTemplate] = useState(null)
+    const [formType, setFormType] = useState(null)
+
+    const [deleteConfirmationDialogIsOpened, setDeleteConfirmationDialogIsOpened] = useState(false)
+
     const restrictTemplateImport = () => {
         const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to import templates.</span>
         setLicenseRestrictionAlertMessage(message)
@@ -45,8 +51,13 @@ export const NetworksTemplatesDialog = ({
         </span>
     }
 
-    const [selectedTemplate, setSelectedTemplate] = useState(null)
-    const [formType, setFormType] = useState(null)
+
+    const deleteSelectedTemplate = () => {
+        const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
+        dispatch(setNetworkTemplates(newTemplatesList))
+        setFormType(null)
+        setSelectedTemplate(null)
+    }
 
     return <Dialog
         icon={<FaLayerGroup size={16} className={"bp3-icon material-icon"}/>}
@@ -88,10 +99,7 @@ export const NetworksTemplatesDialog = ({
                             disabled={!selectedTemplate}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
-                                const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
-                                dispatch(setNetworkTemplates(newTemplatesList))
-                                setFormType(null)
-                                setSelectedTemplate(null)
+                                setDeleteConfirmationDialogIsOpened(true)
                             }}>
                         Delete
                     </Button>
@@ -126,6 +134,12 @@ export const NetworksTemplatesDialog = ({
                                               setSelectedTemplate={setSelectedTemplate}
                                               canvas={canvas}
             />}
+
+            <DeleteConfirmationDialog dialogIsOpened={deleteConfirmationDialogIsOpened}
+                                      setDialogIsOpened={setDeleteConfirmationDialogIsOpened}
+                                      message={<span>Do you really want to delete network template <b>{selectedTemplate && selectedTemplate.properties.name}</b>?</span>}
+                                      action={deleteSelectedTemplate}
+            />
 
         </div>
         <div className={Classes.DIALOG_FOOTER}>

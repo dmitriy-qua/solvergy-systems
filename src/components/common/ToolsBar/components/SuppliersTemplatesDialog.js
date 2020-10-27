@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {SelectList} from 'react-widgets'
 import {setSuppliersTemplates} from "../../../../redux/actions/project";
 import {SupplierTemplateForm} from "./SupplierTemplateForm";
+import {DeleteConfirmationDialog} from "./DeleteConfirmationDialog";
 
 
 export const SuppliersTemplatesDialog = ({
@@ -45,6 +46,15 @@ export const SuppliersTemplatesDialog = ({
 
     const [selectedTemplate, setSelectedTemplate] = useState(null)
     const [formType, setFormType] = useState(null)
+
+    const [deleteConfirmationDialogIsOpened, setDeleteConfirmationDialogIsOpened] = useState(false)
+
+    const deleteSelectedTemplate = () => {
+        const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
+        dispatch(setSuppliersTemplates(newTemplatesList))
+        setFormType(null)
+        setSelectedTemplate(null)
+    }
 
     return <Dialog
         icon={<FaCoins size={16} className={"bp3-icon material-icon"}/>}
@@ -86,10 +96,7 @@ export const SuppliersTemplatesDialog = ({
                             disabled={!selectedTemplate}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
-                                const newTemplatesList = templates.filter(template => template.id !== selectedTemplate.id)
-                                dispatch(setSuppliersTemplates(newTemplatesList))
-                                setFormType(null)
-                                setSelectedTemplate(null)
+                                setDeleteConfirmationDialogIsOpened(true)
                             }}>
                         Delete
                     </Button>
@@ -122,6 +129,12 @@ export const SuppliersTemplatesDialog = ({
                                               templates={templates}
                                               selectedTemplate={selectedTemplate}
                                               setSelectedTemplate={setSelectedTemplate}/>}
+
+            <DeleteConfirmationDialog dialogIsOpened={deleteConfirmationDialogIsOpened}
+                                      setDialogIsOpened={setDeleteConfirmationDialogIsOpened}
+                                      message={<span>Do you really want to delete supplier template <b>{selectedTemplate && selectedTemplate.properties.name}</b>?</span>}
+                                      action={deleteSelectedTemplate}
+            />
 
         </div>
         <div className={Classes.DIALOG_FOOTER}>

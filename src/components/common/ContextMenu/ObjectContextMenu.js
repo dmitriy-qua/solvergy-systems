@@ -10,8 +10,9 @@ import {
     FaTrashAlt,
     FaPencilAlt
 } from 'react-icons/fa';
+import {DeleteConfirmationDialog} from "../ToolsBar/components/DeleteConfirmationDialog";
 
-export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject, canvas, isInspectionMode}) => {
+export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes, editObject, canvas, isInspectionMode, setDeleteConfirmationDialogIsOpened}) => {
 
     const styles = useStyles()
 
@@ -24,7 +25,7 @@ export const ObjectContextMenu = ({selectedObject, deleteObject, objects, nodes,
                   text="Delete object"
                   disabled={isInspectionMode || !selectedObject}
                   intent={Intent.DANGER}
-                  onClick={() => deleteObject(selectedObject, objects, nodes, canvas)}/>
+                  onClick={() => setDeleteConfirmationDialogIsOpened(true)}/>
     </Menu>
 }
 

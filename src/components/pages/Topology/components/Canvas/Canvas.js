@@ -65,7 +65,8 @@ export const Canvas = ({
                            isInspectionMode,
                            deleteNotCompletedObject,
                            completeObject,
-                           saveState
+                           saveState,
+                           setDeleteConfirmationDialogIsOpened
                        }) => {
 
     const dispatch = useDispatch()
@@ -276,7 +277,8 @@ export const Canvas = ({
             if (o.target.isCompleted) {
                 ContextMenu.show(
                     <ObjectContextMenu selectedObject={o.target} deleteObject={deleteObject} objects={currentObjects}
-                                       nodes={currentNodes} editObject={editObject} canvas={canvas} isInspectionMode={inspectionMode}/>,
+                                       nodes={currentNodes} editObject={editObject} canvas={canvas} isInspectionMode={inspectionMode}
+                                       setDeleteConfirmationDialogIsOpened={setDeleteConfirmationDialogIsOpened}/>,
                     {left: o.e.clientX, top: o.e.clientY}
                 )
             } else {
@@ -413,6 +415,8 @@ export const Canvas = ({
             canDrawPolygon = false
             setObjectType("none")
         }
+
+        saveCanvasState(canvas)
     }
 
     const objectMoving = (canvas, height, width) => (e) => {
@@ -445,7 +449,7 @@ export const Canvas = ({
                     _curY = _cur._curY
                 }
 
-                saveCanvasState(canvas)
+                //saveCanvasState(canvas)
             }
         }
     }

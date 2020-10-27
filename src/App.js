@@ -62,6 +62,7 @@ import {getLicenseRestrictions} from "./components/data/license-restrictions";
 import {LicenseRestrictionAlertDialog} from "./components/common/ToolsBar/components/LicenceRestrictionAlertDialog";
 import {ImportNetworksTemplatesDialog} from "./components/common/ToolsBar/components/ImportNetworksTemplatesDialog";
 import {ImportSuppliersTemplatesDialog} from "./components/common/ToolsBar/components/ImportSuppliersTemplatesDialog";
+import {DeleteConfirmationDialog} from "./components/common/ToolsBar/components/DeleteConfirmationDialog";
 
 const isOnline = require('is-online')
 
@@ -153,6 +154,8 @@ export const App = () => {
     const [importSuppliersTemplatesDialogIsOpened, setImportSuppliersTemplatesDialogIsOpened] = useState(false)
 
     const [resultsDialogSize, setResultsDialogSize] = useState({width: 300, height: 300})
+
+    const [deleteConfirmationDialogIsOpened, setDeleteConfirmationDialogIsOpened] = useState(false)
 
     ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available')
@@ -380,7 +383,7 @@ export const App = () => {
                 ContextMenu.show(
                     <ObjectContextMenu selectedObject={selectedObjectNode} deleteObject={deleteObject}
                                        objects={objects} nodes={nodes} editObject={editObject} canvas={canvas}
-                                       isInspectionMode={isInspectionMode}/>,
+                                       isInspectionMode={isInspectionMode} setDeleteConfirmationDialogIsOpened={setDeleteConfirmationDialogIsOpened}/>,
                     {left: e.clientX, top: e.clientY}
                 );
             }
@@ -701,6 +704,7 @@ export const App = () => {
                                           deleteNotCompletedObject={deleteNotCompletedObject}
                                           completeObject={completeObject}
                                           saveState={saveState}
+                                          setDeleteConfirmationDialogIsOpened={setDeleteConfirmationDialogIsOpened}
                                 />
 
                                 <LicenseRestrictionAlertDialog dialogIsOpened={licenseRestrictionAlertDialogIsOpened}
@@ -823,6 +827,12 @@ export const App = () => {
                                 <InternetConnectionDialog dialogIsOpened={internetConnectionDialogIsOpened}
                                                           setDialogIsOpened={setInternetConnectionDialogIsOpened}
                                                           checkInternetConnection={checkInternetConnection}
+                                />
+
+                                <DeleteConfirmationDialog dialogIsOpened={deleteConfirmationDialogIsOpened}
+                                                          setDialogIsOpened={setDeleteConfirmationDialogIsOpened}
+                                                          message={<span>Do you really want to delete selected object?</span>}
+                                                          action={() => deleteObject(selectedObject, objects, nodes, canvas)}
                                 />
 
                                 <UpdateNotification isOpen={updateNotificationIsOpened}

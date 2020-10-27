@@ -14,6 +14,7 @@ import {getUserProjects, setProjectIsLoading} from "../../../../redux/actions/au
 import {forEachNode, updateNodeProperty} from "../../../pages/Topology/components/Canvas/helpers/tree-helper";
 import {deleteProject, openProject, setNodes} from "../../../../redux/actions/project";
 import {Loading} from "../../Notifications/Loading";
+import {DeleteConfirmationDialog} from "./DeleteConfirmationDialog";
 
 export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = null}) => {
 
@@ -26,6 +27,8 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
 
     const [selectedProject, setSelectedProject] = useState(null)
     const [nodes, setNodes] = useState(null)
+
+    const [deleteConfirmationDialogIsOpened, setDeleteConfirmationDialogIsOpened] = useState(false)
 
     useEffect(() => {
         if (dialogIsOpened) {
@@ -53,6 +56,11 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
         const selectedProject = userProjects.find(project => project.id === nodeData.id)
         setSelectedProject(selectedProject)
         setNodes(newNodes)
+    }
+
+    const deleteSelectedProject = () => {
+        dispatch(deleteProject(selectedProject.id))
+        setSelectedProject(null)
     }
 
     return <Dialog
@@ -134,6 +142,11 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
                 <Loading isOpen={!userProjects || !nodes || projectIsDeleting}/>
             }
 
+            <DeleteConfirmationDialog dialogIsOpened={deleteConfirmationDialogIsOpened}
+                                      setDialogIsOpened={setDeleteConfirmationDialogIsOpened}
+                                      message={<span>Do you really want to delete project <b>{selectedProject && selectedProject.info.name}</b>?</span>}
+                                      action={deleteSelectedProject}
+            />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -150,8 +163,7 @@ export const OpenProjectDialog = ({setDialogIsOpened, dialogIsOpened, project = 
                         disabled={!selectedProject || (project && selectedProject.id === project.id)}
                         style={{width: 90, fontFamily: "Montserrat", fontSize: 13}}
                         onClick={() => {
-                            dispatch(deleteProject(selectedProject.id))
-                            setSelectedProject(null)
+                            setDeleteConfirmationDialogIsOpened(true)
                         }}>
                     Delete
                 </Button>

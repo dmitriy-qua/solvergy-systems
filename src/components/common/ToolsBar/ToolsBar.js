@@ -38,6 +38,7 @@ import {GiTeePipe, GiHouse, GiFactory} from 'react-icons/gi';
 import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go';
 import {useDispatch, useSelector} from "react-redux";
 import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
+import {DeleteConfirmationDialog} from "./components/DeleteConfirmationDialog";
 
 const {app} = window.require('electron').remote
 
@@ -98,6 +99,8 @@ export const ToolsBar = ({
     const isAuth = useSelector(state => state.auth.isAuth)
     const user = useSelector(state => state.auth.user)
     const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
+
+    const [deleteConfirmationDialogIsOpened, setDeleteConfirmationDialogIsOpened] = useState(false)
 
     const restrictCalculation = () => {
         const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to calculate the project.</span>
@@ -220,7 +223,7 @@ export const ToolsBar = ({
                       text="Delete object"
                       disabled={isInspectionMode || !selectedObject || !project}
                       intent={Intent.DANGER}
-                      onClick={() => deleteObject(selectedObject, objects, nodes, canvas)}/>
+                      onClick={() => setDeleteConfirmationDialogIsOpened(true)}/>
         </Menu>
     }
 
@@ -675,6 +678,13 @@ export const ToolsBar = ({
 
             </NavbarGroup>}
         </Navbar>
+
+        <DeleteConfirmationDialog dialogIsOpened={deleteConfirmationDialogIsOpened}
+                                  setDialogIsOpened={setDeleteConfirmationDialogIsOpened}
+                                  message={<span>Do you really want to delete selected object?</span>}
+                                  action={() => deleteObject(selectedObject, objects, nodes, canvas)}
+        />
+
     </div>
 }
 
