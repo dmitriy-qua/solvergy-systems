@@ -1,0 +1,1 @@
+export const extendedCanvasObjectKeys = ["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted", "circleId"]

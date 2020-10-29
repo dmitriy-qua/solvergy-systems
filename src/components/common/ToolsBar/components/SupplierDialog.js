@@ -214,7 +214,8 @@ export const SupplierDialog = ({dialogIsOpened, setDialogIsOpened, startCreateOb
                                 const updatedSuppliers = updateObject(suppliers, selectedObject.id, {name, producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})
                                 dispatch(setObjects({objectType: "suppliers", newObjects: updatedSuppliers}))
                                 const canvasObject = canvas.getObjects().find(object => object.id === selectedObject.id)
-                                canvasObject.set({name})
+                                canvasObject.set({name, fill: selectedProducer.color})
+                                canvas.renderAll()
                                 updateNodeLabel(selectedObject.id, name)
                             } else if (dialogIsOpened === "new") {
                                 startCreateObject("supplier", name, {producerId: selectedProducer.id, templateId: selectedTemplate.id, capacity})

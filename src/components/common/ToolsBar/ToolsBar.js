@@ -39,6 +39,8 @@ import {GoPlus, GoPencil, GoFileDirectory, GoGear, GoTools} from 'react-icons/go
 import {useDispatch, useSelector} from "react-redux";
 import {calculateProject, openProject, saveProject} from "../../../redux/actions/project";
 import {DeleteConfirmationDialog} from "./components/DeleteConfirmationDialog";
+import {getProjectErrorTextMessage} from "../../../helpers/data-helper";
+import {extendedCanvasObjectKeys} from "../../data/canvas";
 
 const {app} = window.require('electron').remote
 
@@ -87,7 +89,10 @@ export const ToolsBar = ({
                              setLicenseDialogIsOpened,
                              setInfoDialogIsOpened,
                              setLicenseRestrictionAlertDialogIsOpened,
-                             setLicenseRestrictionAlertMessage
+                             setLicenseRestrictionAlertMessage,
+                             setProjectErrorAlertDialogIsOpened,
+                             setProjectErrorAlertMessage,
+                             checkProjectOnErrors
                          }) => {
 
     const styles = useStyles()
@@ -106,6 +111,21 @@ export const ToolsBar = ({
         const message = <span>Your current license type is <b>{user && user.systemsLicense.pricingPlan.planName}</b>. You are not able to calculate the project.</span>
         setLicenseRestrictionAlertMessage(message)
         setLicenseRestrictionAlertDialogIsOpened(true)
+    }
+
+    const showProjectErrorAlertMessage = (projectErrors) => {
+        const message = <div>
+            <p>Your project has errors:</p>
+            <ul>
+                {projectErrors.map(errorId => {
+                    return <li key={errorId}>
+                        {getProjectErrorTextMessage(errorId)}
+                    </li>
+                })}
+            </ul>
+        </div>
+        setProjectErrorAlertMessage(message)
+        setProjectErrorAlertDialogIsOpened(true)
     }
 
     const FileMenu = () => {
@@ -129,7 +149,7 @@ export const ToolsBar = ({
                       disabled={!project}
                       onClick={() => {
 
-                          const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+                          const canvasState = canvas.toJSON(extendedCanvasObjectKeys)
                           const projectState = {
                               ...project,
                               canvas: canvasState
@@ -235,8 +255,18 @@ export const ToolsBar = ({
                       text="Calculate project"
                       labelElement="SHIFT + X"
                       onClick={() => {
-                          if (!licenseRestrictions.canCalculate) restrictCalculation()
-                          else dispatch(calculateProject(project))
+                          if (!licenseRestrictions.canCalculate) {
+                              restrictCalculation()
+                          } else {
+                              const projectErrors = checkProjectOnErrors()
+
+                              if (projectErrors.length > 0) {
+                                  showProjectErrorAlertMessage(projectErrors)
+                              } else {
+                                  dispatch(calculateProject(project))
+                              }
+
+                          }
                       }}
             />
             <MenuItem icon={<FaSlidersH size={"1rem"} className={"bp3-icon"}/>}
@@ -433,8 +463,18 @@ export const ToolsBar = ({
                             icon={<Icon icon={<FaCalculator size={16} className={"bp3-icon material-icon"}/>}/>}
                             className={[Classes.MINIMAL]}
                             onClick={() => {
-                                if (!licenseRestrictions.canCalculate) restrictCalculation()
-                                else dispatch(calculateProject(project))
+                                if (!licenseRestrictions.canCalculate) {
+                                    restrictCalculation()
+                                } else {
+                                    const projectErrors = checkProjectOnErrors()
+
+                                    if (projectErrors.length > 0) {
+                                        showProjectErrorAlertMessage(projectErrors)
+                                    } else {
+                                        dispatch(calculateProject(project))
+                                    }
+
+                                }
                             }}
                     />
                 </Tooltip>

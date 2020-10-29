@@ -36,6 +36,7 @@ export const lineCircle = (left, top, type, id, mapHeight, mapDistance, networkT
     strokeWidth: STROKE_WIDTH * (mapHeight / mapDistance),
     left: left,
     top: top,
+    networkType: networkType,
     selectable: true,
     hasBorders: false,
     hasControls: false,
@@ -43,6 +44,7 @@ export const lineCircle = (left, top, type, id, mapHeight, mapDistance, networkT
     originY: 'center',
     objectCaching: false,
     id: id,
+    circleId: id + "_" + networkType,
     name: type,
     connectedTo: null
 })

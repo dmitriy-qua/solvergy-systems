@@ -42,6 +42,7 @@ import {SuppliersTemplatesDialog} from "./components/common/ToolsBar/components/
 import {ModelSettings} from "./components/common/ToolsBar/components/ModelSettings";
 import {AuthDialog} from "./components/common/Authentication/AuthDialog";
 import {
+    allObjectsIsConnected,
     handleObjectSelection, regeneratePolygon,
     setEnlivenObjects, toggleInspectionMode
 } from "./components/pages/Topology/components/Canvas/helpers/canvas-helper";
@@ -63,6 +64,8 @@ import {LicenseRestrictionAlertDialog} from "./components/common/ToolsBar/compon
 import {ImportNetworksTemplatesDialog} from "./components/common/ToolsBar/components/ImportNetworksTemplatesDialog";
 import {ImportSuppliersTemplatesDialog} from "./components/common/ToolsBar/components/ImportSuppliersTemplatesDialog";
 import {DeleteConfirmationDialog} from "./components/common/ToolsBar/components/DeleteConfirmationDialog";
+import {ProjectErrorAlertDialog} from "./components/common/ToolsBar/components/ProjectErrorAlertDialog";
+import {extendedCanvasObjectKeys} from "./components/data/canvas";
 
 const isOnline = require('is-online')
 
@@ -147,6 +150,9 @@ export const App = () => {
 
     const [licenseRestrictionAlertDialogIsOpened, setLicenseRestrictionAlertDialogIsOpened] = useState(false)
     const [licenseRestrictionAlertMessage, setLicenseRestrictionAlertMessage] = useState("")
+
+    const [projectErrorAlertDialogIsOpened, setProjectErrorAlertDialogIsOpened] = useState(false)
+    const [projectErrorAlertMessage, setProjectErrorAlertMessage] = useState("")
 
     const [updateDownloadedNotificationIsOpened, setUpdateDownloadedNotificationIsOpened] = useState(false)
 
@@ -351,7 +357,7 @@ export const App = () => {
     }, [selectedObject])
 
     const saveState = () => {
-        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+        const canvasState = canvas.toJSON(extendedCanvasObjectKeys)
 
         const projectWithCanvas = {
             ...currentProject,
@@ -364,7 +370,7 @@ export const App = () => {
     }
 
     const saveCanvasState = (canvas) => {
-        const canvasState = canvas.toJSON(["circle1", "circle2", "objectType", "id", "networkType", "distance", "name", "connectedTo", "networkIsNew", "isCompleted"])
+        const canvasState = canvas.toJSON(extendedCanvasObjectKeys)
         dispatch(setCanvasState(canvasState))
     }
 
@@ -612,6 +618,36 @@ export const App = () => {
         toaster.show({message: `Object "${objectType}" created!`, intent: Intent.SUCCESS, timeout: 3000});
     }
 
+    const checkProjectOnErrors = () => {
+        const errors = []
+
+        if (!project.settings) errors.push("settings-not-completed")
+
+        const {suppliers, networks, consumers, producers} = project.objects
+        const {modelType} = project.type
+
+        const everyProducerHasAtLeastOneSupplier = producers.every(producer => suppliers.find(supplier => supplier.producerId === producer.id) !== undefined)
+
+        if (!everyProducerHasAtLeastOneSupplier) errors.push("every-producer-should-have-at-least-one-supplier")
+
+        if (modelType !== "System" && producers.length === 1) errors.push("producers-should-be-more-than-one")
+
+        if (suppliers.length === 0) errors.push("there-are-no-supplier-objects")
+        if (consumers.length === 0) errors.push("there-are-no-consumer-objects")
+
+        const networksSupply = networks.filter(network => network.networkType === "supply")
+        const networksReturn = networks.filter(network => network.networkType === "return")
+
+        if (networksSupply.length === 0) errors.push("there-are-no-supply-network-objects")
+        if (networksReturn.length === 0) errors.push("there-are-no-return-network-objects")
+
+        const canvasCircles = canvas.getObjects().filter(object => object.type === "circle")
+
+        if (!allObjectsIsConnected(canvasCircles)) errors.push("some-objects-are-not-connected")
+
+        return errors
+    }
+
     return <div className="App">
         <ResizeSensor onResize={handleResize}>
             <ReflexContainer orientation="horizontal" windowResizeAware={true}>
@@ -666,6 +702,9 @@ export const App = () => {
                               setInfoDialogIsOpened={setInfoDialogIsOpened}
                               setLicenseRestrictionAlertDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
                               setLicenseRestrictionAlertMessage={setLicenseRestrictionAlertMessage}
+                              setProjectErrorAlertDialogIsOpened={setProjectErrorAlertDialogIsOpened}
+                              setProjectErrorAlertMessage={setProjectErrorAlertMessage}
+                              checkProjectOnErrors={checkProjectOnErrors}
                     />
                 </ReflexElement>
 
@@ -711,6 +750,12 @@ export const App = () => {
                                                                setDialogIsOpened={setLicenseRestrictionAlertDialogIsOpened}
                                                                message={licenseRestrictionAlertMessage}
                                                                setMessage={setLicenseRestrictionAlertMessage}
+                                />
+
+                                <ProjectErrorAlertDialog dialogIsOpened={projectErrorAlertDialogIsOpened}
+                                                               setDialogIsOpened={setProjectErrorAlertDialogIsOpened}
+                                                               message={projectErrorAlertMessage}
+                                                               setMessage={setProjectErrorAlertMessage}
                                 />
 
                                 <ConsumerDialog startCreateObject={startCreateObject}

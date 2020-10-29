@@ -223,7 +223,9 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     let circle1 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle1.set({
         id: currentCreatingObjectData.id,
+        circleId: currentCreatingObjectData.id + "_supply",
         name: "start",
+        networkType: "supply",
         left: center[0] + 2 * (mapHeight / mapDistance),
         top: center[1],
         selectable: false,
@@ -234,7 +236,9 @@ export const generatePolygon = (pointArray, lineArray, activeShape, activeLine, 
     let circle2 = new fabric.Circle(circleGenerated(mapHeight, mapDistance));
     circle2.set({
         id: currentCreatingObjectData.id,
+        circleId: currentCreatingObjectData.id + "_return",
         name: "end",
+        networkType: "return",
         left: center[0] - 2 * (mapHeight / mapDistance),
         top: center[1],
         selectable: false,
@@ -657,5 +661,12 @@ export const moveLineObject = (e, p, canvas, _curXm, _curYm, mapDistance, height
     canvas.renderAll()
 
     return {_curX: e.e.clientX, _curY: e.e.clientY}
+}
+
+export const allObjectsIsConnected = (canvasCircles) => {
+    return canvasCircles.every(circle => {
+        const connectedOtherCircle = canvasCircles.find(otherCircle => circle.circleId !== otherCircle.circleId && circle.networkType === otherCircle.networkType && circle.top === otherCircle.top && circle.left === otherCircle.left)
+        return connectedOtherCircle !== undefined;
+    })
 }
 

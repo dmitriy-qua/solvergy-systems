@@ -107,3 +107,42 @@ export const getMonthInfo = (monthKey) => {
             return {name: "DEC", fullName: "December", number: 12, daysCount: 31}
     }
 }
+
+export const getProjectErrorTextMessage = (errorId) => {
+    return errorsMap.find(error => error.id === errorId).message
+}
+
+const errorsMap = [
+    {
+        id: "settings-not-completed",
+        message: "Model settings are not completed."
+    },
+    {
+        id: "producers-should-be-more-than-one",
+        message: "There should be more than one producer."
+    },
+    {
+        id: "there-are-no-supplier-objects",
+        message: "There are no supplier objects in the project."
+    },
+    {
+        id: "there-are-no-consumer-objects",
+        message: "There are no consumer objects in the project."
+    },
+    {
+        id: "there-are-no-supply-network-objects",
+        message: "There are no supply network objects in the project."
+    },
+    {
+        id: "there-are-no-return-network-objects",
+        message: "There are no return network objects in the project."
+    },
+    {
+        id: "some-objects-are-not-connected",
+        message: "Some objects are not connected or not connected correctly."
+    },
+    {
+        id: "every-producer-should-have-at-least-one-supplier",
+        message: "Every producer should have at least one supplier object."
+    },
+]
