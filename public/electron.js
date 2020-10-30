@@ -13,6 +13,8 @@ let mainWindow
 let splash
 
 function createWindow() {
+    
+
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 750,
@@ -56,7 +58,7 @@ function createWindow() {
         autoUpdater.checkForUpdatesAndNotify()
     })
 
-    if (!isDev) Menu.setApplicationMenu(null)
+    //mainWindow.setMenu(null)
     //Menu.setApplicationMenu(null)
 }
 
@@ -69,11 +71,12 @@ process.env.ELECTRON_ENABLE_LOGGING = 1
 //         return true;
 //     }
 // });
-
+if (!isDev) Menu.setApplicationMenu(null)
 app.setAppUserModelId("org.solvergy.systems")
 
 app.on('ready', () => {
     createWindow()
+    //if (!isDev) Menu.setApplicationMenu(null)
 })
 
 app.on('window-all-closed', () => {
