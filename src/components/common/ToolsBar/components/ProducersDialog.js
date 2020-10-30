@@ -19,6 +19,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, save
     const dispatch = useDispatch()
 
     const producers = useSelector(state => state.project.objects.producers)
+    const suppliers = useSelector(state => state.project.objects.suppliers)
     const modelType = useSelector(state => state.project.type.modelType)
 
     let listItem = ({item}) => {
@@ -74,7 +75,7 @@ export const ProducersDialog = ({dialogIsOpened, setDialogIsOpened, canvas, save
                     </Button>
 
                     <Button intent={Intent.DANGER}
-                            disabled={!selectedProducer || selectedProducer.id === "main_producer"}
+                            disabled={!selectedProducer || selectedProducer.id === "main_producer" || suppliers.some(supplier => supplier.producerId === selectedProducer.id)}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
                                 const newProducersList = producers.filter(producer => producer.id !== selectedProducer.id)

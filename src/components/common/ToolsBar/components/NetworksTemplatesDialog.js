@@ -29,6 +29,7 @@ export const NetworksTemplatesDialog = ({
     const dispatch = useDispatch()
 
     const templates = useSelector(state => state.project.templates.networks)
+    const networks = useSelector(state => state.project.objects.networks)
 
     const licenseRestrictions = useSelector(state => state.auth.licenseRestrictions)
     const user = useSelector(state => state.auth.user)
@@ -96,7 +97,7 @@ export const NetworksTemplatesDialog = ({
                     </Button>
 
                     <Button intent={Intent.DANGER}
-                            disabled={!selectedTemplate}
+                            disabled={!selectedTemplate || networks.some(network => network.templateId === selectedTemplate.id)}
                             style={{width: 90, fontFamily: "Montserrat", fontSize: 13, margin: 10}}
                             onClick={() => {
                                 setDeleteConfirmationDialogIsOpened(true)
